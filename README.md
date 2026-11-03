@@ -18,4 +18,14 @@
 - رسائل التحقق برقم الجوال عن طريق مزود سعودي (Unifonic أو Taqnyat)
 
 ## الحالة
-مرحلة التصميم مكتملة، والبناء جاي.
+بدأ البناء: هيكل التطبيق في `app/` (Expo SDK 58 + Expo Router) ويشتغل على بيانات تجريبية.
+مخطط قاعدة البيانات في `supabase/migrations/` (لم يُطبّق بعد).
+
+## التشغيل
+```bash
+cd app
+npm install
+npm run web        # أو: npx expo start
+npm test           # اختبارات منطق المستوى و«لقّني مباراة»
+npm run typecheck
+```
