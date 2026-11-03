@@ -1,9 +1,9 @@
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
 import { useState } from 'react';
-import { Pressable } from 'react-native';
-import { Button, Card, Input, Pill, Row, Screen, T } from '@/components/ui';
+import { Button, Chip, Input, Row, T } from '@/components/ui';
 import { colors } from '@/constants/theme';
 import { QASSIM_CITIES } from '@/lib/cities';
+import { SignInShell } from './SignIn';
 
 export function ProfileSetup({ client: sb, session, onDone }: { client: SupabaseClient; session: Session; onDone: () => void }) {
   const [name, setName] = useState('');
@@ -21,23 +21,17 @@ export function ProfileSetup({ client: sb, session, onDone }: { client: Supabase
   };
 
   return (
-    <Screen>
-      <T variant="h1" style={{ marginTop: 40 }}>هلا فيك 👋</T>
-      <Card style={{ gap: 12 }}>
-        <T variant="h2">وش اسمك؟</T>
-        <T variant="muted">يظهر للاعبين في المباريات وعلى بطاقتك.</T>
-        <Input value={name} onChangeText={setName} placeholder="الاسم" maxLength={30} autoComplete="name" />
-        <T variant="h2">وين تلعب غالباً؟</T>
-        <Row style={{ flexWrap: 'wrap' }}>
-          {QASSIM_CITIES.map((c) => (
-            <Pressable key={c} onPress={() => setCity(c)}>
-              <Pill label={c} active={city === c} />
-            </Pressable>
-          ))}
-        </Row>
-        <Button title={busy ? '...' : 'يلا نبدأ'} disabled={busy || name.trim().length < 2 || !city} onPress={save} />
-        {msg && <T style={{ color: colors.danger }}>{msg}</T>}
-      </Card>
-    </Screen>
+    <SignInShell title={'هلا فيك\nفي الملعب'}>
+      <T variant="label">اسمك (يظهر للاعبين وعلى بطاقتك)</T>
+      <Input value={name} onChangeText={setName} placeholder="الاسم" maxLength={30} autoComplete="name" />
+      <T variant="label">وين تلعب غالباً؟</T>
+      <Row style={{ flexWrap: 'wrap' }}>
+        {QASSIM_CITIES.map((c) => (
+          <Chip key={c} label={c} active={city === c} onPress={() => setCity(c)} />
+        ))}
+      </Row>
+      <Button title={busy ? '...' : 'يلا نبدأ'} disabled={busy || name.trim().length < 2 || !city} onPress={save} />
+      {msg && <T style={{ color: colors.danger }}>{msg}</T>}
+    </SignInShell>
   );
 }
