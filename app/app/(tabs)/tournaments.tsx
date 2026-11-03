@@ -7,6 +7,7 @@ export default function Tournaments() {
   return (
     <Screen>
       <T variant="h1">البطولات</T>
+      {tournaments.length === 0 && <T variant="muted">ما فيه بطولات قادمة حالياً.</T>}
       {tournaments.map((t) => {
         const joined = joinedTournaments.includes(t.id);
         const full = t.registered >= t.capacity;

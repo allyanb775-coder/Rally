@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { I18nManager, Platform } from 'react-native';
 import 'react-native-reanimated';
 import { colors } from '@/constants/theme';
-import { StoreProvider } from '@/lib/store';
+import { StoreProvider } from '@/lib/StoreProvider';
 
 export { ErrorBoundary } from 'expo-router';
 

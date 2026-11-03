@@ -45,8 +45,8 @@ export default function LevelQuiz() {
       <Button
         title="احفظ مستواي"
         disabled={!done}
-        onPress={() => {
-          setMyLevel(level);
+        onPress={async () => {
+          await setMyLevel(level);
           router.back();
         }}
       />

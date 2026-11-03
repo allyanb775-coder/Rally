@@ -6,7 +6,7 @@ import { fmtLevel } from '@/lib/format';
 import { useStore } from '@/lib/store';
 
 export default function Profile() {
-  const { me } = useStore();
+  const { me, signOut } = useStore();
   const share = () => {
     const message = `مستواي في البادل ${fmtLevel(me.level)} على Rally 🎾`;
     if (Platform.OS === 'web') {
@@ -20,7 +20,8 @@ export default function Profile() {
       <T variant="h1">ملفي</T>
       <PlayerCard player={me} />
       <Button title="شارك بطاقتك" onPress={share} />
-      <Button title="أعد تحديد مستواي" variant="ghost" onPress={() => router.push('/level')} />
+      {me.matchesPlayed === 0 && <Button title="أعد تحديد مستواي" variant="ghost" onPress={() => router.push('/level')} />}
+      {signOut && <Button title="تسجيل الخروج" variant="ghost" onPress={signOut} />}
     </Screen>
   );
 }

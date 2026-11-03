@@ -7,7 +7,7 @@ import type { Match } from './types.ts';
 
 const now = new Date('2026-11-03T12:00:00Z');
 const at = (h: number) => new Date(now.getTime() + h * 36e5).toISOString();
-const base: Match = { id: 'x', hostId: 'h', court: 'c', startsAt: at(2), kind: 'friendly', minLevel: 2, maxLevel: 3, playerIds: ['a'], distanceKm: 1 };
+const base: Match = { id: 'x', hostId: 'h', courtId: 'c', court: 'c', startsAt: at(2), kind: 'friendly', minLevel: 2, maxLevel: 3, playerIds: ['a'], distanceKm: 1 };
 
 test('questionnaire maps to 0..5.5', () => {
   assert.equal(levelFromAnswers({}), 0);
@@ -40,4 +40,14 @@ test('findBestMatch prefers nearly-full matches', () => {
   const me = { id: 'me', level: 2.5 };
   const ms: Match[] = [{ ...base, id: 'one' }, { ...base, id: 'three', playerIds: ['a', 'b', 'c'] }];
   assert.equal(findBestMatch(ms, me, now)?.id, 'three');
+});
+
+import { normalizeSaudiPhone } from './phone.ts';
+test('normalizeSaudiPhone', () => {
+  assert.equal(normalizeSaudiPhone('0551234567'), '+966551234567');
+  assert.equal(normalizeSaudiPhone('+966 55 123 4567'), '+966551234567');
+  assert.equal(normalizeSaudiPhone('00966551234567'), '+966551234567');
+  assert.equal(normalizeSaudiPhone('٠٥٥١٢٣٤٥٦٧'), '+966551234567');
+  assert.equal(normalizeSaudiPhone('0112345678'), null);
+  assert.equal(normalizeSaudiPhone('055123'), null);
 });

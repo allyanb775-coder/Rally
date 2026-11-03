@@ -7,12 +7,15 @@ export type Player = {
   city: string;
 };
 
+export type Court = { id: string; name: string };
+
 export type MatchKind = 'friendly' | 'competitive';
 
 export type Match = {
   id: string;
   hostId: string;
-  court: string;
+  courtId: string;
+  court: string; // court name, denormalized for display
   startsAt: string; // ISO
   kind: MatchKind;
   minLevel: number;

@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { PlayerRow } from '@/components/MatchCard';
 import { Button, Card, Pill, Row, Screen, T } from '@/components/ui';
 import { fmtLevel, fmtNum, fmtWhen } from '@/lib/format';
@@ -8,6 +9,7 @@ import { MATCH_SIZE } from '@/lib/types';
 export default function MatchDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { matches, me, joinMatch, leaveMatch } = useStore();
+  const [busy, setBusy] = useState(false);
   const m = matches.find((x) => x.id === id);
   if (!m) return <Screen><T>المباراة غير موجودة.</T></Screen>;
 
@@ -34,12 +36,12 @@ export default function MatchDetail() {
       </Card>
 
       {joined ? (
-        !isHost && <Button title="انسحب" variant="ghost" onPress={() => leaveMatch(m.id)} />
+        !isHost && <Button title="انسحب" variant="ghost" disabled={busy} onPress={async () => { setBusy(true); await leaveMatch(m.id); setBusy(false); }} />
       ) : (
         <Button
           title={full ? 'مكتملة' : !eligible ? 'خارج مستواك' : 'انضم'}
-          disabled={full || !eligible}
-          onPress={() => joinMatch(m.id)}
+          disabled={busy || full || !eligible}
+          onPress={async () => { setBusy(true); await joinMatch(m.id); setBusy(false); }}
         />
       )}
     </Screen>

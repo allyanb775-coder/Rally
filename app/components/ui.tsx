@@ -1,6 +1,6 @@
 import { SymbolView } from 'expo-symbols';
 import { ReactNode } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextProps, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, TextProps, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, space } from '@/constants/theme';
 import { fmtLevel } from '@/lib/format';
@@ -45,6 +45,10 @@ export function Button({
       <Text style={[s.btnText, { color: primary ? colors.accentText : colors.text }]}>{title}</Text>
     </Pressable>
   );
+}
+
+export function Input(props: TextInputProps) {
+  return <TextInput placeholderTextColor={colors.muted} {...props} style={[s.input, props.style]} />;
 }
 
 export function Row({ children, style }: { children: ReactNode; style?: ViewStyle }) {
@@ -100,5 +104,6 @@ const s = StyleSheet.create({
   btnText: { fontSize: 16, fontWeight: '700' },
   badge: { backgroundColor: colors.accent, borderRadius: radius.sm, paddingHorizontal: space(2), paddingVertical: 2, minWidth: 36, alignItems: 'center' },
   badgeText: { color: colors.accentText, fontWeight: '800', fontSize: 13 },
+  input: { backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, color: colors.text, fontSize: 18, paddingVertical: space(3.5), paddingHorizontal: space(4), textAlign: 'right' },
   pill: { backgroundColor: colors.surfaceAlt, borderRadius: 99, paddingHorizontal: space(3), paddingVertical: space(1) },
 });
