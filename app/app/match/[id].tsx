@@ -24,7 +24,7 @@ export default function MatchDetail() {
         <T variant="h1">{m.court}</T>
         <Pill label={m.kind === 'competitive' ? 'تنافسية' : 'ودية'} active={m.kind === 'competitive'} />
       </Row>
-      <T variant="muted">{fmtWhen(m.startsAt)}</T>
+      <T variant="muted">{m.city} · {fmtWhen(m.startsAt)}</T>
       <T variant="muted">المستوى المطلوب {fmtLevel(m.minLevel)} – {fmtLevel(m.maxLevel)}</T>
       {m.kind === 'competitive' && <T variant="muted">نتيجة هذي المباراة تعدّل مستوى اللاعبين.</T>}
 

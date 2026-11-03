@@ -6,10 +6,11 @@ import { Button, Pill, Row, Screen, T } from '@/components/ui';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 
-type Filter = 'all' | 'mine-level' | 'competitive';
+type Filter = 'all' | 'mine-level' | 'my-city' | 'competitive';
 const filters: { key: Filter; label: string }[] = [
   { key: 'all', label: 'الكل' },
   { key: 'mine-level', label: 'بمستواي' },
+  { key: 'my-city', label: 'بمدينتي' },
   { key: 'competitive', label: 'تنافسية' },
 ];
 
@@ -19,13 +20,14 @@ export default function Matches() {
   const list = matches
     .filter((m) => m.playerIds.length < MATCH_SIZE && new Date(m.startsAt) > new Date())
     .filter((m) => (filter === 'mine-level' ? me.level >= m.minLevel && me.level <= m.maxLevel : true))
+    .filter((m) => (filter === 'my-city' ? m.city === me.city : true))
     .filter((m) => (filter === 'competitive' ? m.kind === 'competitive' : true))
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 
   return (
     <Screen>
       <T variant="h1">المباريات المفتوحة</T>
-      <Row>
+      <Row style={{ flexWrap: 'wrap' }}>
         {filters.map((f) => (
           <Pressable key={f.key} onPress={() => setFilter(f.key)}>
             <Pill label={f.label} active={filter === f.key} />

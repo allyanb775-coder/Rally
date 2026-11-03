@@ -32,8 +32,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         setMatches((ms) => ms.map((m) => (m.id === id ? { ...m, playerIds: m.playerIds.filter((p) => p !== ME_ID) } : m))),
       createMatch: async (m) => {
         const id = `m${Date.now()}`;
-        const court = seedCourts.find((c) => c.id === m.courtId)?.name ?? '';
-        setMatches((ms) => [...ms, { ...m, id, court, hostId: ME_ID, playerIds: [ME_ID], distanceKm: 0 }]);
+        const c = seedCourts.find((x) => x.id === m.courtId);
+        setMatches((ms) => [...ms, { ...m, id, court: c?.name ?? '', city: c?.city ?? '', hostId: ME_ID, playerIds: [ME_ID], distanceKm: 0 }]);
         return id;
       },
       joinTournament: async (id) => {

@@ -7,7 +7,7 @@ import type { Match } from './types.ts';
 
 const now = new Date('2026-11-03T12:00:00Z');
 const at = (h: number) => new Date(now.getTime() + h * 36e5).toISOString();
-const base: Match = { id: 'x', hostId: 'h', courtId: 'c', court: 'c', startsAt: at(2), kind: 'friendly', minLevel: 2, maxLevel: 3, playerIds: ['a'], distanceKm: 1 };
+const base: Match = { id: 'x', hostId: 'h', courtId: 'c', court: 'c', city: 'x', startsAt: at(2), kind: 'friendly', minLevel: 2, maxLevel: 3, playerIds: ['a'], distanceKm: 1 };
 
 test('questionnaire maps to 0..5.5', () => {
   assert.equal(levelFromAnswers({}), 0);

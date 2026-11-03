@@ -53,7 +53,7 @@ export default function CreateMatch() {
   return (
     <Screen>
       <T variant="h2">الملعب</T>
-      {choice(courts, court, setCourt, (c) => c.name)}
+      {choice(courts, court, setCourt, (c) => `${c.name} · ${c.city}`)}
       <T variant="h2">الوقت</T>
       {choice(slots, slot, setSlot, (s) => s.label)}
       <T variant="h2">النوع</T>

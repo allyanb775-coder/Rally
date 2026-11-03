@@ -44,7 +44,7 @@ export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient;
   return (
     <Screen>
       <T variant="h1" style={{ marginTop: 40 }}>Rally 🎾</T>
-      <T variant="muted">لاعبين البادل في عنيزة، بمكان واحد.</T>
+      <T variant="muted">لاعبين البادل في القصيم، بمكان واحد.</T>
       <Card style={{ gap: 12 }}>
         {!phone ? (
           <>

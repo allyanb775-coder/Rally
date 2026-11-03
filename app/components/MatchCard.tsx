@@ -20,7 +20,7 @@ export function MatchCard({ match, highlight }: { match: Match; highlight?: bool
           <Icon name="clock" color={colors.muted} size={14} />
           <T variant="muted">{fmtWhen(match.startsAt)}</T>
           <Icon name="pin" color={colors.muted} size={14} />
-          <T variant="muted">{fmtNum(match.distanceKm)} كم</T>
+          <T variant="muted">{match.distanceKm > 0 ? `${fmtNum(match.distanceKm)} كم` : match.city}</T>
         </Row>
         <T variant="muted">
           المستوى {fmtLevel(match.minLevel)} – {fmtLevel(match.maxLevel)}

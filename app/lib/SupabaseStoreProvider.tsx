@@ -22,15 +22,15 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
   const since = new Date(Date.now() - 24 * 36e5).toISOString();
   const [profiles, courts, matches, tournaments] = await Promise.all([
     sb.from('profiles').select('id,name,city,level,matches_played,wins'),
-    sb.from('courts').select('id,name').order('name'),
+    sb.from('courts').select('id,name,city').order('city').order('name'),
     sb
       .from('matches')
-      .select('id,host_id,court_id,starts_at,kind,min_level,max_level,courts(name),match_players(player_id,joined_at)')
+      .select('id,host_id,court_id,starts_at,kind,min_level,max_level,courts(name,city),match_players(player_id,joined_at)')
       .gte('starts_at', since)
       .order('starts_at'),
     sb
       .from('tournaments')
-      .select('id,name,format,starts_at,min_level,max_level,capacity,fee_sar,courts(name),tournament_entries(player_id)')
+      .select('id,name,format,starts_at,min_level,max_level,capacity,fee_sar,courts(name,city),tournament_entries(player_id)')
       .gte('starts_at', since)
       .order('starts_at'),
   ]);
@@ -51,6 +51,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       hostId: m.host_id,
       courtId: m.court_id,
       court: m.courts?.name ?? '',
+      city: m.courts?.city ?? '',
       startsAt: m.starts_at,
       kind: m.kind,
       minLevel: num(m.min_level),
@@ -65,7 +66,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       name: t.name,
       format: t.format,
       startsAt: t.starts_at,
-      venue: t.courts?.name ?? '',
+      venue: [t.courts?.name, t.courts?.city].filter(Boolean).join('، '),
       minLevel: num(t.min_level),
       maxLevel: num(t.max_level),
       capacity: t.capacity,
