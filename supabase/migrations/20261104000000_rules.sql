@@ -25,7 +25,6 @@ begin
   end if;
   return old;
 end $$;
-drop trigger if exists host_leave on public.match_players;
 create trigger host_leave before delete on public.match_players
   for each row execute function public.prevent_host_leave();
 
@@ -42,7 +41,6 @@ begin
   if lvl < t.min_level or lvl > t.max_level then raise exception 'level out of range'; end if;
   return new;
 end $$;
-drop trigger if exists tournament_entry on public.tournament_entries;
 create trigger tournament_entry before insert on public.tournament_entries
   for each row execute function public.enforce_tournament_entry();
 
@@ -61,7 +59,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists profile_guard on public.profiles;
 create trigger profile_guard before update on public.profiles
   for each row execute function public.guard_profile_update();
 
@@ -75,7 +72,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists profile_insert_guard on public.profiles;
 create trigger profile_insert_guard before insert on public.profiles
   for each row execute function public.guard_profile_insert();
 
