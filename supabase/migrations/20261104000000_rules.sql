@@ -80,4 +80,7 @@ create trigger profile_insert_guard before insert on public.profiles
   for each row execute function public.guard_profile_insert();
 
 -- Live updates for open matches.
-alter publication supabase_realtime add table public.matches, public.match_players;
+do $$ begin
+  alter publication supabase_realtime add table public.matches, public.match_players;
+exception when duplicate_object then null;
+end $$;
