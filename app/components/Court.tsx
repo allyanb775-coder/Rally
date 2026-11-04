@@ -30,8 +30,8 @@ export function Court({ playerIds, size = 'md' }: { playerIds: string[]; size?: 
               return (
                 <View
                   key={i}
-                  style={[s.dot, { width: dot, height: dot, borderRadius: dot / 2 }, p ? { backgroundColor: mine ? colors.led : colors.text } : s.empty]}>
-                  <Text style={{ fontFamily: fonts.kufi, fontSize: dot * 0.4, lineHeight: dot * 0.9, color: p ? colors.ink : colors.led }}>
+                  style={[s.dot, { width: dot, height: dot, borderRadius: dot / 2 }, p ? { backgroundColor: mine ? '#FFD400' : colors.text } : s.empty]}>
+                  <Text style={{ fontFamily: fonts.kufi, fontSize: dot * 0.4, lineHeight: dot * 0.9, color: p ? '#000' : '#FFFFFF' }}>
                     {p ? p.name[0] : '+'}
                   </Text>
                 </View>
@@ -51,5 +51,5 @@ const s = StyleSheet.create({
   net: { position: 'absolute', left: '50%', marginLeft: -2, top: -2, bottom: -2, width: 4, backgroundColor: colors.ink },
   half: { position: 'absolute', top: 0, bottom: 0, width: '50%', justifyContent: 'space-around', alignItems: 'center', paddingVertical: '3%' },
   dot: { alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } },
-  empty: { borderWidth: 2, borderStyle: 'dashed', borderColor: colors.led, backgroundColor: 'rgba(6,11,26,0.25)' },
+  empty: { borderWidth: 2, borderStyle: 'dashed', borderColor: '#FFFFFF', backgroundColor: 'rgba(0,0,0,0.25)' },
 });

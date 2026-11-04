@@ -1,4 +1,5 @@
 import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_700Bold } from '@expo-google-fonts/ibm-plex-sans-arabic';
+import { Anton_400Regular } from '@expo-google-fonts/anton';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -31,6 +32,7 @@ const theme = {
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
+    Anton_400Regular,
     IBMPlexSansArabic_400Regular,
     IBMPlexSansArabic_500Medium,
     IBMPlexSansArabic_700Bold,

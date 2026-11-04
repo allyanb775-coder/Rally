@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { colors, fonts, radius, space } from '@/constants/theme';
+import { colors, fonts, space } from '@/constants/theme';
 import { fmtDay, fmtNum, fmtRange } from '@/lib/format';
 import { needsResult, teamOf } from '@/lib/result';
 import { useStore } from '@/lib/store';
@@ -25,13 +25,13 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
       style={({ pressed }) => [pressed && { opacity: 0.85 }]}>
       <Glass style={s.row}>
       <View style={s.time}>
-        <Led value={ledTime(match.startsAt)} dot={3} />
+        <Led value={ledTime(match.startsAt)} dot={3.6} color="#FFFFFF" />
         <T style={s.day}>{fmtDay(match.startsAt)}</T>
       </View>
       <View style={{ flex: 1, gap: 4, minWidth: 0 }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <T variant="h3" numberOfLines={1} style={{ flexShrink: 1 }}>{match.court}</T>
-          {match.kind === 'competitive' && <T style={s.comp}>تنافسية</T>}
+          {match.kind === 'competitive' && <T style={s.comp}>RANKED</T>}
         </Row>
         <T variant="small">
           {match.city} · المستوى {fmtRange(match.minLevel, match.maxLevel)}
@@ -41,7 +41,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
             {Array.from({ length: MATCH_SIZE }).map((_, i) => {
               const id = match.playerIds[i];
               const p = id ? players[id] : undefined;
-              return <View key={i} style={[s.spot, p ? { backgroundColor: id === me.id ? colors.led : colors.text } : s.spotEmpty]} />;
+              return <View key={i} style={[s.spot, p ? { backgroundColor: id === me.id ? colors.blue : colors.text } : s.spotEmpty]} />;
             })}
           </Row>
           {resultNote ? (
@@ -65,7 +65,7 @@ export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
   return (
     <Pressable onPress={() => (id === me.id ? router.push('/profile') : router.push({ pathname: '/player/[id]', params: { id } }))}>
     <Row style={s.player}>
-      <View style={[s.avatar, id === me.id && { backgroundColor: colors.led }]}>
+      <View style={[s.avatar, id === me.id && { backgroundColor: colors.blue }]}>
         <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{p.name[0]}</T>
       </View>
       <View style={{ flex: 1 }}>
@@ -80,12 +80,12 @@ export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
 
 const s = StyleSheet.create({
   row: { flexDirection: 'row', gap: space(3), alignItems: 'stretch', padding: space(3), paddingHorizontal: space(4) },
-  time: { backgroundColor: colors.ink, borderRadius: radius.sm, paddingHorizontal: 10, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', gap: 6 },
-  day: { fontFamily: fonts.bold, fontSize: 11, color: colors.inkMuted, textAlign: 'center' },
-  comp: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, color: colors.led, borderWidth: 1, borderColor: colors.led, paddingHorizontal: 6, borderRadius: 2 },
+  time: { backgroundColor: colors.blue, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', gap: 2, minWidth: 84 },
+  day: { fontFamily: fonts.bold, fontSize: 11, color: 'rgba(255,255,255,0.8)', textAlign: 'center' },
+  comp: { fontFamily: fonts.display, fontSize: 10, letterSpacing: 1, lineHeight: 18, color: '#FFFFFF', backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 8, borderRadius: 999, overflow: 'hidden' },
   spot: { width: 16, height: 16, borderRadius: 8 },
-  spotEmpty: { borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.led },
-  missing: { fontFamily: fonts.bold, fontSize: 13, color: colors.led },
+  spotEmpty: { borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.5)' },
+  missing: { fontFamily: fonts.bold, fontSize: 13, color: '#8FB0FF' },
   player: { paddingVertical: 8, borderTopWidth: 1, borderColor: colors.lineSoft, gap: space(3) },
   avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.text, alignItems: 'center', justifyContent: 'center' },
 });

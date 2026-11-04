@@ -16,6 +16,7 @@ export function Photo({ source, aspect, children, style }: { source: ImageSource
   );
 }
 
+export const HIGH_FIVE_HERO = { source: require('@/assets/images/high-five-hero.jpg'), aspect: 1179 / 980 };
 export const HIGH_FIVE_WIDE = { source: require('@/assets/images/high-five-wide.jpg'), aspect: 1179 / 600 };
 
 const s = StyleSheet.create({

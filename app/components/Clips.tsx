@@ -7,7 +7,7 @@ import { clipProblem, MAX_CLIP_SECONDS } from '@/lib/clips';
 import { notify } from '@/lib/notify';
 import { Highlight } from '@/lib/types';
 import { Glass } from './Glass';
-import { Icon, Row, T } from './ui';
+import { Heading, Icon, Row, T } from './ui';
 
 /** Opens the phone's videos; on a valid pick, goes to the post screen. */
 export async function pickClip() {
@@ -67,8 +67,8 @@ export function ClipGrid({ clips, mine }: { clips: Highlight[]; mine?: boolean }
 /** Section header used on profiles. */
 export function ClipsHeader({ count }: { count: number }) {
   return (
-    <Row style={{ justifyContent: 'space-between', marginTop: space(2) }}>
-      <T variant="h2">لقطات اللعب</T>
+    <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end', marginTop: space(3) }}>
+      <Heading en="Highlights" ar="لقطات اللعب" />
       <T variant="small">{count} لقطة</T>
     </Row>
   );

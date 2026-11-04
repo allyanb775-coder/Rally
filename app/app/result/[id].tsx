@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Led, ledLevel } from '@/components/Led';
 import { Scoreboard } from '@/components/Scoreboard';
-import { Board, Button, Icon, Row, Screen, T } from '@/components/ui';
+import { Board, Button, Heading, Icon, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { ltr } from '@/lib/format';
 import { levelChanges, needsResult, nextGames, scoreFromSets, SetScore, teamOf, teams, winnerFromSets } from '@/lib/result';
@@ -56,7 +56,7 @@ export default function ReportResult() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <T variant="h1">النتيجة</T>
+          <Heading en="Result" ar="النتيجة" size="xl" />
           <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
             <Icon name="close" size={20} />
           </Pressable>

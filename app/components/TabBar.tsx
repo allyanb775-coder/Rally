@@ -6,10 +6,10 @@ import { colors, fonts } from '@/constants/theme';
 import { Icon, IconName } from './ui';
 
 const meta: Record<string, { title: string; icon: IconName }> = {
-  index: { title: 'الملعب', icon: 'home' },
-  matches: { title: 'الجدول', icon: 'tennis' },
-  tournaments: { title: 'البطولات', icon: 'trophy' },
-  profile: { title: 'بطاقتي', icon: 'person' },
+  index: { title: 'PLAY', icon: 'home' },
+  matches: { title: 'MATCHES', icon: 'tennis' },
+  tournaments: { title: 'EVENTS', icon: 'trophy' },
+  profile: { title: 'CARD', icon: 'person' },
 };
 
 /** Scoreboard base: a black strip with a lit bar over the current tab, and a + to open a match. */
@@ -22,8 +22,8 @@ export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
     return (
       <Pressable key={r.key} accessibilityRole="tab" accessibilityState={{ selected: focused }} onPress={() => !focused && navigateToTab(r.key)} style={s.item}>
         <View style={[s.lamp, focused && s.lampOn]} />
-        <Icon name={m.icon} size={22} color={focused ? colors.led : 'rgba(255,255,255,0.55)'} />
-        <Text style={[s.label, focused && { color: colors.led }]}>{m.title}</Text>
+        <Icon name={m.icon} size={22} color={focused ? '#FFFFFF' : 'rgba(255,255,255,0.45)'} />
+        <Text style={[s.label, focused && { color: '#FFFFFF' }]}>{m.title}</Text>
       </Pressable>
     );
   });
@@ -33,7 +33,7 @@ export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
       <View style={[s.glass, { paddingBottom: Math.max(insets.bottom, 8) }]}>
       {items.slice(0, mid)}
       <Pressable accessibilityRole="button" accessibilityLabel="افتح مباراة" onPress={() => router.push('/create-match')} style={s.plus}>
-        <Icon name="plus" size={26} color={colors.ink} />
+        <Icon name="plus" size={26} color="#FFFFFF" />
       </Pressable>
       {items.slice(mid)}
       </View>
@@ -43,10 +43,10 @@ export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
 
 const s = StyleSheet.create({
   bar: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  glass: { flexDirection: 'row', alignItems: 'flex-start', paddingTop: 8, paddingHorizontal: 4, backgroundColor: colors.ink, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' },
+  glass: { flexDirection: 'row', alignItems: 'flex-start', paddingTop: 8, paddingHorizontal: 4, backgroundColor: '#000000', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)' },
   item: { flex: 1, alignItems: 'center', gap: 3, paddingBottom: 6 },
-  lamp: { height: 0 },
-  lampOn: {},
-  label: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16, color: 'rgba(255,255,255,0.55)' },
-  plus: { width: 50, height: 50, borderRadius: 25, backgroundColor: colors.led, alignItems: 'center', justifyContent: 'center', marginTop: -4 },
+  lamp: { width: 5, height: 5, borderRadius: 3, marginBottom: 4, backgroundColor: 'transparent' },
+  lampOn: { backgroundColor: colors.blue },
+  label: { fontFamily: fonts.display, fontSize: 12, lineHeight: 16, letterSpacing: 1, color: 'rgba(255,255,255,0.45)' },
+  plus: { width: 50, height: 50, borderRadius: 25, backgroundColor: colors.blue, alignItems: 'center', justifyContent: 'center', marginTop: -4 },
 });

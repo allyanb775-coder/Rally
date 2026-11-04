@@ -1,7 +1,7 @@
 import { router, Stack } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Board, Button, Chip, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
+import { Board, Button, Chip, Heading, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtRange, fmtTime } from '@/lib/format';
 import { LEVEL_WINDOW, matchRange, MAX_LEVEL } from '@/lib/level';
@@ -45,7 +45,7 @@ export default function CreateMatch() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <T variant="h1">افتح مباراة</T>
+          <Heading en="New match" ar="افتح مباراة" size="xl" />
           <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
             <Icon name="close" size={20} />
           </Pressable>
@@ -119,7 +119,7 @@ const s = StyleSheet.create({
   close: { width: 44, height: 44, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space(3) },
   court: { width: '47%', flexGrow: 1, borderRadius: radius.sm, borderWidth: 1, borderColor: 'rgba(255,255,255,0.45)', padding: space(3), gap: 4, backgroundColor: 'rgba(190,225,255,0.12)' },
-  courtActive: { borderColor: colors.led, backgroundColor: colors.turfDark },
+  courtActive: { borderColor: colors.blue, backgroundColor: '#0E1838' },
   courtMini: { height: 40, borderRadius: 2, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.line, marginBottom: 6 },
   courtNet: { position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(255,255,255,0.6)' },
   segment: { flexDirection: 'row', backgroundColor: colors.ink, borderRadius: radius.sm, padding: 4, gap: 4 },

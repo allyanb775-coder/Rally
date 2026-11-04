@@ -1,10 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { MatchCard } from '@/components/MatchCard';
-import { HIGH_FIVE_WIDE, Photo } from '@/components/Photo';
+import { HIGH_FIVE_HERO, Photo } from '@/components/Photo';
 import { SwipeDeck } from '@/components/SwipeDeck';
-import { Button, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
+import { Button, Heading, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { rankMatches } from '@/lib/findMatch';
 import { needsResult } from '@/lib/result';
@@ -25,36 +25,40 @@ export default function Home() {
 
   return (
     <Screen tabBar>
-      <Photo source={HIGH_FIVE_WIDE.source} aspect={HIGH_FIVE_WIDE.aspect}>
-        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']} locations={[0.45, 1]} style={StyleSheet.absoluteFill} />
-        <Pressable onPress={() => router.push('/profile')} style={[s.avatar, s.heroAvatar]} accessibilityLabel="ملفي">
-          <T style={{ fontFamily: fonts.bold, fontSize: 18, lineHeight: 24, color: colors.ink }}>{me.name[0]}</T>
-        </Pressable>
-        <View style={s.heroText}>
-          <T style={s.heroHello}>{greeting()}</T>
-          <T style={s.heroTitle}>جاهز {firstName}؟</T>
-        </View>
-      </Photo>
+      <View style={s.bleed}>
+        <Photo source={HIGH_FIVE_HERO.source} aspect={HIGH_FIVE_HERO.aspect} style={{ borderRadius: 0 }}>
+          <LinearGradient colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.6)', '#000']} locations={[0, 0.25, 0.7, 1]} style={StyleSheet.absoluteFill} />
+          <Row style={s.heroBar}>
+            <T style={s.brand}>RALLY · QASSIM</T>
+            <Pressable onPress={() => router.push('/profile')} style={s.avatar} accessibilityLabel="ملفي">
+              <T style={{ fontFamily: fonts.bold, fontSize: 16, lineHeight: 22, color: '#000' }}>{me.name[0]}</T>
+            </Pressable>
+          </Row>
+          <View style={s.heroText}>
+            <T style={s.heroTitle}>READY TO{'\n'}PLAY?</T>
+            <T style={s.heroHello}>{greeting()} {firstName} · لاقِ شريكك والعب بمستواك</T>
+          </View>
+        </Photo>
+      </View>
 
-      <Row style={{ gap: space(2) }}>
-        <Stat label="مستواك" value={me.level.toFixed(1)} accent />
-        <Stat label="مباريات الليلة" value={String(tonight.length)} />
-        <Stat label="ناقصها لاعب" value={String(missing.length)} />
+      <Row style={s.stats}>
+        <Stat label="LEVEL" value={me.level.toFixed(1)} accent />
+        <View style={s.statSep} />
+        <Stat label="TONIGHT" value={String(tonight.length)} />
+        <View style={s.statSep} />
+        <Stat label="OPEN SPOTS" value={String(missing.length)} />
       </Row>
 
       {awaiting.length > 0 && (
         <View style={{ gap: space(3) }}>
-          <T variant="h2">بانتظار النتيجة</T>
+          <Heading en="Awaiting result" ar="بانتظار النتيجة" />
           {awaiting.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
         </View>
       )}
 
-      <View>
-        <T variant="h2">العب الحين</T>
-        <T variant="small">مباريات تناسب مستواك، اسحب يمين تنضم</T>
-      </View>
+      <Heading en="Play now" ar="العب الحين · اسحب يمين تنضم، يسار للي بعدها" />
 
       <SwipeDeck
         matches={ranked}
@@ -88,7 +92,7 @@ export default function Home() {
 
       {mine.length > 0 && (
         <View>
-          <SectionHeader title="مبارياتي" />
+          <SectionHeader title="مبارياتي" en="My matches" />
           {mine.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
@@ -101,19 +105,23 @@ export default function Home() {
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <View style={s.stat}>
-      <T style={[s.statValue, accent && { color: colors.led }]}>{value}</T>
+      <T style={[s.statValue, accent && { color: colors.blue }]}>{value}</T>
       <T style={s.statLabel}>{label}</T>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  stat: { flex: 1, backgroundColor: '#13203F', borderRadius: 14, paddingVertical: space(3), alignItems: 'center', gap: 2 },
-  statValue: { fontFamily: fonts.bold, fontSize: 22, lineHeight: 28, textAlign: 'center' },
-  statLabel: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16, color: colors.muted, textAlign: 'center' },
-  heroText: { position: 'absolute', bottom: space(4), left: space(4), right: space(4) },
-  heroAvatar: { position: 'absolute', top: space(4), left: space(4) },
-  heroHello: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: 'rgba(255,255,255,0.75)' },
-  heroTitle: { fontFamily: fonts.bold, fontSize: 24, lineHeight: 32, color: '#FFFFFF' },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.led, alignItems: 'center', justifyContent: 'center' },
+  bleed: { marginHorizontal: -space(4), marginTop: -space(3) },
+  heroBar: { position: 'absolute', top: space(4), left: space(4), right: space(4), justifyContent: 'space-between' },
+  brand: { fontFamily: fonts.display, fontSize: 14, letterSpacing: 3, color: '#FFFFFF', writingDirection: 'ltr' },
+  stats: { alignItems: 'stretch', borderTopWidth: 1, borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingVertical: space(3), marginTop: -space(2) },
+  statSep: { width: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
+  stat: { flex: 1, alignItems: 'center', gap: 2 },
+  statValue: { fontFamily: fonts.display, fontSize: 34, lineHeight: 42, textAlign: 'center' },
+  statLabel: { fontFamily: fonts.display, fontSize: 11, letterSpacing: 1.5, lineHeight: 14, color: colors.muted, textAlign: 'center' },
+  heroText: { position: 'absolute', bottom: space(5), left: space(5), right: space(5) },
+  heroHello: { fontFamily: fonts.medium, fontSize: 14, lineHeight: 20, color: 'rgba(255,255,255,0.8)', marginTop: 6 },
+  heroTitle: { fontFamily: fonts.display, fontSize: 64, lineHeight: 66, color: '#FFFFFF', writingDirection: 'ltr', textAlign: Platform.OS === 'web' ? 'right' : 'left' },
+  avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
 });

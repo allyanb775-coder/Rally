@@ -6,9 +6,9 @@ import { colors, fonts } from '@/constants/theme';
  * `dot` keeps the old size scale: the digits are about 7 dots tall.
  */
 export function Led({ value, dot = 4, color = colors.led }: { value: string; dot?: number; color?: string; off?: boolean }) {
-  const size = Math.round(dot * 6.2);
+  const size = Math.round(dot * 7);
   return (
-    <Text style={{ fontFamily: fonts.bold, fontSize: size, lineHeight: Math.round(size * 1.2), color, writingDirection: 'ltr', fontVariant: ['tabular-nums'] }}>
+    <Text style={{ fontFamily: fonts.display, fontSize: size, lineHeight: Math.round(size * 1.25), color, writingDirection: 'ltr', letterSpacing: 0.5 }}>
       {`⁦${value}⁩`}
     </Text>
   );

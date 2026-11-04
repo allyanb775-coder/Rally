@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Led, ledNum } from '@/components/Led';
 import { MatchCard } from '@/components/MatchCard';
-import { Chip, Lined, Row, Screen, T } from '@/components/ui';
-import { colors, fonts, radius, space } from '@/constants/theme';
+import { Chip, Heading, Lined, Row, Screen, T } from '@/components/ui';
+import { colors, fonts, space } from '@/constants/theme';
 import { sameDay } from '@/lib/format';
 import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
@@ -34,12 +34,9 @@ export default function Matches() {
   return (
     <Screen tabBar>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <View>
-          <T variant="h1">الجدول</T>
-          <T variant="muted">المباريات المفتوحة في القصيم</T>
-        </View>
+        <Heading en="Matches" ar="المباريات المفتوحة في القصيم" size="xl" />
         <View style={s.count}>
-          <Led value={ledNum(list.length)} dot={4} />
+          <Led value={ledNum(list.length)} dot={4} color="#FFFFFF" />
         </View>
       </Row>
 
@@ -82,8 +79,8 @@ export default function Matches() {
 }
 
 const s = StyleSheet.create({
-  count: { backgroundColor: colors.ink, padding: 10, borderRadius: radius.sm },
-  day: { width: 62, height: 84, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)', backgroundColor: 'rgba(190,225,255,0.12)', borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  count: { backgroundColor: colors.blue, paddingHorizontal: 14, paddingVertical: 4, borderRadius: 999 },
+  day: { width: 62, height: 84, borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', backgroundColor: 'transparent', borderRadius: 16, alignItems: 'center', justifyContent: 'center', gap: 6 },
   dayOn: { backgroundColor: colors.led, borderColor: colors.led },
   dayName: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, textAlign: 'center' },
   dayAll: { fontFamily: fonts.black, fontSize: 14, lineHeight: 26, textAlign: 'center' },

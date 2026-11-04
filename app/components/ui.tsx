@@ -105,13 +105,28 @@ export function Chip({ label, active, onPress, icon }: { label: string; active?:
   return onPress ? <Pressable onPress={onPress}>{body}</Pressable> : body;
 }
 
-export function SectionHeader({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+/**
+ * The Rally headline: a big English word in the condensed display face, with the
+ * Arabic meaning underneath. `size` 'xl' for screen titles, 'md' for sections.
+ */
+export function Heading({ en, ar, size = 'md', align = 'start' }: { en: string; ar?: string; size?: 'xl' | 'md'; align?: 'start' | 'center' }) {
+  const big = size === 'xl';
+  const center = align === 'center';
   return (
-    <Row style={{ justifyContent: 'space-between', marginTop: space(2) }}>
-      <T variant="h2">{title}</T>
+    <View style={{ alignItems: center ? 'center' : 'flex-start' }}>
+      <Text style={[s.display, { fontSize: big ? 52 : 30, lineHeight: big ? 60 : 36 }, center && { textAlign: 'center' }]}>{en}</Text>
+      {!!ar && <Text style={[s.text, s.headingAr, center && { textAlign: 'center' }]}>{ar}</Text>}
+    </View>
+  );
+}
+
+export function SectionHeader({ title, en, action, onAction }: { title: string; en?: string; action?: string; onAction?: () => void }) {
+  return (
+    <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end', marginTop: space(3) }}>
+      {en ? <Heading en={en} ar={title} /> : <T variant="h2">{title}</T>}
       {action && (
         <Pressable onPress={onAction} hitSlop={8}>
-          <T style={{ color: colors.led, fontFamily: fonts.bold, textDecorationLine: 'underline' }}>{action}</T>
+          <T style={{ color: colors.muted, fontFamily: fonts.bold, fontSize: 13 }}>{action}</T>
         </Pressable>
       )}
     </Row>
@@ -160,7 +175,8 @@ export const scaleStart = Platform.OS === 'web' ? ('right' as const) : ('left' a
 const s = StyleSheet.create({
   content: { paddingHorizontal: space(4), paddingTop: space(3), gap: space(4), width: '100%', maxWidth: 560, alignSelf: 'center' },
   text: { color: colors.text, textAlign: align, writingDirection: 'rtl', fontFamily: fonts.body },
-  display: { fontFamily: fonts.bold, fontSize: 34, lineHeight: 44 },
+  display: { fontFamily: fonts.display, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 0.5, writingDirection: 'ltr' },
+  headingAr: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: colors.muted, marginTop: 2 },
   h1: { fontFamily: fonts.bold, fontSize: 26, lineHeight: 36 },
   h2: { fontFamily: fonts.bold, fontSize: 18, lineHeight: 26 },
   h3: { fontFamily: fonts.bold, fontSize: 16, lineHeight: 22 },
@@ -170,15 +186,15 @@ const s = StyleSheet.create({
   label: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 18, color: colors.muted },
   board: { backgroundColor: colors.ink, borderRadius: radius.md, padding: space(4), gap: space(2), borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
   lined: { borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, padding: space(4), gap: space(2), backgroundColor: 'rgba(6,11,26,0.18)' },
-  btn: { flexDirection: 'row', gap: space(2), alignItems: 'center', justifyContent: 'center', height: 52, paddingHorizontal: space(6), borderRadius: 12 },
+  btn: { flexDirection: 'row', gap: space(2), alignItems: 'center', justifyContent: 'center', height: 54, paddingHorizontal: space(6), borderRadius: 999 },
   btnPrimary: { backgroundColor: colors.led },
   btnGhost: { backgroundColor: 'transparent', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)' },
   btnDark: { backgroundColor: colors.ink },
   btnText: { fontSize: 16, fontFamily: fonts.bold },
   input: { backgroundColor: colors.ink, borderRadius: radius.sm, color: colors.text, fontSize: 20, fontFamily: fonts.medium, height: 60, paddingHorizontal: space(4), textAlign: 'right' },
-  badge: { backgroundColor: 'rgba(255,212,0,0.14)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 2, minWidth: 40, alignItems: 'center' },
-  badgeText: { color: colors.led, fontFamily: fonts.bold, fontSize: 13 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: radius.pill, paddingHorizontal: 14, height: 36 },
+  badge: { backgroundColor: 'rgba(47,98,255,0.18)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 2, minWidth: 40, alignItems: 'center' },
+  badgeText: { color: '#8FB0FF', fontFamily: fonts.bold, fontSize: 13 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', backgroundColor: 'transparent', borderRadius: radius.pill, paddingHorizontal: 16, height: 38 },
   chipActive: { backgroundColor: colors.led, borderColor: colors.led },
   chipText: { color: colors.text, fontFamily: fonts.bold, fontSize: 13 },
 });

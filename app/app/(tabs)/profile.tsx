@@ -3,7 +3,7 @@ import { Platform, Share } from 'react-native';
 import { ClipGrid, ClipsHeader } from '@/components/Clips';
 import { LevelMeter } from '@/components/LevelMeter';
 import { PlayerCard } from '@/components/PlayerCard';
-import { Button, Screen, T } from '@/components/ui';
+import { Button, Heading, Screen, T } from '@/components/ui';
 import { fmtLevel } from '@/lib/format';
 import { useStore } from '@/lib/store';
 
@@ -17,7 +17,7 @@ export default function Profile() {
   };
   return (
     <Screen tabBar>
-      <T variant="h1">بطاقتي</T>
+      <Heading en="My card" ar="بطاقتي" size="xl" />
       <PlayerCard player={me} />
       <Button title="شارك بطاقتك ستوري" icon="share" onPress={share} />
       <ClipsHeader count={mine.length} />

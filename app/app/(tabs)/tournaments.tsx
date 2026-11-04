@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Led, ledNum, ledTime } from '@/components/Led';
 import { Glass } from '@/components/Glass';
-import { Bar, Board, Button, Lined, Row, Screen, T } from '@/components/ui';
+import { Bar, Board, Button, Heading, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { fmtNum, fmtRange, ltr } from '@/lib/format';
 import { useStore } from '@/lib/store';
@@ -10,10 +10,7 @@ export default function Tournaments() {
   const { tournaments, joinedTournaments, joinTournament, me } = useStore();
   return (
     <Screen tabBar>
-      <View>
-        <T variant="h1">البطولات</T>
-        <T variant="muted">بطولات دور 16 وليالي أمريكانو في القصيم</T>
-      </View>
+      <Heading en="Events" ar="بطولات دور 16 وليالي أمريكانو في القصيم" size="xl" />
 
       {tournaments.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
@@ -87,7 +84,7 @@ const s = StyleSheet.create({
   card: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)' },
   board: { borderRadius: 0, borderWidth: 0, gap: space(2) },
   lbl: { fontFamily: fonts.kufi, fontSize: 11, lineHeight: 18, color: colors.inkMuted },
-  format: { fontFamily: fonts.kufi, fontSize: 12, lineHeight: 26, color: colors.ink, backgroundColor: colors.led, paddingHorizontal: 10, borderRadius: 2, overflow: 'hidden' },
+  format: { fontFamily: fonts.kufi, fontSize: 12, lineHeight: 26, color: '#FFFFFF', backgroundColor: colors.blue, paddingHorizontal: 10, borderRadius: 2, overflow: 'hidden' },
   name: { fontFamily: fonts.bold, fontSize: 22, lineHeight: 30, marginTop: space(1) },
   venue: { fontFamily: fonts.medium, fontSize: 13, color: colors.inkMuted },
   body: { padding: space(4), gap: space(3), borderRadius: 0, borderWidth: 0 },

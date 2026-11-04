@@ -21,6 +21,6 @@ export function Glass({
 }
 
 const s = StyleSheet.create({
-  card: { backgroundColor: '#13203F', borderRadius: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', padding: space(4), gap: space(2) },
-  strong: { backgroundColor: '#182A52' },
+  card: { backgroundColor: '#0F0F11', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', padding: space(4), gap: space(2) },
+  strong: { backgroundColor: '#151518', borderColor: 'rgba(255,255,255,0.14)' },
 });

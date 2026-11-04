@@ -1,30 +1,33 @@
-// Calm night-blue app with one yellow accent (the ball) and court-blue for the court drawing.
 export const colors = {
-  turf: '#1747C8',
-  turfDeep: '#1239A8',
-  turfDark: '#0E2E8A', // raised cards on the turf
-  ink: '#0E1834', // darker cards and bars
-  line: 'rgba(255,255,255,0.92)', // court lines
-  lineSoft: 'rgba(255,255,255,0.18)',
+  // Black sports-brand look: full-bleed photos, white type, court blue as the one accent.
+  bg: '#000000',
+  card: '#0F0F11',
+  ink: '#151518', // raised panels and bars
   text: '#FFFFFF',
-  muted: '#A9BCEB',
-  inkMuted: '#6C7AA3', // muted text on ink
-  led: '#FFD400',
-  ledOff: '#1A2036', // unlit dots
-  danger: '#FF7A7A',
-  // legacy aliases used by shared code
-  bg: '#0A1328',
-  accent: '#FFD400',
-  accentInk: '#060B1A',
-  surface: '#0E2E8A',
-  surface2: '#060B1A',
-  border: 'rgba(255,255,255,0.18)',
-  court: '#1747C8',
+  muted: '#8B9099',
+  inkMuted: '#6B7079',
+  line: 'rgba(255,255,255,0.92)',
+  lineSoft: 'rgba(255,255,255,0.12)',
+  blue: '#2F62FF', // court blue: the accent
+  led: '#FFFFFF', // primary actions and active states (white with black text)
+  ledOff: '#1E1E22',
+  danger: '#FF5A5F',
+  turf: '#1D4ED8', // the court drawing
+  turfDeep: '#1239A8',
+  turfDark: '#0F0F11',
+  // aliases used by shared code
+  accent: '#FFFFFF',
+  accentInk: '#000000',
+  surface: '#0F0F11',
+  surface2: '#151518',
+  border: 'rgba(255,255,255,0.08)',
+  court: '#1D4ED8',
   courtLine: 'rgba(255,255,255,0.92)',
-  gold: '#FFD400',
+  gold: '#FFFFFF',
 };
 
 export const fonts = {
+  display: 'Anton_400Regular', // English headlines and big numbers
   black: 'IBMPlexSansArabic_700Bold',
   extra: 'IBMPlexSansArabic_700Bold',
   kufi: 'IBMPlexSansArabic_700Bold',
