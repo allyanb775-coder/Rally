@@ -40,7 +40,6 @@ export function ResultPanel({ match: m }: { match: Match }) {
       <View style={{ gap: space(2) }}>
         {board('النتيجة النهائية')}
         <T variant="h3" style={{ color: won ? colors.led : colors.text }}>{won ? 'فزتوا 🏆' : 'خسرتوا هالمرة'}</T>
-        {won && <Button title="بطاقة الأبطال" icon="trophy" onPress={() => router.push({ pathname: '/champions/[id]', params: { id: m.id } })} />}
       </View>
     );
   }
