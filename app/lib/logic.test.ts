@@ -114,3 +114,15 @@ test('clip limits: 50MB and 60 seconds', () => {
   assert.equal(clipExtension('video/quicktime'), 'mov');
   assert.equal(clipExtension(undefined), 'mp4');
 });
+
+import { nextGames, scoreFromSets, setsFromScore, winnerFromSets } from './result.ts';
+test('scoreboard: winner, stored score and round trip', () => {
+  assert.equal(winnerFromSets([[6, 4], [3, 6], [null, null]]), null);
+  assert.equal(winnerFromSets([[6, 4], [3, 6], [6, 2]]), 1);
+  assert.equal(winnerFromSets([[4, 6], [5, 7], [null, null]]), 2);
+  assert.equal(winnerFromSets([[6, 6], [null, 3]]), null);
+  assert.equal(scoreFromSets([[4, 6], [5, 7], [null, null]], 2), '6-4 7-5');
+  assert.deepEqual(setsFromScore('6-4 7-5', 2), [[4, 6], [5, 7]]);
+  assert.deepEqual(nextGames(null), 0);
+  assert.deepEqual(nextGames(7), null);
+});

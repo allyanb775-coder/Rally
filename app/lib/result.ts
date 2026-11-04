@@ -52,3 +52,42 @@ export function formatScore(sets: [string, string][]): string {
     .map(([a, b]) => `${parseInt(a, 10)}-${parseInt(b, 10)}`)
     .join(' ');
 }
+
+/** Games per set for [team 1, team 2]; null = set not played. */
+export type SetScore = [number | null, number | null];
+
+/**
+ * Who won from the sets (more sets won; a set needs both numbers and no tie).
+ * Returns null while undecided, e.g. 1–1 in sets or nothing entered.
+ */
+export function winnerFromSets(sets: SetScore[]): Team | null {
+  let w1 = 0;
+  let w2 = 0;
+  for (const [a, b] of sets) {
+    if (a === null || b === null || a === b) continue;
+    if (a > b) w1++;
+    else w2++;
+  }
+  return w1 === w2 ? null : w1 > w2 ? 1 : 2;
+}
+
+/** Stored score is written from the winner's side ("6-4 3-6 6-2"). */
+export function scoreFromSets(sets: SetScore[], winner: Team): string {
+  return sets
+    .filter(([a, b]) => a !== null && b !== null)
+    .map(([a, b]) => (winner === 1 ? `${a}-${b}` : `${b}-${a}`))
+    .join(' ');
+}
+
+/** Back to [team 1, team 2] per set, for the scoreboard. */
+export function setsFromScore(score: string, winner: Team): SetScore[] {
+  return score
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((s) => s.split('-').map((n) => parseInt(n, 10)))
+    .filter(([a, b]) => Number.isFinite(a) && Number.isFinite(b))
+    .map(([w, l]) => (winner === 1 ? [w, l] : [l, w]) as SetScore);
+}
+
+/** Next value when the scorer taps a set box: blank → 0 → 1 … 7 → blank. */
+export const nextGames = (n: number | null): number | null => (n === null ? 0 : n >= 7 ? null : n + 1);

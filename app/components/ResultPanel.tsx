@@ -1,30 +1,46 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { colors, fonts, space } from '@/constants/theme';
-import { fmtLevel, ltr } from '@/lib/format';
-import { levelChanges, needsResult, teamOf, teams } from '@/lib/result';
+import { colors, space } from '@/constants/theme';
+import { fmtLevel } from '@/lib/format';
+import { levelChanges, needsResult, setsFromScore, teamOf, teams } from '@/lib/result';
 import { useStore } from '@/lib/store';
-import { Match } from '@/lib/types';
+import { Match, Team } from '@/lib/types';
+import { Scoreboard } from './Scoreboard';
 import { Board, Button, Row, T } from './ui';
 
-/** Result section on a match page: report, wait, confirm/dispute, or the final score. */
+/** Result section on a match page: report, wait, confirm/dispute, or the final scoreboard. */
 export function ResultPanel({ match: m }: { match: Match }) {
   const { me, players, confirmResult } = useStore();
   const [busy, setBusy] = useState(false);
   const myTeam = teamOf(m, me.id);
   if (!myTeam || m.kind !== 'competitive') return null;
   const r = m.result;
-  const names = (team: 1 | 2) => teams(m)[team].map((id) => players[id]?.name ?? '').join(' و ');
+  const t = teams(m);
+  const names = { 1: t[1].map((p) => players[p]?.name ?? ''), 2: t[2].map((p) => players[p]?.name ?? '') } as Record<Team, string[]>;
+
+  // A reported result with no set scores still shows who won.
+  const board = (status: string) => {
+    if (!r) return null;
+    const sets = setsFromScore(r.score, r.winningTeam);
+    return (
+      <Scoreboard
+        teams={names}
+        sets={sets.length ? sets : [r.winningTeam === 1 ? [1, 0] : [0, 1]]}
+        status={status}
+        venue={m.court}
+        highlightTeam={myTeam}
+      />
+    );
+  };
 
   if (r?.status === 'confirmed') {
     const won = r.winningTeam === myTeam;
     return (
-      <Board style={{ gap: space(2) }}>
-        <T style={{ fontFamily: fonts.kufi, fontSize: 11, lineHeight: 18, color: colors.inkMuted }}>النتيجة النهائية</T>
-        <T variant="h2" style={{ color: won ? colors.led : colors.text }}>{won ? 'فزتوا 🏆' : 'خسرتوا هالمرة'}</T>
-        <T style={{ color: colors.text }}>فاز {names(r.winningTeam)}{r.score ? ` · ${ltr(r.score)}` : ''}</T>
-      </Board>
+      <View style={{ gap: space(2) }}>
+        {board('النتيجة النهائية')}
+        <T variant="h3" style={{ color: won ? colors.led : colors.text }}>{won ? 'فزتوا 🏆' : 'خسرتوا هالمرة'}</T>
+      </View>
     );
   }
 
@@ -34,22 +50,19 @@ export function ResultPanel({ match: m }: { match: Match }) {
     return (
       <Board style={{ gap: space(3) }}>
         <T variant="h3">انتهت المباراة؟</T>
-        <T style={{ color: colors.inkMuted }}>سجّل النتيجة، وبعد ما يأكدها الفريق الثاني يتعدل مستوى الأربعة.</T>
+        <T style={{ color: colors.inkMuted }}>سجّل الأشواط على اللوحة، وبعد ما يأكدها الفريق الثاني يتعدل مستوى الأربعة.</T>
         <Button title="سجّل النتيجة" icon="trophy" onPress={() => router.push({ pathname: '/result/[id]', params: { id: m.id } })} />
       </Board>
     );
   }
 
-  const reporterTeam = teamOf(m, r.reportedBy);
   const reporter = players[r.reportedBy]?.name ?? 'لاعب';
-  if (reporterTeam === myTeam) {
+  if (teamOf(m, r.reportedBy) === myTeam) {
     return (
-      <Board style={{ gap: space(2) }}>
-        <T variant="h3">بانتظار تأكيد الفريق الثاني</T>
-        <T style={{ color: colors.inkMuted }}>
-          {reporter} سجّل: فاز {names(r.winningTeam)}{r.score ? ` · ${ltr(r.score)}` : ''}
-        </T>
-      </Board>
+      <View style={{ gap: space(2) }}>
+        {board('بانتظار التأكيد')}
+        <T variant="small">{reporter} سجّلها، وننتظر واحد من الفريق الثاني يأكدها.</T>
+      </View>
     );
   }
 
@@ -60,24 +73,21 @@ export function ResultPanel({ match: m }: { match: Match }) {
     setBusy(false);
   };
   return (
-    <Board style={{ gap: space(3) }}>
-      <T variant="h3">{reporter} سجّل النتيجة</T>
-      <T style={{ color: colors.text }}>
-        فاز {names(r.winningTeam)}{r.score ? ` · ${ltr(r.score)}` : ''}
-      </T>
+    <View style={{ gap: space(3) }}>
+      {board(`${reporter} سجّلها`)}
       {mine && (
-        <T style={{ color: colors.inkMuted }}>
+        <T variant="small">
           إذا أكدتها يصير مستواك {fmtLevel(mine.after)} (كان {fmtLevel(mine.before)})
         </T>
       )}
       <Row style={{ gap: space(3) }}>
         <View style={{ flex: 1 }}>
-          <Button title="أكّد" icon="check" disabled={busy} onPress={() => act(true)} />
+          <Button title="أكّد النتيجة" icon="check" disabled={busy} onPress={() => act(true)} />
         </View>
         <View style={{ flex: 1 }}>
           <Button title="مو صحيحة" variant="ghost" disabled={busy} onPress={() => act(false)} />
         </View>
       </Row>
-    </Board>
+    </View>
   );
 }
