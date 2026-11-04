@@ -20,6 +20,9 @@ export default function Home() {
   const mine = upcoming.filter((m) => m.playerIds.includes(me.id));
   const ranked = rankMatches(matches, me, now);
   const awaiting = matches.filter((m) => m.playerIds.includes(me.id) && needsResult(m, now));
+  const results = matches
+    .filter((m) => m.playerIds.includes(me.id) && m.result?.status === 'confirmed')
+    .sort((a, b) => b.startsAt.localeCompare(a.startsAt));
   const firstName = me.name === 'أنت' ? 'يا بطل' : me.name;
 
   return (
@@ -90,6 +93,15 @@ export default function Home() {
             <T style={{ fontFamily: fonts.kufi, color: colors.led, lineHeight: 26 }}>ابدأ ←</T>
           </Lined>
         </Pressable>
+      )}
+
+      {results.length > 0 && (
+        <View>
+          <SectionHeader title="آخر نتائجك" />
+          {results.map((m) => (
+            <MatchCard key={m.id} match={m} />
+          ))}
+        </View>
       )}
 
       {mine.length > 0 && (

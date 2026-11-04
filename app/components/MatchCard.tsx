@@ -15,7 +15,9 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
   const missing = MATCH_SIZE - match.playerIds.length;
   // After the match: what the result needs from me, if anything.
   let resultNote: string | null = null;
-  if (needsResult(match) && match.playerIds.includes(me.id)) {
+  if (match.result?.status === 'confirmed' && match.playerIds.includes(me.id)) {
+    resultNote = teamOf(match, me.id) === match.result.winningTeam ? 'فزتوا 🏆' : 'خسرتوا';
+  } else if (needsResult(match) && match.playerIds.includes(me.id)) {
     const r = match.result;
     resultNote = !r ? 'سجّل النتيجة' : teamOf(match, r.reportedBy) === teamOf(match, me.id) ? 'بانتظار تأكيدهم' : 'أكّد النتيجة';
   }

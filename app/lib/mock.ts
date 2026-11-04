@@ -37,6 +37,7 @@ const ago = (h: number) => {
 
 export const seedMatches: Match[] = [
   { id: 'm0', hostId: 'p1', courtId: 'c1', court: 'ألتميت بادل', city: 'عنيزة', startsAt: ago(2), kind: 'competitive', minLevel: 2.4, maxLevel: 3.4, playerIds: ['p1', ME_ID, 'p2', 'p5'], distanceKm: 0 },
+  { id: 'm000', hostId: 'p5', courtId: 'c3', court: 'بادل لاند', city: 'بريدة', startsAt: ago(50), kind: 'competitive', minLevel: 2.3, maxLevel: 3.3, playerIds: [ME_ID, 'p1', 'p5', 'p2'], distanceKm: 0, result: { winningTeam: 1, score: '6-4 4-6 7-5', status: 'confirmed', reportedBy: 'p1' } },
   { id: 'm00', hostId: ME_ID, courtId: 'c4', court: 'بادل زون', city: 'عنيزة', startsAt: ago(26), kind: 'competitive', minLevel: 2, maxLevel: 3, playerIds: [ME_ID, 'p5', 'p2', 'p1'], distanceKm: 0, result: { winningTeam: 2, score: '6-4 7-5', status: 'pending', reportedBy: 'p5' } },
   { id: 'm1', hostId: 'p1', courtId: 'c1', court: 'ألتميت بادل', city: 'عنيزة', startsAt: slot(0, 20), kind: 'competitive', minLevel: 2.4, maxLevel: 3.4, playerIds: ['p1', 'p2', 'p5'], distanceKm: 0 },
   { id: 'm2', hostId: 'p4', courtId: 'c2', court: 'بادل إن', city: 'بريدة', startsAt: slot(0, 22, 30), kind: 'friendly', minLevel: 0.7, maxLevel: 1.7, playerIds: ['p4'], distanceKm: 0 },
