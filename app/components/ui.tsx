@@ -1,34 +1,14 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { SymbolView } from 'expo-symbols';
 import { ReactNode } from 'react';
-import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, TextProps, useWindowDimensions, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, TextProps, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtLevel } from '@/lib/format';
 import { Glass } from './Glass';
 
-const ARENA = require('@/assets/images/arena.jpg');
-const ARENA_ASPECT = 1179 / 890;
-
-/**
- * Every screen sits in a night arena: the lit blue court in the middle, roof lights
- * above, the stands falling into shadow. Darkened top and bottom so text stays readable;
- * the glass panels blur it like real court glass. Sized in pixels to cover the screen.
- */
+/** Flat night-blue background behind every screen. */
 export function Turf() {
-  const { width, height } = useWindowDimensions();
-  const h = Math.max(height, width / ARENA_ASPECT);
-  const w = h * ARENA_ASPECT;
-  return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#04060E', overflow: 'hidden' }]} pointerEvents="none">
-      <Image source={ARENA} style={{ position: 'absolute', width: w, height: h, top: (height - h) / 2, left: (width - w) / 2 }} resizeMode="cover" />
-      <LinearGradient
-        colors={['rgba(4,6,14,0.82)', 'rgba(4,6,14,0.55)', 'rgba(4,6,14,0.12)', 'rgba(4,6,14,0.45)', 'rgba(4,6,14,0.9)']}
-        locations={[0, 0.3, 0.5, 0.72, 1]}
-        style={StyleSheet.absoluteFill}
-      />
-    </View>
-  );
+  return <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.bg }]} pointerEvents="none" />;
 }
 
 /** Bottom padding leaves room for the tab bar. */
@@ -180,25 +160,25 @@ export const scaleStart = Platform.OS === 'web' ? ('right' as const) : ('left' a
 const s = StyleSheet.create({
   content: { paddingHorizontal: space(4), paddingTop: space(3), gap: space(4), width: '100%', maxWidth: 560, alignSelf: 'center' },
   text: { color: colors.text, textAlign: align, writingDirection: 'rtl', fontFamily: fonts.body },
-  display: { fontFamily: fonts.black, fontSize: 38, lineHeight: 60 },
-  h1: { fontFamily: fonts.black, fontSize: 28, lineHeight: 46 },
-  h2: { fontFamily: fonts.extra, fontSize: 18, lineHeight: 30 },
+  display: { fontFamily: fonts.bold, fontSize: 34, lineHeight: 44 },
+  h1: { fontFamily: fonts.bold, fontSize: 26, lineHeight: 36 },
+  h2: { fontFamily: fonts.bold, fontSize: 18, lineHeight: 26 },
   h3: { fontFamily: fonts.bold, fontSize: 16, lineHeight: 22 },
   body: { fontSize: 15, lineHeight: 22 },
   muted: { fontSize: 14, lineHeight: 20, color: colors.muted },
   small: { fontSize: 12, lineHeight: 16, color: colors.muted },
-  label: { fontFamily: fonts.kufi, fontSize: 11, lineHeight: 20, color: colors.muted },
-  board: { backgroundColor: colors.ink, borderRadius: radius.md, padding: space(4), gap: space(2), borderWidth: 3, borderColor: '#0B1430' },
+  label: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 18, color: colors.muted },
+  board: { backgroundColor: colors.ink, borderRadius: radius.md, padding: space(4), gap: space(2), borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
   lined: { borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, padding: space(4), gap: space(2), backgroundColor: 'rgba(6,11,26,0.18)' },
-  btn: { flexDirection: 'row', gap: space(2), alignItems: 'center', justifyContent: 'center', height: 56, paddingHorizontal: space(6), borderRadius: radius.sm },
+  btn: { flexDirection: 'row', gap: space(2), alignItems: 'center', justifyContent: 'center', height: 52, paddingHorizontal: space(6), borderRadius: 12 },
   btnPrimary: { backgroundColor: colors.led },
-  btnGhost: { backgroundColor: 'rgba(190,225,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
+  btnGhost: { backgroundColor: 'transparent', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)' },
   btnDark: { backgroundColor: colors.ink },
-  btnText: { fontSize: 16, fontFamily: fonts.kufi },
+  btnText: { fontSize: 16, fontFamily: fonts.bold },
   input: { backgroundColor: colors.ink, borderRadius: radius.sm, color: colors.text, fontSize: 20, fontFamily: fonts.medium, height: 60, paddingHorizontal: space(4), textAlign: 'right' },
-  badge: { borderWidth: 1.5, borderColor: colors.led, borderRadius: radius.sm, paddingHorizontal: 7, paddingVertical: 1, minWidth: 40, alignItems: 'center' },
+  badge: { backgroundColor: 'rgba(255,212,0,0.14)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 2, minWidth: 40, alignItems: 'center' },
   badgeText: { color: colors.led, fontFamily: fonts.bold, fontSize: 13 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)', backgroundColor: 'rgba(190,225,255,0.12)', borderRadius: radius.sm, paddingHorizontal: 12, height: 36 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: radius.pill, paddingHorizontal: 14, height: 36 },
   chipActive: { backgroundColor: colors.led, borderColor: colors.led },
   chipText: { color: colors.text, fontFamily: fonts.bold, fontSize: 13 },
 });

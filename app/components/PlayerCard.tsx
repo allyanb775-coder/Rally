@@ -54,7 +54,7 @@ const s = StyleSheet.create({
   avatar: { width: 96, height: 96, borderRadius: 48, backgroundColor: colors.turf, borderWidth: 3, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.text, fontSize: 40, lineHeight: 80, fontFamily: fonts.black },
   label: { fontFamily: fonts.kufi, fontSize: 13, lineHeight: 22, color: colors.led },
-  name: { color: colors.text, fontSize: 26, lineHeight: 44, fontFamily: fonts.black, paddingHorizontal: 18, textAlign: 'right' },
+  name: { color: colors.text, fontSize: 26, lineHeight: 34, fontFamily: fonts.black, paddingHorizontal: 18, textAlign: 'right' },
   stats: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 2, borderColor: '#1A2340', paddingVertical: 14, marginTop: 6 },
   div: { width: 2, alignSelf: 'stretch', backgroundColor: '#1A2340' },
   statK: { color: colors.inkMuted, fontSize: 11, fontFamily: fonts.medium },

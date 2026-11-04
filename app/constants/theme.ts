@@ -1,10 +1,9 @@
-// Scoreboard on the court: the app lives on blue padel turf, white court lines divide
-// the layout, and numbers glow on black stadium boards in dot-matrix yellow.
+// Calm night-blue app with one yellow accent (the ball) and court-blue for the court drawing.
 export const colors = {
   turf: '#1747C8',
   turfDeep: '#1239A8',
   turfDark: '#0E2E8A', // raised cards on the turf
-  ink: '#060B1A', // scoreboard panels
+  ink: '#0E1834', // darker cards and bars
   line: 'rgba(255,255,255,0.92)', // court lines
   lineSoft: 'rgba(255,255,255,0.18)',
   text: '#FFFFFF',
@@ -14,7 +13,7 @@ export const colors = {
   ledOff: '#1A2036', // unlit dots
   danger: '#FF7A7A',
   // legacy aliases used by shared code
-  bg: '#1747C8',
+  bg: '#0A1328',
   accent: '#FFD400',
   accentInk: '#060B1A',
   surface: '#0E2E8A',
@@ -26,14 +25,13 @@ export const colors = {
 };
 
 export const fonts = {
-  black: 'NotoKufiArabic_900Black',
-  extra: 'NotoKufiArabic_800ExtraBold',
-  kufi: 'NotoKufiArabic_700Bold',
+  black: 'IBMPlexSansArabic_700Bold',
+  extra: 'IBMPlexSansArabic_700Bold',
+  kufi: 'IBMPlexSansArabic_700Bold',
   bold: 'IBMPlexSansArabic_700Bold',
   medium: 'IBMPlexSansArabic_500Medium',
   body: 'IBMPlexSansArabic_400Regular',
 };
 
-// Square-ish corners: scoreboards and court glass, not soft bubbles.
-export const radius = { sm: 3, md: 6, lg: 8, pill: 999 };
+export const radius = { sm: 10, md: 14, lg: 18, pill: 999 };
 export const space = (n: number) => n * 4;

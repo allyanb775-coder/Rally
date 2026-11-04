@@ -3,7 +3,6 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '@/constants/theme';
-import { Glass } from './Glass';
 import { Icon, IconName } from './ui';
 
 const meta: Record<string, { title: string; icon: IconName }> = {
@@ -23,7 +22,7 @@ export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
     return (
       <Pressable key={r.key} accessibilityRole="tab" accessibilityState={{ selected: focused }} onPress={() => !focused && navigateToTab(r.key)} style={s.item}>
         <View style={[s.lamp, focused && s.lampOn]} />
-        <Icon name={m.icon} size={22} color={focused ? colors.led : 'rgba(255,255,255,0.7)'} />
+        <Icon name={m.icon} size={22} color={focused ? colors.led : 'rgba(255,255,255,0.55)'} />
         <Text style={[s.label, focused && { color: colors.led }]}>{m.title}</Text>
       </Pressable>
     );
@@ -31,25 +30,23 @@ export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
   const mid = Math.ceil(items.length / 2);
   return (
     <View style={s.bar}>
-      <Glass strong sheen={false} bolts={false} style={[s.glass, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+      <View style={[s.glass, { paddingBottom: Math.max(insets.bottom, 8) }]}>
       {items.slice(0, mid)}
       <Pressable accessibilityRole="button" accessibilityLabel="افتح مباراة" onPress={() => router.push('/create-match')} style={s.plus}>
-        <View style={{ transform: [{ rotate: '-45deg' }] }}>
-          <Icon name="plus" size={28} color={colors.ink} />
-        </View>
+        <Icon name="plus" size={26} color={colors.ink} />
       </Pressable>
       {items.slice(mid)}
-      </Glass>
+      </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
   bar: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  glass: { flexDirection: 'row', alignItems: 'flex-start', borderRadius: 0, borderWidth: 0, padding: 0, paddingHorizontal: 4, overflow: 'visible', backgroundColor: 'rgba(6,11,26,0.55)' },
+  glass: { flexDirection: 'row', alignItems: 'flex-start', paddingTop: 8, paddingHorizontal: 4, backgroundColor: colors.ink, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' },
   item: { flex: 1, alignItems: 'center', gap: 3, paddingBottom: 6 },
-  lamp: { width: 26, height: 3, marginBottom: 8, backgroundColor: 'transparent' },
-  lampOn: { backgroundColor: colors.led, shadowColor: colors.led, shadowOpacity: 0.9, shadowRadius: 6 },
-  label: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, color: 'rgba(255,255,255,0.7)' },
-  plus: { width: 56, height: 56, borderRadius: 4, backgroundColor: colors.led, alignItems: 'center', justifyContent: 'center', marginTop: -18, transform: [{ rotate: '45deg' }] },
+  lamp: { height: 0 },
+  lampOn: {},
+  label: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16, color: 'rgba(255,255,255,0.55)' },
+  plus: { width: 50, height: 50, borderRadius: 25, backgroundColor: colors.led, alignItems: 'center', justifyContent: 'center', marginTop: -4 },
 });

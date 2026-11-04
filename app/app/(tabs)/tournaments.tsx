@@ -84,11 +84,11 @@ function Info({ label, value }: { label: string; value: string }) {
 }
 
 const s = StyleSheet.create({
-  card: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)', borderRadius: 4, overflow: 'hidden' },
+  card: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)' },
   board: { borderRadius: 0, borderWidth: 0, gap: space(2) },
   lbl: { fontFamily: fonts.kufi, fontSize: 11, lineHeight: 18, color: colors.inkMuted },
   format: { fontFamily: fonts.kufi, fontSize: 12, lineHeight: 26, color: colors.ink, backgroundColor: colors.led, paddingHorizontal: 10, borderRadius: 2, overflow: 'hidden' },
-  name: { fontFamily: fonts.black, fontSize: 22, lineHeight: 40, marginTop: space(1) },
+  name: { fontFamily: fonts.bold, fontSize: 22, lineHeight: 30, marginTop: space(1) },
   venue: { fontFamily: fonts.medium, fontSize: 13, color: colors.inkMuted },
   body: { padding: space(4), gap: space(3), borderRadius: 0, borderWidth: 0 },
   soon: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 22, color: colors.led, borderWidth: 1, borderColor: colors.led, paddingHorizontal: 8, borderRadius: 2 },

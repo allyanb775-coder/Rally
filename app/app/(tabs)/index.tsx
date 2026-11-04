@@ -1,9 +1,8 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Led, ledLevel, ledNum } from '@/components/Led';
 import { MatchCard } from '@/components/MatchCard';
 import { SwipeDeck } from '@/components/SwipeDeck';
-import { Board, Button, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
+import { Button, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { rankMatches } from '@/lib/findMatch';
 import { needsResult } from '@/lib/result';
@@ -24,43 +23,35 @@ export default function Home() {
 
   return (
     <Screen tabBar>
-      <Board>
-        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <Cell label="مباريات الليلة" value={ledNum(tonight.length)} />
-          <View style={s.sep} />
-          <Cell label="ناقصها لاعب" value={ledNum(missing.length)} />
-          <View style={s.sep} />
-          <Cell label="مستواك" value={ledLevel(me.level)} />
-        </Row>
-      </Board>
-
       <Row style={{ justifyContent: 'space-between' }}>
         <View>
           <T variant="muted">{greeting()}</T>
           <T variant="h1">جاهز {firstName}؟</T>
         </View>
         <Pressable onPress={() => router.push('/profile')} style={s.avatar}>
-          <T style={{ fontFamily: fonts.black, fontSize: 18, lineHeight: 34 }}>{me.name[0]}</T>
+          <T style={{ fontFamily: fonts.bold, fontSize: 18, lineHeight: 24, color: colors.ink }}>{me.name[0]}</T>
         </Pressable>
+      </Row>
+
+      <Row style={{ gap: space(2) }}>
+        <Stat label="مستواك" value={me.level.toFixed(1)} accent />
+        <Stat label="مباريات الليلة" value={String(tonight.length)} />
+        <Stat label="ناقصها لاعب" value={String(missing.length)} />
       </Row>
 
       {awaiting.length > 0 && (
         <View style={{ gap: space(3) }}>
-          <Row style={{ gap: 8 }}>
-            <View style={[s.lamp, { backgroundColor: colors.danger, shadowColor: colors.danger }]} />
-            <T variant="h2">بانتظار النتيجة</T>
-          </Row>
+          <T variant="h2">بانتظار النتيجة</T>
           {awaiting.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
         </View>
       )}
 
-      <Row style={{ gap: 8 }}>
-        <View style={s.lamp} />
+      <View>
         <T variant="h2">العب الحين</T>
-        <T variant="small">· مباريات تناسب مستواك</T>
-      </Row>
+        <T variant="small">مباريات تناسب مستواك، اسحب يمين تنضم</T>
+      </View>
 
       <SwipeDeck
         matches={ranked}
@@ -104,18 +95,18 @@ export default function Home() {
   );
 }
 
-function Cell({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <View style={{ gap: 8, alignItems: 'center', flex: 1 }}>
-      <T style={s.cellLabel}>{label}</T>
-      <Led value={value} dot={4} />
+    <View style={s.stat}>
+      <T style={[s.statValue, accent && { color: colors.led }]}>{value}</T>
+      <T style={s.statLabel}>{label}</T>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  sep: { width: 2, alignSelf: 'stretch', backgroundColor: '#1A2340' },
-  cellLabel: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, color: colors.inkMuted, textAlign: 'center' },
-  avatar: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
-  lamp: { width: 9, height: 9, borderRadius: 5, backgroundColor: colors.led, shadowColor: colors.led, shadowOpacity: 1, shadowRadius: 6 },
+  stat: { flex: 1, backgroundColor: '#13203F', borderRadius: 14, paddingVertical: space(3), alignItems: 'center', gap: 2 },
+  statValue: { fontFamily: fonts.bold, fontSize: 22, lineHeight: 28, textAlign: 'center' },
+  statLabel: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16, color: colors.muted, textAlign: 'center' },
+  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.led, alignItems: 'center', justifyContent: 'center' },
 });

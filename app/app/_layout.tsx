@@ -1,5 +1,4 @@
 import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_700Bold } from '@expo-google-fonts/ibm-plex-sans-arabic';
-import { NotoKufiArabic_700Bold, NotoKufiArabic_800ExtraBold, NotoKufiArabic_900Black } from '@expo-google-fonts/noto-kufi-arabic';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -35,9 +34,6 @@ export default function RootLayout() {
     IBMPlexSansArabic_400Regular,
     IBMPlexSansArabic_500Medium,
     IBMPlexSansArabic_700Bold,
-    NotoKufiArabic_700Bold,
-    NotoKufiArabic_800ExtraBold,
-    NotoKufiArabic_900Black,
   });
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync();
@@ -48,7 +44,7 @@ export default function RootLayout() {
     <StoreProvider>
       <ThemeProvider value={theme}>
         <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#04060E' } }}>
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="match/[id]" />
           <Stack.Screen name="create-match" options={{ presentation: 'modal' }} />

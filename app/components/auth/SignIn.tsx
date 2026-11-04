@@ -93,7 +93,7 @@ export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّ�
 
 const s = StyleSheet.create({
   logo: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.led },
-  title: { fontFamily: fonts.black, fontSize: 44, lineHeight: 74 },
+  title: { fontFamily: fonts.bold, fontSize: 40, lineHeight: 52 },
   logoBoard: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.ink, paddingHorizontal: 14, paddingVertical: 6, borderRadius: radius.sm },
   logoText: { fontFamily: fonts.black, fontSize: 18, lineHeight: 32, color: colors.led, letterSpacing: 4 },
   cc: { height: 60, paddingHorizontal: space(4), borderRadius: radius.sm, backgroundColor: colors.ink, justifyContent: 'center' },
