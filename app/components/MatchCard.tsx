@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtNum, fmtRange } from '@/lib/format';
+import { needsResult, teamOf } from '@/lib/result';
 import { useStore } from '@/lib/store';
 import { Match, MATCH_SIZE } from '@/lib/types';
 import { Glass } from './Glass';
@@ -12,6 +13,12 @@ import { LevelBadge, Row, T } from './ui';
 export function MatchCard({ match }: { match: Match; highlight?: boolean; compact?: boolean }) {
   const { players, me } = useStore();
   const missing = MATCH_SIZE - match.playerIds.length;
+  // After the match: what the result needs from me, if anything.
+  let resultNote: string | null = null;
+  if (needsResult(match) && match.playerIds.includes(me.id)) {
+    const r = match.result;
+    resultNote = !r ? 'سجّل النتيجة' : teamOf(match, r.reportedBy) === teamOf(match, me.id) ? 'بانتظار تأكيدهم' : 'أكّد النتيجة';
+  }
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/match/[id]', params: { id: match.id } })}
@@ -37,9 +44,13 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
               return <View key={i} style={[s.spot, p ? { backgroundColor: id === me.id ? colors.led : colors.text } : s.spotEmpty]} />;
             })}
           </Row>
-          <T style={[s.missing, missing === 0 && { color: colors.muted }]}>
-            {missing === 0 ? 'مكتملة' : missing === 1 ? 'ناقص لاعب' : `ناقص ${fmtNum(missing)}`}
-          </T>
+          {resultNote ? (
+            <T style={[s.missing, { color: resultNote === 'بانتظار تأكيدهم' ? colors.muted : colors.led }]}>{resultNote} ←</T>
+          ) : (
+            <T style={[s.missing, missing === 0 && { color: colors.muted }]}>
+              {missing === 0 ? 'مكتملة' : missing === 1 ? 'ناقص لاعب' : `ناقص ${fmtNum(missing)}`}
+            </T>
+          )}
         </Row>
       </View>
       </Glass>

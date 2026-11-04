@@ -52,6 +52,7 @@ export default function RootLayout() {
           <Stack.Screen name="match/[id]" />
           <Stack.Screen name="create-match" options={{ presentation: 'modal' }} />
           <Stack.Screen name="level" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="result/[id]" options={{ presentation: 'modal' }} />
         </Stack>
       </ThemeProvider>
     </StoreProvider>

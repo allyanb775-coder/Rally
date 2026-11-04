@@ -79,3 +79,29 @@ test('a small level gap (up to 0.25 outside the range) is accepted', () => {
   assert.ok(!levelFits(3.3, r));
   assert.ok(!levelFits(1.7, r));
 });
+
+import { formatScore, levelChanges, needsResult, teamOf, teams } from './result.ts';
+test('teams follow join order: 1st+3rd vs 2nd+4th', () => {
+  const m = { playerIds: ['a', 'b', 'c', 'd'] };
+  assert.deepEqual(teams(m), { 1: ['a', 'c'], 2: ['b', 'd'] });
+  assert.equal(teamOf(m, 'd'), 2);
+  assert.equal(teamOf(m, 'x'), null);
+});
+test('levelChanges: winners go up, losers down, upset moves more', () => {
+  const m = { playerIds: ['a', 'b', 'c', 'd'] };
+  const ps = { a: { level: 2, matchesPlayed: 40 }, b: { level: 3, matchesPlayed: 40 }, c: { level: 2, matchesPlayed: 40 }, d: { level: 3, matchesPlayed: 40 } };
+  const upset = levelChanges(m, ps, 1); // weaker team 1 wins
+  const expected = levelChanges(m, ps, 2);
+  assert.ok(upset.a.after > 2 && upset.b.after < 3);
+  assert.ok(upset.a.after - 2 > expected.b.after - 3);
+});
+test('needsResult only for started, full, competitive matches without a confirmed result', () => {
+  const m: Match = { ...base, kind: 'competitive', playerIds: ['a', 'b', 'c', 'd'], startsAt: at(-2) };
+  assert.ok(needsResult(m, now));
+  assert.ok(!needsResult({ ...m, kind: 'friendly' }, now));
+  assert.ok(!needsResult({ ...m, startsAt: at(2) }, now));
+  assert.ok(!needsResult({ ...m, result: { winningTeam: 1, score: '', status: 'confirmed', reportedBy: 'a' } }, now));
+});
+test('formatScore', () => {
+  assert.equal(formatScore([['6', '4'], ['3', '6'], ['', '']]), '6-4 3-6');
+});

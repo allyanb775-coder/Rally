@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Court, Match, Player, Tournament } from './types';
+import { Court, Match, Player, Team, Tournament } from './types';
 
 export type NewMatch = Pick<Match, 'courtId' | 'startsAt' | 'kind' | 'minLevel' | 'maxLevel'>;
 
@@ -15,6 +15,10 @@ export type Store = {
   leaveMatch: (id: string) => Promise<void>;
   createMatch: (m: NewMatch) => Promise<string | null>;
   joinTournament: (id: string) => Promise<void>;
+  /** Any of the four players reports who won; returns false if it was rejected. */
+  reportResult: (matchId: string, winningTeam: Team, score: string) => Promise<boolean>;
+  /** A player from the other team confirms (levels update) or disputes (result is cleared). */
+  confirmResult: (matchId: string, accept: boolean) => Promise<boolean>;
   refresh: () => Promise<void>;
   signOut?: () => Promise<void>;
 };

@@ -18,14 +18,21 @@ type Data = {
 
 const num = (v: unknown) => Number(v ?? 0);
 
+// match_results is one-to-one with matches; PostgREST may return an object or a one-item array.
+function toResult(r: any): Match['result'] {
+  const x = Array.isArray(r) ? r[0] : r;
+  if (!x) return undefined;
+  return { winningTeam: x.winning_team, score: x.score ?? '', status: x.status, reportedBy: x.reported_by };
+}
+
 async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
-  const since = new Date(Date.now() - 24 * 36e5).toISOString();
+  const since = new Date(Date.now() - 3 * 24 * 36e5).toISOString(); // keep recent matches for results
   const [profiles, courts, matches, tournaments] = await Promise.all([
     sb.from('profiles').select('id,name,city,level,matches_played,wins'),
     sb.from('courts').select('id,name,city').order('city').order('name'),
     sb
       .from('matches')
-      .select('id,host_id,court_id,starts_at,kind,min_level,max_level,courts(name,city),match_players(player_id,joined_at)')
+      .select('id,host_id,court_id,starts_at,kind,min_level,max_level,courts(name,city),match_players(player_id,joined_at),match_results(winning_team,score,status,reported_by)')
       .gte('starts_at', since)
       .order('starts_at'),
     sb
@@ -60,6 +67,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
         .sort((a: any, b: any) => a.joined_at.localeCompare(b.joined_at))
         .map((p: any) => p.player_id),
       distanceKm: 0, // TODO: compute from court coordinates once we have player location
+      result: toResult(m.match_results),
     })),
     tournaments: (tournaments.data ?? []).map((t: any) => ({
       id: t.id,
@@ -114,6 +122,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
       .channel('rally')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_players' }, () => refresh())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => refresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'match_results' }, () => refresh())
       .subscribe();
     return () => {
       sb.removeChannel(ch);
@@ -164,6 +173,9 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
         await run(() => sb.from('match_players').insert({ match_id: row.id, player_id: uid }));
         return row.id as string;
       },
+      reportResult: async (matchId, winningTeam, score) =>
+        run(() => sb.rpc('report_result', { p_match: matchId, p_winning_team: winningTeam, p_score: score })),
+      confirmResult: async (matchId, accept) => run(() => sb.rpc('confirm_result', { p_match: matchId, p_accept: accept })),
       joinTournament: async (id) => {
         await run(() => sb.from('tournament_entries').insert({ tournament_id: id, player_id: uid }));
       },

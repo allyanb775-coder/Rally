@@ -11,6 +11,16 @@ export type Court = { id: string; name: string; city: string };
 
 export type MatchKind = 'friendly' | 'competitive';
 
+export type Team = 1 | 2;
+
+/** A reported result. Levels change only once a player from the other team confirms it. */
+export type MatchResult = {
+  winningTeam: Team;
+  score: string; // e.g. "6-4 3-6 6-2", may be empty
+  status: 'pending' | 'confirmed';
+  reportedBy: string;
+};
+
 export type Match = {
   id: string;
   hostId: string;
@@ -21,8 +31,9 @@ export type Match = {
   kind: MatchKind;
   minLevel: number;
   maxLevel: number;
-  playerIds: string[]; // up to 4
+  playerIds: string[]; // up to 4, in join order
   distanceKm: number;
+  result?: MatchResult;
 };
 
 export type TournamentFormat = 'knockout16' | 'americano';

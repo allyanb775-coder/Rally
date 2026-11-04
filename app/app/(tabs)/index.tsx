@@ -6,6 +6,7 @@ import { SwipeDeck } from '@/components/SwipeDeck';
 import { Board, Button, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { rankMatches } from '@/lib/findMatch';
+import { needsResult } from '@/lib/result';
 import { greeting, sameDay } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
@@ -18,6 +19,7 @@ export default function Home() {
   const missing = upcoming.filter((m) => m.playerIds.length < MATCH_SIZE);
   const mine = upcoming.filter((m) => m.playerIds.includes(me.id));
   const ranked = rankMatches(matches, me, now);
+  const awaiting = matches.filter((m) => m.playerIds.includes(me.id) && needsResult(m, now));
   const firstName = me.name === 'أنت' ? 'يا بطل' : me.name;
 
   return (
@@ -41,6 +43,18 @@ export default function Home() {
           <T style={{ fontFamily: fonts.black, fontSize: 18, lineHeight: 34 }}>{me.name[0]}</T>
         </Pressable>
       </Row>
+
+      {awaiting.length > 0 && (
+        <View style={{ gap: space(3) }}>
+          <Row style={{ gap: 8 }}>
+            <View style={[s.lamp, { backgroundColor: colors.danger, shadowColor: colors.danger }]} />
+            <T variant="h2">بانتظار النتيجة</T>
+          </Row>
+          {awaiting.map((m) => (
+            <MatchCard key={m.id} match={m} />
+          ))}
+        </View>
+      )}
 
       <Row style={{ gap: 8 }}>
         <View style={s.lamp} />

@@ -6,6 +6,7 @@ import { BALL_HIT_MS, BallHit } from '@/components/BallHit';
 import { Court } from '@/components/Court';
 import { Led, ledNum, ledTime } from '@/components/Led';
 import { PlayerRow } from '@/components/MatchCard';
+import { ResultPanel } from '@/components/ResultPanel';
 import { Board, Button, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtRange } from '@/lib/format';
@@ -80,6 +81,8 @@ export default function MatchDetail() {
           <Stat label="مستواك" value={fmtLevel(me.level)} warn={!eligible} />
         </Row>
 
+        <ResultPanel match={m} />
+
         <Lined style={{ gap: 0 }}>
           <T variant="h3" style={{ marginBottom: 4 }}>اللاعبين</T>
           {m.playerIds.map((p) => (
@@ -91,7 +94,9 @@ export default function MatchDetail() {
 
       <SafeAreaView edges={['bottom']} style={s.cta}>
         <View style={s.ctaInner}>
-          {joined ? (
+          {new Date(m.startsAt) <= new Date() ? (
+            <Button title={joined ? 'المباراة انتهت' : 'المباراة بدأت'} variant="dark" disabled onPress={() => {}} />
+          ) : joined ? (
             isHost ? (
               <Button title="أنت صاحب المباراة" variant="dark" disabled onPress={() => {}} />
             ) : (
