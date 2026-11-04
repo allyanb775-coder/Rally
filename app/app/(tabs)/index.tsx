@@ -1,6 +1,8 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { MatchCard } from '@/components/MatchCard';
+import { HIGH_FIVE_WIDE, Photo } from '@/components/Photo';
 import { SwipeDeck } from '@/components/SwipeDeck';
 import { Button, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
@@ -23,15 +25,16 @@ export default function Home() {
 
   return (
     <Screen tabBar>
-      <Row style={{ justifyContent: 'space-between' }}>
-        <View>
-          <T variant="muted">{greeting()}</T>
-          <T variant="h1">جاهز {firstName}؟</T>
-        </View>
-        <Pressable onPress={() => router.push('/profile')} style={s.avatar}>
+      <Photo source={HIGH_FIVE_WIDE.source} aspect={HIGH_FIVE_WIDE.aspect}>
+        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']} locations={[0.45, 1]} style={StyleSheet.absoluteFill} />
+        <Pressable onPress={() => router.push('/profile')} style={[s.avatar, s.heroAvatar]} accessibilityLabel="ملفي">
           <T style={{ fontFamily: fonts.bold, fontSize: 18, lineHeight: 24, color: colors.ink }}>{me.name[0]}</T>
         </Pressable>
-      </Row>
+        <View style={s.heroText}>
+          <T style={s.heroHello}>{greeting()}</T>
+          <T style={s.heroTitle}>جاهز {firstName}؟</T>
+        </View>
+      </Photo>
 
       <Row style={{ gap: space(2) }}>
         <Stat label="مستواك" value={me.level.toFixed(1)} accent />
@@ -108,5 +111,9 @@ const s = StyleSheet.create({
   stat: { flex: 1, backgroundColor: '#13203F', borderRadius: 14, paddingVertical: space(3), alignItems: 'center', gap: 2 },
   statValue: { fontFamily: fonts.bold, fontSize: 22, lineHeight: 28, textAlign: 'center' },
   statLabel: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16, color: colors.muted, textAlign: 'center' },
+  heroText: { position: 'absolute', bottom: space(4), left: space(4), right: space(4) },
+  heroAvatar: { position: 'absolute', top: space(4), left: space(4) },
+  heroHello: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: 'rgba(255,255,255,0.75)' },
+  heroTitle: { fontFamily: fonts.bold, fontSize: 24, lineHeight: 32, color: '#FFFFFF' },
   avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.led, alignItems: 'center', justifyContent: 'center' },
 });

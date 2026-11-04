@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Court } from '@/components/Court';
+import { HIGH_FIVE_WIDE, Photo } from '@/components/Photo';
 import { Button, Input, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { normalizeSaudiPhone } from '@/lib/phone';
@@ -82,9 +82,7 @@ export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّ�
         </View>
         <T style={s.title}>{title}</T>
         <T variant="muted">لاعبين البادل في القصيم بمكان واحد: لاقِ مباراة بمستواك، كمّل الناقصين، وشارك في البطولات.</T>
-        <View style={{ transform: [{ rotate: '-4deg' }], marginVertical: space(2) }}>
-          <Court playerIds={[]} size="sm" />
-        </View>
+        <Photo source={HIGH_FIVE_WIDE.source} aspect={HIGH_FIVE_WIDE.aspect} />
         <View style={{ gap: space(3) }}>{children}</View>
       </View>
     </Screen>
