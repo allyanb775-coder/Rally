@@ -1,29 +1,39 @@
-// Night-session padel: ink-black venue, blue turf courts with white lines, lime ball as the single accent.
+// Scoreboard on the court: the app lives on blue padel turf, white court lines divide
+// the layout, and numbers glow on black stadium boards in dot-matrix yellow.
 export const colors = {
-  bg: '#07090F',
-  surface: '#10141D',
-  surface2: '#171C28',
-  border: '#232A3A',
-  text: '#F5F7FA',
-  muted: '#7E889C',
-  accent: '#D4FF3A', // padel ball
-  accentInk: '#0A0D05',
-  court: '#1D4ED8', // blue turf
-  courtDeep: '#13338F',
-  courtLine: 'rgba(255,255,255,0.88)',
-  glass: 'rgba(170,200,255,0.35)', // court glass walls
-  gold: '#F2C94C',
-  goldDeep: '#8A6A12',
-  danger: '#FF5C5C',
+  turf: '#1747C8',
+  turfDeep: '#1239A8',
+  turfDark: '#0E2E8A', // raised cards on the turf
+  ink: '#060B1A', // scoreboard panels
+  line: 'rgba(255,255,255,0.92)', // court lines
+  lineSoft: 'rgba(255,255,255,0.18)',
+  text: '#FFFFFF',
+  muted: '#A9BCEB',
+  inkMuted: '#6C7AA3', // muted text on ink
+  led: '#FFD400',
+  ledOff: '#1A2036', // unlit dots
+  danger: '#FF7A7A',
+  // legacy aliases used by shared code
+  bg: '#1747C8',
+  accent: '#FFD400',
+  accentInk: '#060B1A',
+  surface: '#0E2E8A',
+  surface2: '#060B1A',
+  border: 'rgba(255,255,255,0.18)',
+  court: '#1747C8',
+  courtLine: 'rgba(255,255,255,0.92)',
+  gold: '#FFD400',
 };
 
 export const fonts = {
-  black: 'Rubik_900Black',
-  extra: 'Rubik_800ExtraBold',
-  bold: 'Rubik_700Bold',
-  medium: 'Rubik_500Medium',
-  body: 'Rubik_400Regular',
+  black: 'NotoKufiArabic_900Black',
+  extra: 'NotoKufiArabic_800ExtraBold',
+  kufi: 'NotoKufiArabic_700Bold',
+  bold: 'IBMPlexSansArabic_700Bold',
+  medium: 'IBMPlexSansArabic_500Medium',
+  body: 'IBMPlexSansArabic_400Regular',
 };
 
-export const radius = { sm: 10, md: 18, lg: 26, pill: 999 };
+// Square-ish corners: scoreboards and court glass, not soft bubbles.
+export const radius = { sm: 3, md: 6, lg: 8, pill: 999 };
 export const space = (n: number) => n * 4;

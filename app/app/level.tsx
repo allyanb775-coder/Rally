@@ -2,7 +2,7 @@ import { router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { LevelMeter } from '@/components/LevelMeter';
-import { Bar, Button, Card, Row, Screen, T } from '@/components/ui';
+import { Bar, Button, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtNum } from '@/lib/format';
 import { levelFromAnswers, levelQuestions } from '@/lib/level';
@@ -24,7 +24,7 @@ export default function LevelQuiz() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <View style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
@@ -53,9 +53,7 @@ export default function LevelQuiz() {
         ) : (
           <View style={{ gap: space(4), marginTop: space(4) }}>
             <T variant="h1">هذا مستواك المبدئي</T>
-            <Card style={{ padding: space(5) }}>
-              <LevelMeter level={level} />
-            </Card>
+            <LevelMeter level={level} />
             <T variant="muted">يتعدل تلقائياً بعد كل مباراة تنافسية. الاستبيان يوصلك لـ ٥٫٥ كحد أعلى، والباقي تكسبه في الملعب.</T>
             <Button
               title="احفظ وابدأ"
@@ -73,9 +71,9 @@ export default function LevelQuiz() {
 }
 
 const s = StyleSheet.create({
-  opt: { flexDirection: 'row', alignItems: 'center', gap: space(3), minHeight: 64, paddingHorizontal: space(4), borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border },
-  optActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+  opt: { flexDirection: 'row', alignItems: 'center', gap: space(3), minHeight: 64, paddingHorizontal: space(4), borderRadius: radius.sm, borderWidth: 2, borderColor: colors.line },
+  optActive: { backgroundColor: colors.led, borderColor: colors.led },
   optText: { fontFamily: fonts.bold, fontSize: 16, flexShrink: 1 },
-  radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: colors.muted },
+  radio: { width: 20, height: 20, borderRadius: 2, borderWidth: 2, borderColor: colors.text },
   radioActive: { borderColor: colors.accentInk, backgroundColor: colors.accentInk },
 });

@@ -1,4 +1,6 @@
-import { Rubik_400Regular, Rubik_500Medium, Rubik_700Bold, Rubik_800ExtraBold, Rubik_900Black, useFonts } from '@expo-google-fonts/rubik';
+import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_700Bold } from '@expo-google-fonts/ibm-plex-sans-arabic';
+import { NotoKufiArabic_700Bold, NotoKufiArabic_800ExtraBold, NotoKufiArabic_900Black } from '@expo-google-fonts/noto-kufi-arabic';
+import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -28,7 +30,14 @@ const theme = {
 };
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({ Rubik_400Regular, Rubik_500Medium, Rubik_700Bold, Rubik_800ExtraBold, Rubik_900Black });
+  const [loaded, error] = useFonts({
+    IBMPlexSansArabic_400Regular,
+    IBMPlexSansArabic_500Medium,
+    IBMPlexSansArabic_700Bold,
+    NotoKufiArabic_700Bold,
+    NotoKufiArabic_800ExtraBold,
+    NotoKufiArabic_900Black,
+  });
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync();
   }, [loaded, error]);
@@ -38,7 +47,7 @@ export default function RootLayout() {
     <StoreProvider>
       <ThemeProvider value={theme}>
         <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.turf } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="match/[id]" />
           <Stack.Screen name="create-match" options={{ presentation: 'modal' }} />

@@ -1,107 +1,107 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { LevelMeter } from '@/components/LevelMeter';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Led, ledLevel, ledNum } from '@/components/Led';
 import { MatchCard } from '@/components/MatchCard';
-import { Card, Icon, Row, Screen, SectionHeader, T } from '@/components/ui';
-import { colors, fonts, radius, space } from '@/constants/theme';
-import { findBestMatch } from '@/lib/findMatch';
-import { greeting } from '@/lib/format';
+import { SwipeDeck } from '@/components/SwipeDeck';
+import { Board, Button, Lined, Row, Screen, SectionHeader, T } from '@/components/ui';
+import { colors, fonts, space } from '@/constants/theme';
+import { rankMatches } from '@/lib/findMatch';
+import { greeting, sameDay } from '@/lib/format';
 import { useStore } from '@/lib/store';
-import { Match, MATCH_SIZE } from '@/lib/types';
+import { MATCH_SIZE } from '@/lib/types';
 
 export default function Home() {
-  const { me, matches } = useStore();
-  const [found, setFound] = useState<Match | null | undefined>(undefined);
+  const { me, matches, joinMatch } = useStore();
   const now = new Date();
   const upcoming = matches.filter((m) => new Date(m.startsAt) > now);
+  const tonight = upcoming.filter((m) => sameDay(new Date(m.startsAt), now));
+  const missing = upcoming.filter((m) => m.playerIds.length < MATCH_SIZE);
   const mine = upcoming.filter((m) => m.playerIds.includes(me.id));
-  const open = upcoming.filter((m) => m.playerIds.length < MATCH_SIZE && !m.playerIds.includes(me.id));
+  const ranked = rankMatches(matches, me, now);
+  const firstName = me.name === 'أنت' ? 'يا بطل' : me.name;
 
   return (
     <Screen tabBar>
+      <Board>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <Cell label="مباريات الليلة" value={ledNum(tonight.length)} />
+          <View style={s.sep} />
+          <Cell label="ناقصها لاعب" value={ledNum(missing.length)} />
+          <View style={s.sep} />
+          <Cell label="مستواك" value={ledLevel(me.level)} />
+        </Row>
+      </Board>
+
       <Row style={{ justifyContent: 'space-between' }}>
         <View>
           <T variant="muted">{greeting()}</T>
-          <T variant="h1">{me.name === 'أنت' ? 'يا بطل' : me.name}</T>
+          <T variant="h1">جاهز {firstName}؟</T>
         </View>
         <Pressable onPress={() => router.push('/profile')} style={s.avatar}>
-          <T style={{ fontFamily: fonts.black, fontSize: 20, color: colors.accentInk }}>{me.name[0]}</T>
+          <T style={{ fontFamily: fonts.black, fontSize: 18, lineHeight: 34 }}>{me.name[0]}</T>
         </Pressable>
       </Row>
 
-      <Pressable onPress={() => setFound(findBestMatch(matches, me))} style={({ pressed }) => [pressed && { transform: [{ scale: 0.98 }] }]}>
-        <LinearGradient colors={[colors.accent, '#A8E61D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.hero}>
-          <View style={s.ball} />
-          <View style={[s.ball, s.ballSeam]} />
-          <T style={s.heroKicker}>ضغطة وحدة</T>
-          <T style={s.heroTitle}>العب{'\n'}الحين</T>
-          <Row style={{ justifyContent: 'space-between', marginTop: space(2) }}>
-            <T style={s.heroSub}>أقرب مباراة بمستواك وناقصها لاعب</T>
-            <View style={s.heroBtn}>
-              <Icon name="bolt" size={22} color={colors.accent} />
+      <Row style={{ gap: 8 }}>
+        <View style={s.lamp} />
+        <T variant="h2">العب الحين</T>
+        <T variant="small">· مباريات تناسب مستواك</T>
+      </Row>
+
+      <SwipeDeck
+        matches={ranked}
+        onOpen={(m) => router.push({ pathname: '/match/[id]', params: { id: m.id } })}
+        onJoin={async (m) => {
+          await joinMatch(m.id);
+          router.push({ pathname: '/match/[id]', params: { id: m.id } });
+        }}
+        empty={
+          <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
+            <T variant="h2" style={{ textAlign: 'center' }}>ما بقى مباريات تناسبك الحين</T>
+            <T variant="muted" style={{ textAlign: 'center' }}>افتح مباراة والباقين ينضمون لك</T>
+            <View style={{ alignSelf: 'stretch', marginTop: space(2) }}>
+              <Button title="افتح مباراة" icon="plus" onPress={() => router.push('/create-match')} />
             </View>
-          </Row>
-        </LinearGradient>
-      </Pressable>
+          </Lined>
+        }
+      />
 
-      {found === null && (
-        <Card>
-          <T variant="h3">ما فيه مباراة مفتوحة بمستواك الحين</T>
-          <T variant="muted">افتح مباراة من زر + وخل الباقين ينضمون لك.</T>
-        </Card>
+      {me.matchesPlayed === 0 && (
+        <Pressable onPress={() => router.push('/level')}>
+          <Lined style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexShrink: 1 }}>
+              <T variant="h3">مستواك مبدئي</T>
+              <T variant="small">جاوب ٥ أسئلة عشان نطابقك صح</T>
+            </View>
+            <T style={{ fontFamily: fonts.kufi, color: colors.led, lineHeight: 26 }}>ابدأ ←</T>
+          </Lined>
+        </Pressable>
       )}
-      {found && (
-        <View style={{ gap: space(3) }}>
-          <SectionHeader title="هذي تناسبك 🎾" />
-          <MatchCard match={found} highlight />
-        </View>
-      )}
-
-      <Card style={{ padding: space(5) }}>
-        <LevelMeter level={me.level} />
-        {me.matchesPlayed === 0 && (
-          <Pressable onPress={() => router.push('/level')} style={s.inline}>
-            <Icon name="chart" size={16} color={colors.accent} />
-            <T style={{ color: colors.accent, fontFamily: fonts.bold }}>حدد مستواك بـ٥ أسئلة</T>
-          </Pressable>
-        )}
-      </Card>
 
       {mine.length > 0 && (
-        <>
+        <View>
           <SectionHeader title="مبارياتي" />
           {mine.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
-        </>
-      )}
-
-      {open.length > 0 && (
-        <>
-          <SectionHeader title="ناقصها لاعبين" action="الكل" onAction={() => router.push('/matches')} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space(3) }} style={{ marginHorizontal: -space(5) }} contentInset={{ left: space(5), right: space(5) }}>
-            <View style={{ width: space(2) }} />
-            {open.map((m) => (
-              <MatchCard key={m.id} match={m} compact />
-            ))}
-            <View style={{ width: space(2) }} />
-          </ScrollView>
-        </>
+        </View>
       )}
     </Screen>
   );
 }
 
+function Cell({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={{ gap: 8, alignItems: 'center', flex: 1 }}>
+      <T style={s.cellLabel}>{label}</T>
+      <Led value={value} dot={4} />
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
-  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
-  hero: { borderRadius: radius.lg, padding: space(6), overflow: 'hidden', minHeight: 210 },
-  heroKicker: { fontFamily: fonts.bold, fontSize: 13, color: colors.accentInk, opacity: 0.7 },
-  heroTitle: { fontFamily: fonts.black, fontSize: 48, lineHeight: 52, color: colors.accentInk },
-  heroSub: { fontFamily: fonts.medium, fontSize: 14, color: colors.accentInk, flexShrink: 1 },
-  heroBtn: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.accentInk, alignItems: 'center', justifyContent: 'center' },
-  ball: { position: 'absolute', width: 220, height: 220, borderRadius: 110, borderWidth: 18, borderColor: 'rgba(10,13,5,0.07)', left: -70, top: -60 },
-  ballSeam: { width: 300, height: 300, borderRadius: 150, borderWidth: 3, left: -110, top: -100 },
-  inline: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space(2) },
+  sep: { width: 2, alignSelf: 'stretch', backgroundColor: '#1A2340' },
+  cellLabel: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, color: colors.inkMuted, textAlign: 'center' },
+  avatar: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  lamp: { width: 9, height: 9, borderRadius: 5, backgroundColor: colors.led, shadowColor: colors.led, shadowOpacity: 1, shadowRadius: 6 },
 });

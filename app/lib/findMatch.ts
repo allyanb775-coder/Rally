@@ -1,16 +1,12 @@
 import { MATCH_SIZE, type Match } from './types.ts';
 
 /**
- * "العب الحين": pick the best open match for a player.
- * Only matches the player can join (level within range, not full, not already in,
- * in the future). Score prefers close level, nearly-full matches, soon start, short distance.
+ * "العب الحين": open matches a player can join, best first.
+ * Joinable = level within range, not full, not already in, starts in the future.
+ * Score prefers close level, nearly-full matches, soon start, short distance.
  */
-export function findBestMatch(
-  matches: Match[],
-  player: { id: string; level: number },
-  now: Date = new Date(),
-): Match | null {
-  let best: { m: Match; score: number } | null = null;
+export function rankMatches(matches: Match[], player: { id: string; level: number }, now: Date = new Date()): Match[] {
+  const scored: { m: Match; score: number }[] = [];
   for (const m of matches) {
     const open = MATCH_SIZE - m.playerIds.length;
     const start = new Date(m.startsAt).getTime();
@@ -26,7 +22,11 @@ export function findBestMatch(
       open * 1 + // fewer missing = completes sooner
       Math.min(hoursAway, 72) / 12 + // sooner is better
       m.distanceKm / 3; // closer is better
-    if (!best || score < best.score) best = { m, score };
+    scored.push({ m, score });
   }
-  return best?.m ?? null;
+  return scored.sort((a, b) => a.score - b.score).map((x) => x.m);
+}
+
+export function findBestMatch(matches: Match[], player: { id: string; level: number }, now: Date = new Date()): Match | null {
+  return rankMatches(matches, player, now)[0] ?? null;
 }

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Led, ledNum } from '@/components/Led';
 import { MatchCard } from '@/components/MatchCard';
-import { Card, Chip, Row, Screen, T } from '@/components/ui';
+import { Chip, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtNum, sameDay } from '@/lib/format';
+import { sameDay } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 
@@ -31,53 +32,60 @@ export default function Matches() {
 
   return (
     <Screen tabBar>
-      <View>
-        <T variant="h1">المباريات</T>
-        <T variant="muted">{fmtNum(open.length)} مباراة مفتوحة في القصيم</T>
-      </View>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <View>
+          <T variant="h1">الجدول</T>
+          <T variant="muted">المباريات المفتوحة في القصيم</T>
+        </View>
+        <View style={s.count}>
+          <Led value={ledNum(list.length)} dot={4} />
+        </View>
+      </Row>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space(2) }}>
-        <Pressable onPress={() => setDay(null)} style={[s.day, !day && s.dayActive]}>
-          <T style={[s.dayName, !day && s.activeInk]}>كل</T>
-          <T style={[s.dayNum, !day && s.activeInk]}>الأيام</T>
+        <Pressable onPress={() => setDay(null)} style={[s.day, !day && s.dayOn]}>
+          <T style={[s.dayName, !day && s.ink]}>كل</T>
+          <T style={[s.dayAll, !day && s.ink]}>الأيام</T>
         </Pressable>
         {days.map((d, i) => {
-          const active = !!day && sameDay(d, day);
-          const count = open.filter((m) => sameDay(new Date(m.startsAt), d)).length;
+          const on = !!day && sameDay(d, day);
+          const n = open.filter((m) => sameDay(new Date(m.startsAt), d)).length;
           return (
-            <Pressable key={i} onPress={() => setDay(d)} style={[s.day, active && s.dayActive]}>
-              <T style={[s.dayName, active && s.activeInk]}>{i === 0 ? 'اليوم' : d.toLocaleDateString('ar-SA', { weekday: 'short' })}</T>
-              <T style={[s.dayNum, active && s.activeInk]}>{fmtNum(d.getDate())}</T>
-              <View style={[s.dot, { opacity: count ? 1 : 0 }, active && { backgroundColor: colors.accentInk }]} />
+            <Pressable key={i} onPress={() => setDay(d)} style={[s.day, on && s.dayOn]}>
+              <T style={[s.dayName, on && s.ink]}>{i === 0 ? 'اليوم' : d.toLocaleDateString('ar-SA', { weekday: 'short' })}</T>
+              <Led value={ledNum(d.getDate())} dot={3} color={on ? colors.ink : colors.led} off={false} />
+              <View style={[s.pip, { opacity: n ? 1 : 0 }, on && { backgroundColor: colors.ink }]} />
             </Pressable>
           );
         })}
       </ScrollView>
 
       <Row style={{ flexWrap: 'wrap' }}>
-        <Chip label="بمستواي" icon="chart" active={filters.includes('mine-level')} onPress={() => toggle('mine-level')} />
-        <Chip label="بمدينتي" icon="pin" active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
-        <Chip label="تنافسية" icon="trophy" active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
+        <Chip label="بمستواي" active={filters.includes('mine-level')} onPress={() => toggle('mine-level')} />
+        <Chip label="بمدينتي" active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
+        <Chip label="تنافسية" active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
       </Row>
 
-      {list.length === 0 && (
-        <Card style={{ alignItems: 'center', paddingVertical: space(8) }}>
-          <T variant="h3">ما فيه مباريات بهالاختيار</T>
-          <T variant="muted">جرّب يوم ثاني، أو افتح مباراة من زر +</T>
-        </Card>
-      )}
-      {list.map((m) => (
-        <MatchCard key={m.id} match={m} />
-      ))}
+      <View style={{ borderBottomWidth: 2, borderColor: colors.line }}>
+        {list.length === 0 ? (
+          <Lined style={{ alignItems: 'center', paddingVertical: space(8), borderBottomWidth: 0 }}>
+            <T variant="h3">ما فيه مباريات بهالاختيار</T>
+            <T variant="muted">جرّب يوم ثاني، أو افتح مباراة من زر +</T>
+          </Lined>
+        ) : (
+          list.map((m) => <MatchCard key={m.id} match={m} />)
+        )}
+      </View>
     </Screen>
   );
 }
 
 const s = StyleSheet.create({
-  day: { width: 64, height: 78, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  dayActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  dayName: { fontFamily: fonts.medium, fontSize: 12, color: colors.muted, textAlign: 'center' },
-  dayNum: { fontFamily: fonts.extra, fontSize: 20, textAlign: 'center' },
-  activeInk: { color: colors.accentInk },
-  dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: colors.accent },
+  count: { backgroundColor: colors.ink, padding: 10, borderRadius: radius.sm },
+  day: { width: 62, height: 84, borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  dayOn: { backgroundColor: colors.led, borderColor: colors.led },
+  dayName: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, textAlign: 'center' },
+  dayAll: { fontFamily: fonts.black, fontSize: 14, lineHeight: 26, textAlign: 'center' },
+  ink: { color: colors.ink },
+  pip: { width: 5, height: 5, borderRadius: 3, backgroundColor: colors.led },
 });

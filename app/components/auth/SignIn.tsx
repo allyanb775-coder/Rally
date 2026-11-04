@@ -76,10 +76,10 @@ export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّ�
   return (
     <Screen>
       <View style={{ marginTop: space(6), gap: space(5) }}>
-        <Row style={{ gap: 8 }}>
+        <View style={s.logoBoard}>
+          <T style={s.logoText}>RALLY</T>
           <View style={s.logo} />
-          <T style={{ fontFamily: fonts.black, fontSize: 22, letterSpacing: 1 }}>RALLY</T>
-        </Row>
+        </View>
         <T style={s.title}>{title}</T>
         <T variant="muted">لاعبين البادل في القصيم بمكان واحد: لاقِ مباراة بمستواك، كمّل الناقصين، وشارك في البطولات.</T>
         <View style={{ transform: [{ rotate: '-4deg' }], marginVertical: space(2) }}>
@@ -92,7 +92,9 @@ export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّ�
 }
 
 const s = StyleSheet.create({
-  logo: { width: 22, height: 22, borderRadius: 11, backgroundColor: colors.accent },
-  title: { fontFamily: fonts.black, fontSize: 52, lineHeight: 58 },
-  cc: { height: 60, paddingHorizontal: space(4), borderRadius: radius.md, backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.border, justifyContent: 'center' },
+  logo: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.led },
+  title: { fontFamily: fonts.black, fontSize: 44, lineHeight: 74 },
+  logoBoard: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.ink, paddingHorizontal: 14, paddingVertical: 6, borderRadius: radius.sm },
+  logoText: { fontFamily: fonts.black, fontSize: 18, lineHeight: 32, color: colors.led, letterSpacing: 4 },
+  cc: { height: 60, paddingHorizontal: space(4), borderRadius: radius.sm, backgroundColor: colors.ink, justifyContent: 'center' },
 });

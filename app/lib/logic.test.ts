@@ -51,3 +51,14 @@ test('normalizeSaudiPhone', () => {
   assert.equal(normalizeSaudiPhone('0112345678'), null);
   assert.equal(normalizeSaudiPhone('055123'), null);
 });
+
+import { rankMatches } from './findMatch.ts';
+test('rankMatches orders joinable matches best-first', () => {
+  const me = { id: 'me', level: 2.5 };
+  const ms: Match[] = [
+    { ...base, id: 'later', startsAt: at(40) },
+    { ...base, id: 'soon', startsAt: at(1), playerIds: ['a', 'b', 'c'] },
+    { ...base, id: 'full', playerIds: ['a', 'b', 'c', 'd'] },
+  ];
+  assert.deepEqual(rankMatches(ms, me, now).map((m) => m.id), ['soon', 'later']);
+});

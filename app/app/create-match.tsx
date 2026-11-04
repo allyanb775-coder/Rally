@@ -1,7 +1,7 @@
 import { router, Stack } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Button, Chip, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
+import { Board, Button, Chip, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtTime } from '@/lib/format';
 import { clampLevel, MAX_LEVEL } from '@/lib/level';
@@ -43,13 +43,13 @@ export default function CreateMatch() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <View style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
           <T variant="h1">افتح مباراة</T>
           <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
-            <T style={{ fontSize: 18, fontFamily: fonts.bold }}>✕</T>
+            <Icon name="close" size={20} />
           </Pressable>
         </Row>
 
@@ -60,7 +60,7 @@ export default function CreateMatch() {
             const active = c.id === courtId;
             return (
               <Pressable key={c.id} onPress={() => setCourtId(c.id)} style={[s.court, active && s.courtActive]}>
-                <View style={[s.courtMini, active && { backgroundColor: colors.court }]}>
+                <View style={[s.courtMini, active && { backgroundColor: colors.turf }]}>
                   <View style={s.courtNet} />
                 </View>
                 <T variant="h3" numberOfLines={1} style={active ? { color: colors.text } : undefined}>{c.name}</T>
@@ -91,12 +91,13 @@ export default function CreateMatch() {
         </View>
 
         <T variant="label">مين يقدر ينضم؟</T>
+        <Board style={{ gap: 10 }}>
         <View style={s.range}>
           <View style={[s.rangeFill, { [scaleStart]: `${(minLevel / MAX_LEVEL) * 100}%`, width: `${((maxLevel - minLevel) / MAX_LEVEL) * 100}%` }]} />
           <View style={[s.rangeMe, { [scaleStart]: `${(me.level / MAX_LEVEL) * 100}%`, marginHorizontal: -2 }]} />
         </View>
         <Row style={{ justifyContent: 'space-between' }}>
-          <T style={{ fontFamily: fonts.extra, fontSize: 18 }}>
+          <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32 }}>
             {fmtLevel(minLevel)} – {fmtLevel(maxLevel)}
           </T>
           <Row style={{ gap: 6 }}>
@@ -105,6 +106,7 @@ export default function CreateMatch() {
             ))}
           </Row>
         </Row>
+        </Board>
 
         <View style={{ marginTop: space(2) }}>
           <Button title={busy ? '...' : 'افتح المباراة'} icon="bolt" disabled={busy || !courtId} onPress={submit} />
@@ -115,18 +117,18 @@ export default function CreateMatch() {
 }
 
 const s = StyleSheet.create({
-  close: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  close: { width: 44, height: 44, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space(3) },
-  court: { width: '47%', flexGrow: 1, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1.5, borderColor: colors.border, padding: space(3), gap: 4 },
-  courtActive: { borderColor: colors.accent },
-  courtMini: { height: 40, borderRadius: 8, backgroundColor: colors.surface2, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)', marginBottom: 6 },
+  court: { width: '47%', flexGrow: 1, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.lineSoft, padding: space(3), gap: 4, backgroundColor: 'rgba(6,11,26,0.18)' },
+  courtActive: { borderColor: colors.led, backgroundColor: colors.turfDark },
+  courtMini: { height: 40, borderRadius: 2, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.line, marginBottom: 6 },
   courtNet: { position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(255,255,255,0.6)' },
-  segment: { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: radius.md, padding: 4, gap: 4, borderWidth: 1, borderColor: colors.border },
-  segItem: { flex: 1, borderRadius: radius.md - 4, paddingVertical: space(3), alignItems: 'center' },
+  segment: { flexDirection: 'row', backgroundColor: colors.ink, borderRadius: radius.sm, padding: 4, gap: 4 },
+  segItem: { flex: 1, borderRadius: 2, paddingVertical: space(3), alignItems: 'center' },
   segActive: { backgroundColor: colors.accent },
-  segText: { fontFamily: fonts.bold, fontSize: 16, textAlign: 'center' },
+  segText: { fontFamily: fonts.kufi, fontSize: 15, lineHeight: 26, textAlign: 'center' },
   segSub: { fontFamily: fonts.medium, fontSize: 11, color: colors.muted, textAlign: 'center' },
-  range: { height: 12, borderRadius: 6, backgroundColor: colors.surface2 },
-  rangeFill: { position: 'absolute', top: 0, bottom: 0, backgroundColor: colors.accent, borderRadius: 6, opacity: 0.85 },
+  range: { height: 12, backgroundColor: colors.ledOff },
+  rangeFill: { position: 'absolute', top: 0, bottom: 0, backgroundColor: colors.led },
   rangeMe: { position: 'absolute', top: -4, width: 4, height: 20, borderRadius: 2, backgroundColor: colors.text },
 });

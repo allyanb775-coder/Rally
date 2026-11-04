@@ -3,10 +3,11 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Court } from '@/components/Court';
+import { Led, ledNum, ledTime } from '@/components/Led';
 import { PlayerRow } from '@/components/MatchCard';
-import { Button, Card, Icon, Row, Screen, T } from '@/components/ui';
+import { Board, Button, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtDay, fmtLevel, fmtNum, fmtTime } from '@/lib/format';
+import { fmtDay, fmtLevel } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 
@@ -36,45 +37,49 @@ export default function MatchDetail() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <View style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
           <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={s.back} accessibilityLabel="رجوع">
-            <Icon name="arrow" size={20} />
+            <View style={{ transform: [{ scaleX: -1 }] }}>
+              <Icon name="arrow" size={20} />
+            </View>
           </Pressable>
-          <View style={[s.kind, m.kind === 'competitive' && { backgroundColor: colors.accent }]}>
-            <T style={{ fontFamily: fonts.bold, fontSize: 12, color: m.kind === 'competitive' ? colors.accentInk : colors.text }}>
-              {m.kind === 'competitive' ? 'تنافسية · تعدّل المستوى' : 'ودية'}
-            </T>
-          </View>
+          <T style={[s.kind, m.kind === 'competitive' && { color: colors.led, borderColor: colors.led }]}>
+            {m.kind === 'competitive' ? 'تنافسية · تعدّل المستوى' : 'ودية'}
+          </T>
         </Row>
 
-        <View>
-          <T variant="label">{fmtDay(m.startsAt)}</T>
-          <T variant="display">{fmtTime(m.startsAt)}</T>
-          <Row style={{ gap: 6 }}>
-            <Icon name="pin" size={14} color={colors.muted} />
-            <T variant="muted">
-              {m.court} · {m.city}
-            </T>
+        <Board style={{ gap: space(3) }}>
+          <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <View style={{ gap: 8 }}>
+              <T style={s.boardLabel}>{fmtDay(m.startsAt)}</T>
+              <Led value={ledTime(m.startsAt)} dot={7} />
+            </View>
+            <View style={{ alignItems: 'flex-end', gap: 8 }}>
+              <T style={s.boardLabel}>ناقص</T>
+              <Led value={ledNum(missing, 1)} dot={7} color={missing ? colors.led : colors.inkMuted} />
+            </View>
           </Row>
-        </View>
+          <T style={{ fontFamily: fonts.bold, color: colors.text }}>
+            {m.court} · {m.city}
+          </T>
+        </Board>
 
         <Court playerIds={m.playerIds} size="lg" />
 
         <Row style={{ gap: space(3) }}>
-          <Stat label="المستوى" value={`${fmtLevel(m.minLevel)}–${fmtLevel(m.maxLevel)}`} />
-          <Stat label="اللاعبين" value={`${fmtNum(m.playerIds.length)}/${fmtNum(MATCH_SIZE)}`} />
-          <Stat label="ناقص" value={fmtNum(missing)} accent={missing > 0} />
+          <Stat label="المستوى المطلوب" value={`${fmtLevel(m.minLevel)} – ${fmtLevel(m.maxLevel)}`} />
+          <Stat label="مستواك" value={fmtLevel(me.level)} warn={!eligible} />
         </Row>
 
-        <Card>
-          <T variant="h3">اللاعبين</T>
+        <Lined style={{ gap: 0 }}>
+          <T variant="h3" style={{ marginBottom: 4 }}>اللاعبين</T>
           {m.playerIds.map((p) => (
             <PlayerRow key={p} id={p} host={p === m.hostId} />
           ))}
-        </Card>
+        </Lined>
         <View style={{ height: 90 }} />
       </Screen>
 
@@ -100,20 +105,19 @@ export default function MatchDetail() {
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Stat({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
   return (
-    <View style={s.stat}>
-      <T variant="small" style={{ textAlign: 'center' }}>{label}</T>
-      <T style={[s.statV, accent && { color: colors.accent }]}>{value}</T>
-    </View>
+    <Lined style={{ flex: 1, gap: 2, paddingVertical: space(3) }}>
+      <T variant="small">{label}</T>
+      <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32, color: warn ? colors.danger : colors.text }}>{value}</T>
+    </Lined>
   );
 }
 
 const s = StyleSheet.create({
-  back: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', transform: [{ scaleX: -1 }] },
-  kind: { borderRadius: radius.pill, paddingHorizontal: 14, height: 32, justifyContent: 'center', backgroundColor: colors.surface2 },
-  stat: { flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, paddingVertical: space(3), gap: 2 },
-  statV: { fontFamily: fonts.extra, fontSize: 20, textAlign: 'center' },
-  cta: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(7,9,15,0.94)', borderTopWidth: 1, borderTopColor: colors.border },
-  ctaInner: { paddingHorizontal: space(5), paddingVertical: space(3), width: '100%', maxWidth: 560, alignSelf: 'center' },
+  back: { width: 44, height: 44, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  kind: { fontFamily: fonts.kufi, fontSize: 12, lineHeight: 28, borderWidth: 1.5, borderColor: colors.text, paddingHorizontal: 12, borderRadius: 2 },
+  boardLabel: { fontFamily: fonts.kufi, fontSize: 11, lineHeight: 18, color: colors.inkMuted },
+  cta: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: colors.ink, borderTopWidth: 3, borderTopColor: '#0B1430' },
+  ctaInner: { paddingHorizontal: space(4), paddingVertical: space(3), width: '100%', maxWidth: 560, alignSelf: 'center' },
 });
