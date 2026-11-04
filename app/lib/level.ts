@@ -9,6 +9,14 @@ export function matchRange(level: number): { minLevel: number; maxLevel: number 
   return { minLevel: clampLevel(level - LEVEL_WINDOW), maxLevel: clampLevel(level + LEVEL_WINDOW) };
 }
 
+/** A small level gap is fine: you may join a match up to this far outside its range. */
+export const JOIN_GRACE = 0.25;
+
+/** Whether a player at `level` may join a match with this range (range plus the small grace). */
+export function levelFits(level: number, range: { minLevel: number; maxLevel: number }): boolean {
+  return level >= range.minLevel - JOIN_GRACE - 1e-9 && level <= range.maxLevel + JOIN_GRACE + 1e-9;
+}
+
 export const clampLevel = (n: number) =>
   Math.round(Math.min(MAX_LEVEL, Math.max(MIN_LEVEL, n)) * 100) / 100;
 

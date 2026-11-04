@@ -5,6 +5,7 @@ import { MatchCard } from '@/components/MatchCard';
 import { Chip, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { sameDay } from '@/lib/format';
+import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 
@@ -25,7 +26,7 @@ export default function Matches() {
   const open = matches.filter((m) => m.playerIds.length < MATCH_SIZE && new Date(m.startsAt) > now);
   const list = open
     .filter((m) => (day ? sameDay(new Date(m.startsAt), day) : true))
-    .filter((m) => (filters.includes('mine-level') ? me.level >= m.minLevel && me.level <= m.maxLevel : true))
+    .filter((m) => (filters.includes('mine-level') ? levelFits(me.level, m) : true))
     .filter((m) => (filters.includes('my-city') ? m.city === me.city : true))
     .filter((m) => (filters.includes('competitive') ? m.kind === 'competitive' : true))
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));

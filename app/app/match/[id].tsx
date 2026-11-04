@@ -9,6 +9,7 @@ import { PlayerRow } from '@/components/MatchCard';
 import { Board, Button, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtRange } from '@/lib/format';
+import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 
@@ -29,7 +30,7 @@ export default function MatchDetail() {
 
   const joined = m.playerIds.includes(me.id);
   const full = m.playerIds.length >= MATCH_SIZE;
-  const eligible = me.level >= m.minLevel && me.level <= m.maxLevel;
+  const eligible = levelFits(me.level, m);
   const isHost = m.hostId === me.id;
   const missing = MATCH_SIZE - m.playerIds.length;
   const act = async (fn: () => Promise<void>) => {

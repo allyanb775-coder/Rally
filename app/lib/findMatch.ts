@@ -1,3 +1,4 @@
+import { levelFits } from './level.ts';
 import { MATCH_SIZE, type Match } from './types.ts';
 
 /**
@@ -12,7 +13,7 @@ export function rankMatches(matches: Match[], player: { id: string; level: numbe
     const start = new Date(m.startsAt).getTime();
     if (open <= 0) continue;
     if (m.playerIds.includes(player.id)) continue;
-    if (player.level < m.minLevel || player.level > m.maxLevel) continue;
+    if (!levelFits(player.level, m)) continue;
     if (start <= now.getTime()) continue;
 
     const hoursAway = (start - now.getTime()) / 36e5;

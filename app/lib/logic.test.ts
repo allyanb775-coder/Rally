@@ -69,3 +69,13 @@ test('matches only accept players at the host level ± 0.5', () => {
   assert.deepEqual(matchRange(0.2), { minLevel: 0, maxLevel: 0.7 });
   assert.deepEqual(matchRange(6.8), { minLevel: 6.3, maxLevel: 7 });
 });
+
+import { levelFits } from './level.ts';
+test('a small level gap (up to 0.25 outside the range) is accepted', () => {
+  const r = { minLevel: 2, maxLevel: 3 };
+  assert.ok(levelFits(2.5, r));
+  assert.ok(levelFits(3.25, r));
+  assert.ok(levelFits(1.75, r));
+  assert.ok(!levelFits(3.3, r));
+  assert.ok(!levelFits(1.7, r));
+});
