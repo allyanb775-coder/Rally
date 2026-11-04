@@ -52,3 +52,15 @@ export type Tournament = {
 };
 
 export const MATCH_SIZE = 4;
+
+/** A short gameplay clip a player posts on their profile. */
+export type Highlight = {
+  id: string;
+  playerId: string;
+  url: string;
+  caption: string;
+  createdAt: string;
+};
+
+/** A video picked from the phone, ready to upload. */
+export type PickedClip = { uri: string; mimeType?: string; fileSize?: number; duration?: number | null };

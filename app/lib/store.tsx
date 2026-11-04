@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Court, Match, Player, Team, Tournament } from './types';
+import { Court, Highlight, Match, PickedClip, Player, Team, Tournament } from './types';
 
 export type NewMatch = Pick<Match, 'courtId' | 'startsAt' | 'kind' | 'minLevel' | 'maxLevel'>;
 
@@ -10,6 +10,9 @@ export type Store = {
   matches: Match[];
   tournaments: Tournament[];
   joinedTournaments: string[];
+  highlights: Highlight[]; // newest first
+  addHighlight: (clip: PickedClip, caption: string) => Promise<boolean>;
+  deleteHighlight: (id: string) => Promise<boolean>;
   setMyLevel: (level: number) => Promise<void>;
   joinMatch: (id: string) => Promise<void>;
   leaveMatch: (id: string) => Promise<void>;

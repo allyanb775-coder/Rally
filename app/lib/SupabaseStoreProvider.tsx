@@ -6,7 +6,8 @@ import { SignIn } from '@/components/auth/SignIn';
 import { colors } from '@/constants/theme';
 import { friendlyError, notify } from './notify';
 import { Store, StoreContext } from './store';
-import { Court, Match, Player, Tournament } from './types';
+import { clipExtension } from './clips';
+import { Court, Highlight, Match, Player, Tournament } from './types';
 
 type Data = {
   players: Record<string, Player>;
@@ -14,6 +15,7 @@ type Data = {
   matches: Match[];
   tournaments: Tournament[];
   joinedTournaments: string[];
+  highlights: Highlight[];
 };
 
 const num = (v: unknown) => Number(v ?? 0);
@@ -27,7 +29,7 @@ function toResult(r: any): Match['result'] {
 
 async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
   const since = new Date(Date.now() - 3 * 24 * 36e5).toISOString(); // keep recent matches for results
-  const [profiles, courts, matches, tournaments] = await Promise.all([
+  const [profiles, courts, matches, tournaments, clips] = await Promise.all([
     sb.from('profiles').select('id,name,city,level,matches_played,wins'),
     sb.from('courts').select('id,name,city').order('city').order('name'),
     sb
@@ -40,8 +42,9 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       .select('id,name,format,starts_at,min_level,max_level,capacity,fee_sar,courts(name,city),tournament_entries(player_id)')
       .gte('starts_at', since)
       .order('starts_at'),
+    sb.from('highlights').select('id,player_id,path,caption,created_at').order('created_at', { ascending: false }).limit(300),
   ]);
-  for (const r of [profiles, courts, matches, tournaments]) if (r.error) throw r.error;
+  for (const r of [profiles, courts, matches, tournaments, clips]) if (r.error) throw r.error;
 
   const players = Object.fromEntries(
     (profiles.data ?? []).map((p: any) => [
@@ -80,6 +83,13 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       capacity: t.capacity,
       registered: t.tournament_entries.length,
       fee: t.fee_sar,
+    })),
+    highlights: (clips.data ?? []).map((h: any) => ({
+      id: h.id,
+      playerId: h.player_id,
+      url: sb.storage.from('highlights').getPublicUrl(h.path).data.publicUrl,
+      caption: h.caption,
+      createdAt: h.created_at,
     })),
     joinedTournaments: (tournaments.data ?? [])
       .filter((t: any) => t.tournament_entries.some((e: any) => e.player_id === uid))
@@ -176,6 +186,27 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
       reportResult: async (matchId, winningTeam, score) =>
         run(() => sb.rpc('report_result', { p_match: matchId, p_winning_team: winningTeam, p_score: score })),
       confirmResult: async (matchId, accept) => run(() => sb.rpc('confirm_result', { p_match: matchId, p_accept: accept })),
+      addHighlight: async (clip, caption) => {
+        try {
+          const body = await (await fetch(clip.uri)).arrayBuffer();
+          const path = `${uid}/${Date.now()}.${clipExtension(clip.mimeType)}`;
+          const up = await sb.storage.from('highlights').upload(path, body, { contentType: clip.mimeType ?? 'video/mp4' });
+          if (up.error) throw up.error;
+          const ok = await run(() => sb.from('highlights').insert({ player_id: uid, path, caption }));
+          if (!ok) await sb.storage.from('highlights').remove([path]);
+          return ok;
+        } catch (e) {
+          console.warn(e);
+          notify('ما قدرنا نرفع المقطع. تأكد من الاتصال وحاول مرة ثانية.');
+          return false;
+        }
+      },
+      deleteHighlight: async (id) => {
+        const { data: row } = await sb.from('highlights').select('path').eq('id', id).single();
+        const ok = await run(() => sb.from('highlights').delete().eq('id', id));
+        if (ok && row?.path) await sb.storage.from('highlights').remove([row.path]);
+        return ok;
+      },
       joinTournament: async (id) => {
         await run(() => sb.from('tournament_entries').insert({ tournament_id: id, player_id: uid }));
       },

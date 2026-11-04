@@ -105,3 +105,12 @@ test('needsResult only for started, full, competitive matches without a confirme
 test('formatScore', () => {
   assert.equal(formatScore([['6', '4'], ['3', '6'], ['', '']]), '6-4 3-6');
 });
+
+import { clipExtension, clipProblem } from './clips.ts';
+test('clip limits: 50MB and 60 seconds', () => {
+  assert.equal(clipProblem({ uri: 'x', fileSize: 10 * 1024 * 1024, duration: 30000 }), null);
+  assert.ok(clipProblem({ uri: 'x', fileSize: 60 * 1024 * 1024 }));
+  assert.ok(clipProblem({ uri: 'x', duration: 90000 }));
+  assert.equal(clipExtension('video/quicktime'), 'mov');
+  assert.equal(clipExtension(undefined), 'mp4');
+});

@@ -63,6 +63,7 @@ export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
   const p = players[id];
   if (!p) return null;
   return (
+    <Pressable onPress={() => (id === me.id ? router.push('/profile') : router.push({ pathname: '/player/[id]', params: { id } }))}>
     <Row style={s.player}>
       <View style={[s.avatar, id === me.id && { backgroundColor: colors.led }]}>
         <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{p.name[0]}</T>
@@ -73,6 +74,7 @@ export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
       </View>
       <LevelBadge level={p.level} />
     </Row>
+    </Pressable>
   );
 }
 

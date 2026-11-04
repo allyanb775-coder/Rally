@@ -151,6 +151,9 @@ const icons = {
   close: { ios: 'xmark', android: 'close', web: 'close' },
   calendar: { ios: 'calendar', android: 'calendar_today', web: 'calendar_today' },
   users: { ios: 'person.2.fill', android: 'group', web: 'group' },
+  play: { ios: 'play.fill', android: 'play_arrow', web: 'play_arrow' },
+  trash: { ios: 'trash', android: 'delete', web: 'delete' },
+  video: { ios: 'video.fill', android: 'videocam', web: 'videocam' },
 } as const;
 export type IconName = keyof typeof icons;
 

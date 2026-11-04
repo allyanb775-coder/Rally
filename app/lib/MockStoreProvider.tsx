@@ -2,7 +2,7 @@ import { ReactNode, useMemo, useState } from 'react';
 import { ME_ID, seedCourts, seedMatches, seedPlayers, seedTournaments } from './mock';
 import { Store, StoreContext } from './store';
 import { levelChanges, teamOf } from './result';
-import { Match, MATCH_SIZE, Team } from './types';
+import { Highlight, Match, MATCH_SIZE, Team } from './types';
 
 /** In-memory demo data, used when Supabase isn't configured. Resets on reload. */
 export function MockStoreProvider({ children }: { children: ReactNode }) {
@@ -10,6 +10,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [matches, setMatches] = useState(seedMatches);
   const [tournaments, setTournaments] = useState(seedTournaments);
   const [joinedTournaments, setJoined] = useState<string[]>([]);
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
 
   // Applies a result to everyone's level, as the database does on confirmation.
   const confirm = (m: Match) => {
@@ -68,13 +69,22 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         else setMatches((ms) => ms.map((x) => (x.id === matchId ? { ...x, result: undefined } : x)));
         return true;
       },
+      highlights,
+      addHighlight: async (clip, caption) => {
+        setHighlights((hs) => [{ id: `h${Date.now()}`, playerId: ME_ID, url: clip.uri, caption, createdAt: new Date().toISOString() }, ...hs]);
+        return true;
+      },
+      deleteHighlight: async (id) => {
+        setHighlights((hs) => hs.filter((h) => h.id !== id));
+        return true;
+      },
       joinTournament: async (id) => {
         if (joinedTournaments.includes(id)) return;
         setJoined((j) => [...j, id]);
         setTournaments((ts) => ts.map((t) => (t.id === id && t.registered < t.capacity ? { ...t, registered: t.registered + 1 } : t)));
       },
     }),
-    [players, matches, tournaments, joinedTournaments],
+    [players, matches, tournaments, joinedTournaments, highlights],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
