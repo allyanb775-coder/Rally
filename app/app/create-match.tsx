@@ -119,7 +119,7 @@ export default function CreateMatch() {
 const s = StyleSheet.create({
   close: { width: 44, height: 44, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space(3) },
-  court: { width: '47%', flexGrow: 1, borderRadius: radius.sm, borderWidth: 2, borderColor: colors.lineSoft, padding: space(3), gap: 4, backgroundColor: 'rgba(6,11,26,0.18)' },
+  court: { width: '47%', flexGrow: 1, borderRadius: radius.sm, borderWidth: 1, borderColor: 'rgba(255,255,255,0.45)', padding: space(3), gap: 4, backgroundColor: 'rgba(190,225,255,0.12)' },
   courtActive: { borderColor: colors.led, backgroundColor: colors.turfDark },
   courtMini: { height: 40, borderRadius: 2, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.line, marginBottom: 6 },
   courtNet: { position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, backgroundColor: 'rgba(255,255,255,0.6)' },

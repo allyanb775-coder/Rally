@@ -3,7 +3,9 @@ import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-nativ
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel } from '@/lib/format';
 import { Match } from '@/lib/types';
+import { BALL_HIT_MS, BallHit } from './BallHit';
 import { Court } from './Court';
+import { Glass } from './Glass';
 import { Led, ledTime } from './Led';
 import { Icon, Row, T } from './ui';
 
@@ -15,17 +17,27 @@ const THRESHOLD = 110;
  */
 export function SwipeDeck({ matches, onJoin, onOpen, empty }: { matches: Match[]; onJoin: (m: Match) => void; onOpen: (m: Match) => void; empty: React.ReactNode }) {
   const [skipped, setSkipped] = useState<string[]>([]);
+  const [hit, setHit] = useState(0);
+  const busy = useRef(false);
   const queue = matches.filter((m) => !skipped.includes(m.id));
   const pos = useRef(new Animated.ValueXY()).current;
   const top = queue[0];
   const topRef = useRef(top);
   topRef.current = top;
 
-  const fling = (dir: 1 | -1) => {
+  const fling = async (dir: 1 | -1) => {
     const m = topRef.current;
-    if (!m) return;
+    if (!m || busy.current) return;
+    busy.current = true;
+    if (dir === 1) {
+      // Ball strikes the glass, then the card goes.
+      Animated.spring(pos, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
+      setHit((n) => n + 1);
+      await new Promise((r) => setTimeout(r, BALL_HIT_MS));
+    }
     Animated.timing(pos, { toValue: { x: dir * 500, y: 40 }, duration: 220, useNativeDriver: false }).start(() => {
       pos.setValue({ x: 0, y: 0 });
+      busy.current = false;
       if (dir === 1) onJoin(m);
       else setSkipped((s) => [...s, m.id]);
     });
@@ -52,9 +64,10 @@ export function SwipeDeck({ matches, onJoin, onOpen, empty }: { matches: Match[]
   return (
     <View style={{ gap: space(4) }}>
       <View style={s.stack}>
-        {queue[2] && <View style={[s.ghost, { transform: [{ translateX: -12 }, { translateY: 18 }, { rotate: '-5deg' }] }]} />}
-        {queue[1] && <View style={[s.ghost, { transform: [{ translateX: 10 }, { translateY: 9 }, { rotate: '3deg' }], opacity: 0.8 }]} />}
+        {queue[2] && <Glass sheen={false} bolts={false} style={[s.ghost, { transform: [{ translateX: -12 }, { translateY: 18 }, { rotate: '-5deg' }] }]} />}
+        {queue[1] && <Glass sheen={false} style={[s.ghost, { transform: [{ translateX: 10 }, { translateY: 9 }, { rotate: '3deg' }] }]} />}
         <Animated.View {...pan.panHandlers} style={[s.card, { transform: [{ translateX: pos.x }, { translateY: pos.y }, { rotate }] }]}>
+          <Glass strong style={{ padding: space(4) }}>
           <Pressable onPress={() => onOpen(top)} style={{ gap: space(3) }}>
             <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <View style={{ gap: 6 }}>
@@ -77,6 +90,8 @@ export function SwipeDeck({ matches, onJoin, onOpen, empty }: { matches: Match[]
               </View>
             </Row>
           </Pressable>
+          <BallHit play={hit} />
+          </Glass>
           <Animated.View style={[s.stamp, s.stampJoin, { opacity: joinOpacity }]}>
             <T style={[s.stampText, { color: colors.led }]}>انضم</T>
           </Animated.View>
@@ -103,8 +118,8 @@ export function SwipeDeck({ matches, onJoin, onOpen, empty }: { matches: Match[]
 
 const s = StyleSheet.create({
   stack: { position: 'relative' },
-  ghost: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, backgroundColor: 'rgba(14,46,138,0.6)' },
-  card: { userSelect: 'none', backgroundColor: colors.turfDark, borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, padding: space(4), shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 20, shadowOffset: { width: 0, height: 14 } },
+  ghost: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  card: { userSelect: 'none', borderRadius: radius.sm, shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 24, shadowOffset: { width: 0, height: 16 } },
   kind: { fontFamily: fonts.kufi, fontSize: 12, lineHeight: 22, borderWidth: 1.5, borderColor: colors.text, paddingHorizontal: 10, borderRadius: 2 },
   kindComp: { borderColor: colors.led, color: colors.led },
   stamp: { position: 'absolute', top: 26, borderWidth: 3, paddingHorizontal: 12, borderRadius: 4, backgroundColor: 'rgba(6,11,26,0.7)' },

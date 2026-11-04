@@ -4,6 +4,7 @@ import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtNum } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { Match, MATCH_SIZE } from '@/lib/types';
+import { Glass } from './Glass';
 import { Led, ledTime } from './Led';
 import { LevelBadge, Row, T } from './ui';
 
@@ -14,7 +15,8 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/match/[id]', params: { id: match.id } })}
-      style={({ pressed }) => [s.row, pressed && { opacity: 0.85 }]}>
+      style={({ pressed }) => [pressed && { opacity: 0.85 }]}>
+      <Glass style={s.row}>
       <View style={s.time}>
         <Led value={ledTime(match.startsAt)} dot={3} />
         <T style={s.day}>{fmtDay(match.startsAt)}</T>
@@ -40,6 +42,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
           </T>
         </Row>
       </View>
+      </Glass>
     </Pressable>
   );
 }
@@ -63,7 +66,7 @@ export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
 }
 
 const s = StyleSheet.create({
-  row: { flexDirection: 'row', gap: space(3), alignItems: 'stretch', borderTopWidth: 2, borderColor: colors.line, paddingVertical: space(3) },
+  row: { flexDirection: 'row', gap: space(3), alignItems: 'stretch', padding: space(3), paddingHorizontal: space(4) },
   time: { backgroundColor: colors.ink, borderRadius: radius.sm, paddingHorizontal: 10, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', gap: 6 },
   day: { fontFamily: fonts.bold, fontSize: 11, color: colors.inkMuted, textAlign: 'center' },
   comp: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, color: colors.led, borderWidth: 1, borderColor: colors.led, paddingHorizontal: 6, borderRadius: 2 },

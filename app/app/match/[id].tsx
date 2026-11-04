@@ -2,6 +2,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BALL_HIT_MS, BallHit } from '@/components/BallHit';
 import { Court } from '@/components/Court';
 import { Led, ledNum, ledTime } from '@/components/Led';
 import { PlayerRow } from '@/components/MatchCard';
@@ -15,6 +16,7 @@ export default function MatchDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { matches, me, joinMatch, leaveMatch } = useStore();
   const [busy, setBusy] = useState(false);
+  const [hit, setHit] = useState(0);
   const m = matches.find((x) => x.id === id);
   if (!m) {
     return (
@@ -67,7 +69,10 @@ export default function MatchDetail() {
           </T>
         </Board>
 
-        <Court playerIds={m.playerIds} size="lg" />
+        <View>
+          <Court playerIds={m.playerIds} size="lg" />
+          <BallHit play={hit} />
+        </View>
 
         <Row style={{ gap: space(3) }}>
           <Stat label="المستوى المطلوب" value={`${fmtLevel(m.minLevel)} – ${fmtLevel(m.maxLevel)}`} />
@@ -96,7 +101,13 @@ export default function MatchDetail() {
               title={full ? 'المباراة مكتملة' : !eligible ? 'مستواك خارج المدى' : busy ? '...' : 'انضم للمباراة'}
               icon={!full && eligible ? 'check' : undefined}
               disabled={busy || full || !eligible}
-              onPress={() => act(() => joinMatch(m.id))}
+              onPress={() =>
+                act(async () => {
+                  setHit((n) => n + 1);
+                  await new Promise((r) => setTimeout(r, BALL_HIT_MS));
+                  await joinMatch(m.id);
+                })
+              }
             />
           )}
         </View>

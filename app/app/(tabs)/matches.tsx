@@ -66,9 +66,9 @@ export default function Matches() {
         <Chip label="تنافسية" active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
       </Row>
 
-      <View style={{ borderBottomWidth: 2, borderColor: colors.line }}>
+      <View style={{ gap: space(3) }}>
         {list.length === 0 ? (
-          <Lined style={{ alignItems: 'center', paddingVertical: space(8), borderBottomWidth: 0 }}>
+          <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
             <T variant="h3">ما فيه مباريات بهالاختيار</T>
             <T variant="muted">جرّب يوم ثاني، أو افتح مباراة من زر +</T>
           </Lined>
@@ -82,7 +82,7 @@ export default function Matches() {
 
 const s = StyleSheet.create({
   count: { backgroundColor: colors.ink, padding: 10, borderRadius: radius.sm },
-  day: { width: 62, height: 84, borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  day: { width: 62, height: 84, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)', backgroundColor: 'rgba(190,225,255,0.12)', borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', gap: 6 },
   dayOn: { backgroundColor: colors.led, borderColor: colors.led },
   dayName: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 18, textAlign: 'center' },
   dayAll: { fontFamily: fonts.black, fontSize: 14, lineHeight: 26, textAlign: 'center' },

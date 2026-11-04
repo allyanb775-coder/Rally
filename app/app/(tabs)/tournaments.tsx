@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import { Led, ledNum, ledTime } from '@/components/Led';
+import { Glass } from '@/components/Glass';
 import { Bar, Board, Button, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { fmtLevel, fmtNum } from '@/lib/format';
@@ -43,7 +44,7 @@ export default function Tournaments() {
               <T style={s.venue}>{t.venue}</T>
             </Board>
 
-            <View style={s.body}>
+            <Glass bolts={false} style={s.body}>
               <Row style={{ justifyContent: 'space-between' }}>
                 <Info label="المستوى" value={`${fmtLevel(t.minLevel)}–${fmtLevel(t.maxLevel)}`} />
                 <Info label="الرسوم" value={`${fmtNum(t.fee)} ر.س`} />
@@ -57,7 +58,7 @@ export default function Tournaments() {
                 disabled={joined || full || !eligible}
                 onPress={() => joinTournament(t.id)}
               />
-            </View>
+            </Glass>
           </View>
         );
       })}
@@ -83,12 +84,12 @@ function Info({ label, value }: { label: string; value: string }) {
 }
 
 const s = StyleSheet.create({
-  card: { borderWidth: 2, borderColor: colors.line, borderRadius: 3, overflow: 'hidden' },
+  card: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)', borderRadius: 4, overflow: 'hidden' },
   board: { borderRadius: 0, borderWidth: 0, gap: space(2) },
   lbl: { fontFamily: fonts.kufi, fontSize: 11, lineHeight: 18, color: colors.inkMuted },
   format: { fontFamily: fonts.kufi, fontSize: 12, lineHeight: 26, color: colors.ink, backgroundColor: colors.led, paddingHorizontal: 10, borderRadius: 2, overflow: 'hidden' },
   name: { fontFamily: fonts.black, fontSize: 22, lineHeight: 40, marginTop: space(1) },
   venue: { fontFamily: fonts.medium, fontSize: 13, color: colors.inkMuted },
-  body: { padding: space(4), gap: space(3), backgroundColor: 'rgba(6,11,26,0.18)' },
+  body: { padding: space(4), gap: space(3), borderRadius: 0, borderWidth: 0 },
   soon: { fontFamily: fonts.kufi, fontSize: 10, lineHeight: 22, color: colors.led, borderWidth: 1, borderColor: colors.led, paddingHorizontal: 8, borderRadius: 2 },
 });

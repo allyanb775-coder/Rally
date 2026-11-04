@@ -5,6 +5,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInput
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtLevel } from '@/lib/format';
+import { Glass } from './Glass';
 
 /** Faint full-court lines behind every screen: net down the middle, service lines across. */
 export function Turf() {
@@ -47,9 +48,9 @@ export function Board({ children, style }: { children: ReactNode; style?: ViewSt
   return <View style={[s.board, style as ViewStyle]}>{children}</View>;
 }
 
-/** Area outlined in court lines, for grouping on the turf. */
+/** A pane of court glass for grouping on the turf. */
 export function Lined({ children, style }: { children: ReactNode; style?: ViewStyle | ViewStyle[] }) {
-  return <View style={[s.lined, style as ViewStyle]}>{children}</View>;
+  return <Glass style={style as ViewStyle}>{children}</Glass>;
 }
 
 // Kept for screens that still use the generic name.
@@ -162,7 +163,7 @@ const align = Platform.OS === 'web' ? 'right' : 'left'; // native flips 'left' u
 export const scaleStart = Platform.OS === 'web' ? ('right' as const) : ('left' as const);
 
 const s = StyleSheet.create({
-  turfLine: { position: 'absolute', backgroundColor: colors.line, opacity: 0.12 },
+  turfLine: { position: 'absolute', backgroundColor: colors.line, opacity: 0.22 },
   content: { paddingHorizontal: space(4), paddingTop: space(3), gap: space(4), width: '100%', maxWidth: 560, alignSelf: 'center' },
   text: { color: colors.text, textAlign: align, writingDirection: 'rtl', fontFamily: fonts.body },
   display: { fontFamily: fonts.black, fontSize: 38, lineHeight: 60 },
@@ -177,13 +178,13 @@ const s = StyleSheet.create({
   lined: { borderWidth: 2, borderColor: colors.line, borderRadius: radius.sm, padding: space(4), gap: space(2), backgroundColor: 'rgba(6,11,26,0.18)' },
   btn: { flexDirection: 'row', gap: space(2), alignItems: 'center', justifyContent: 'center', height: 56, paddingHorizontal: space(6), borderRadius: radius.sm },
   btnPrimary: { backgroundColor: colors.led },
-  btnGhost: { backgroundColor: 'transparent', borderWidth: 2, borderColor: colors.line },
+  btnGhost: { backgroundColor: 'rgba(190,225,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
   btnDark: { backgroundColor: colors.ink },
   btnText: { fontSize: 16, fontFamily: fonts.kufi },
   input: { backgroundColor: colors.ink, borderRadius: radius.sm, color: colors.text, fontSize: 20, fontFamily: fonts.medium, height: 60, paddingHorizontal: space(4), textAlign: 'right' },
   badge: { borderWidth: 1.5, borderColor: colors.led, borderRadius: radius.sm, paddingHorizontal: 7, paddingVertical: 1, minWidth: 40, alignItems: 'center' },
   badgeText: { color: colors.led, fontFamily: fonts.bold, fontSize: 13 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1.5, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 12, height: 36 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)', backgroundColor: 'rgba(190,225,255,0.12)', borderRadius: radius.sm, paddingHorizontal: 12, height: 36 },
   chipActive: { backgroundColor: colors.led, borderColor: colors.led },
   chipText: { color: colors.text, fontFamily: fonts.bold, fontSize: 13 },
 });
