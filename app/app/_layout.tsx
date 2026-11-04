@@ -48,7 +48,7 @@ export default function RootLayout() {
     <StoreProvider>
       <ThemeProvider value={theme}>
         <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.turf } }}>
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#04060E' } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="match/[id]" />
           <Stack.Screen name="create-match" options={{ presentation: 'modal' }} />

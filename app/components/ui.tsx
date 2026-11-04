@@ -1,20 +1,32 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { SymbolView } from 'expo-symbols';
 import { ReactNode } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, TextProps, View, ViewStyle } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, TextProps, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtLevel } from '@/lib/format';
 import { Glass } from './Glass';
 
-/** Faint full-court lines behind every screen: net down the middle, service lines across. */
+const ARENA = require('@/assets/images/arena.jpg');
+const ARENA_ASPECT = 1100 / 832;
+
+/**
+ * Every screen sits in a night arena: the lit blue court in the middle, roof lights
+ * above, the stands falling into shadow. Darkened top and bottom so text stays readable;
+ * the glass panels blur it like real court glass. Sized in pixels to cover the screen.
+ */
 export function Turf() {
+  const { width, height } = useWindowDimensions();
+  const h = Math.max(height, width / ARENA_ASPECT);
+  const w = h * ARENA_ASPECT;
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <LinearGradient colors={[colors.turf, colors.turfDeep]} style={StyleSheet.absoluteFill} />
-      <View style={[s.turfLine, { top: 0, bottom: 0, left: '50%', width: 3, marginLeft: -1.5 }]} />
-      <View style={[s.turfLine, { left: 0, right: 0, top: '30%', height: 3 }]} />
-      <View style={[s.turfLine, { left: 0, right: 0, top: '70%', height: 3 }]} />
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: '#04060E', overflow: 'hidden' }]} pointerEvents="none">
+      <Image source={ARENA} style={{ position: 'absolute', width: w, height: h, top: (height - h) / 2, left: (width - w) / 2 }} resizeMode="cover" />
+      <LinearGradient
+        colors={['rgba(4,6,14,0.82)', 'rgba(4,6,14,0.55)', 'rgba(4,6,14,0.12)', 'rgba(4,6,14,0.45)', 'rgba(4,6,14,0.9)']}
+        locations={[0, 0.3, 0.5, 0.72, 1]}
+        style={StyleSheet.absoluteFill}
+      />
     </View>
   );
 }
@@ -166,7 +178,6 @@ const align = Platform.OS === 'web' ? 'right' : 'left'; // native flips 'left' u
 export const scaleStart = Platform.OS === 'web' ? ('right' as const) : ('left' as const);
 
 const s = StyleSheet.create({
-  turfLine: { position: 'absolute', backgroundColor: colors.line, opacity: 0.22 },
   content: { paddingHorizontal: space(4), paddingTop: space(3), gap: space(4), width: '100%', maxWidth: 560, alignSelf: 'center' },
   text: { color: colors.text, textAlign: align, writingDirection: 'rtl', fontFamily: fonts.body },
   display: { fontFamily: fonts.black, fontSize: 38, lineHeight: 60 },
