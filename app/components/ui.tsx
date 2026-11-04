@@ -8,7 +8,7 @@ import { fmtLevel } from '@/lib/format';
 import { Glass } from './Glass';
 
 const ARENA = require('@/assets/images/arena.jpg');
-const ARENA_ASPECT = 1100 / 832;
+const ARENA_ASPECT = 1179 / 890;
 
 /**
  * Every screen sits in a night arena: the lit blue court in the middle, roof lights
