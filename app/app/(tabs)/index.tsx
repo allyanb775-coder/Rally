@@ -36,7 +36,7 @@ export default function Home() {
           <View style={s.ball} />
           <View style={[s.ball, s.ballSeam]} />
           <T style={s.heroKicker}>ضغطة وحدة</T>
-          <T style={s.heroTitle}>لقّني{'\n'}مباراة</T>
+          <T style={s.heroTitle}>العب{'\n'}الحين</T>
           <Row style={{ justifyContent: 'space-between', marginTop: space(2) }}>
             <T style={s.heroSub}>أقرب مباراة بمستواك وناقصها لاعب</T>
             <View style={s.heroBtn}>
@@ -54,7 +54,7 @@ export default function Home() {
       )}
       {found && (
         <View style={{ gap: space(3) }}>
-          <SectionHeader title="لقينا لك هذي 🎾" />
+          <SectionHeader title="هذي تناسبك 🎾" />
           <MatchCard match={found} highlight />
         </View>
       )}

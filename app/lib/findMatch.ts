@@ -1,7 +1,7 @@
 import { MATCH_SIZE, type Match } from './types.ts';
 
 /**
- * "لقّني مباراة": pick the best open match for a player.
+ * "العب الحين": pick the best open match for a player.
  * Only matches the player can join (level within range, not full, not already in,
  * in the future). Score prefers close level, nearly-full matches, soon start, short distance.
  */
