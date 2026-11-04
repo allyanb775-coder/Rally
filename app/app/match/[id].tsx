@@ -98,7 +98,7 @@ export default function MatchDetail() {
             )
           ) : (
             <Button
-              title={full ? 'المباراة مكتملة' : !eligible ? 'مستواك خارج المدى' : busy ? '...' : 'انضم للمباراة'}
+              title={full ? 'المباراة مكتملة' : !eligible ? 'مو بمستواك' : busy ? '...' : 'انضم للمباراة'}
               icon={!full && eligible ? 'check' : undefined}
               disabled={busy || full || !eligible}
               onPress={() =>

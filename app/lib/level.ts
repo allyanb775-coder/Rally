@@ -1,6 +1,14 @@
 export const MIN_LEVEL = 0;
 export const MAX_LEVEL = 7;
 
+/** You only play with people at your level: a match accepts the host's level ± this. */
+export const LEVEL_WINDOW = 0.5;
+
+/** The level range a match opened by a player at `level` accepts. */
+export function matchRange(level: number): { minLevel: number; maxLevel: number } {
+  return { minLevel: clampLevel(level - LEVEL_WINDOW), maxLevel: clampLevel(level + LEVEL_WINDOW) };
+}
+
 export const clampLevel = (n: number) =>
   Math.round(Math.min(MAX_LEVEL, Math.max(MIN_LEVEL, n)) * 100) / 100;
 

@@ -62,3 +62,10 @@ test('rankMatches orders joinable matches best-first', () => {
   ];
   assert.deepEqual(rankMatches(ms, me, now).map((m) => m.id), ['soon', 'later']);
 });
+
+import { matchRange } from './level.ts';
+test('matches only accept players at the host level ± 0.5', () => {
+  assert.deepEqual(matchRange(2.5), { minLevel: 2, maxLevel: 3 });
+  assert.deepEqual(matchRange(0.2), { minLevel: 0, maxLevel: 0.7 });
+  assert.deepEqual(matchRange(6.8), { minLevel: 6.3, maxLevel: 7 });
+});

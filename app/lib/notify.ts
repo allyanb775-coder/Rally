@@ -9,7 +9,7 @@ export function notify(message: string) {
 export function friendlyError(e: unknown): string {
   const msg = (e as { message?: string })?.message ?? String(e);
   if (msg.includes('match is full')) return 'المباراة اكتملت.';
-  if (msg.includes('level out of range')) return 'مستواك خارج المدى المطلوب.';
+  if (msg.includes('level out of range')) return 'هذي المباراة مو بمستواك. تقدر تلعب بس مع ناس بمستواك.';
   if (msg.includes('match already started')) return 'المباراة بدأت.';
   if (msg.includes('tournament is full')) return 'البطولة اكتملت.';
   if (msg.includes('duplicate key')) return 'أنت مسجّل من قبل.';

@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Board, Button, Chip, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtRange, fmtTime } from '@/lib/format';
-import { clampLevel, MAX_LEVEL } from '@/lib/level';
+import { LEVEL_WINDOW, matchRange, MAX_LEVEL } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MatchKind } from '@/lib/types';
 
@@ -27,11 +27,9 @@ export default function CreateMatch() {
   const [courtId, setCourtId] = useState(courts.find((c) => c.city === me.city)?.id ?? courts[0]?.id);
   const [slot, setSlot] = useState(slots[0]);
   const [kind, setKind] = useState<MatchKind>('friendly');
-  const [spread, setSpread] = useState(1);
   const [busy, setBusy] = useState(false);
 
-  const minLevel = clampLevel(me.level - spread);
-  const maxLevel = clampLevel(me.level + spread);
+  const { minLevel, maxLevel } = matchRange(me.level);
   const sorted = [...courts].sort((a, b) => Number(b.city === me.city) - Number(a.city === me.city));
 
   const submit = async () => {
@@ -100,12 +98,13 @@ export default function CreateMatch() {
           <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32 }}>
             {fmtRange(minLevel, maxLevel)}
           </T>
-          <Row style={{ gap: 6 }}>
-            {[0.5, 1, 1.5].map((n) => (
-              <Chip key={n} label={`± ${fmtLevel(n)}`} active={spread === n} onPress={() => setSpread(n)} />
-            ))}
-          </Row>
+          <T variant="small" style={{ color: colors.inkMuted }}>
+            مستواك ± {fmtLevel(LEVEL_WINDOW)}
+          </T>
         </Row>
+        <T variant="small" style={{ color: colors.inkMuted }}>
+          في Rally تلعب بس مع ناس بمستواك، عشان تكون المباراة متكافئة.
+        </T>
         </Board>
 
         <View style={{ marginTop: space(2) }}>
