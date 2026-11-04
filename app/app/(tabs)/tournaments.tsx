@@ -1,6 +1,5 @@
 import { StyleSheet, View } from 'react-native';
 import { Led, ledNum, ledTime } from '@/components/Led';
-import { EventPoster } from '@/components/EventPoster';
 import { Glass } from '@/components/Glass';
 import { Bar, Board, Button, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
@@ -15,8 +14,6 @@ export default function Tournaments() {
         <T variant="h1">البطولات</T>
         <T variant="muted">بطولات دور 16 وليالي أمريكانو في القصيم</T>
       </View>
-
-      <EventPoster source={require('@/assets/images/weekend-coaching.jpg')} aspect={1080 / 1350} label="تدريب البادل في نهاية الأسبوع" />
 
       {tournaments.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
