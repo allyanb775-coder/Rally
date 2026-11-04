@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { I18nManager, Platform } from 'react-native';
 import 'react-native-reanimated';
+import { TeamComplete } from '@/components/TeamComplete';
 import { colors } from '@/constants/theme';
 import { StoreProvider } from '@/lib/StoreProvider';
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
           <Stack.Screen name="clip/[id]" options={{ presentation: 'modal' }} />
           <Stack.Screen name="player/[id]" />
         </Stack>
+        <TeamComplete />
       </ThemeProvider>
     </StoreProvider>
   );
