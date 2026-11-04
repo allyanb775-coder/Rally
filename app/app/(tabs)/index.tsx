@@ -71,7 +71,7 @@ export default function Home() {
           <Lined style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View style={{ flexShrink: 1 }}>
               <T variant="h3">مستواك مبدئي</T>
-              <T variant="small">جاوب ٥ أسئلة عشان نطابقك صح</T>
+              <T variant="small">جاوب 5 أسئلة عشان نطابقك صح</T>
             </View>
             <T style={{ fontFamily: fonts.kufi, color: colors.led, lineHeight: 26 }}>ابدأ ←</T>
           </Lined>

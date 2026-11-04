@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtDay, fmtLevel } from '@/lib/format';
+import { fmtDay, fmtRange } from '@/lib/format';
 import { Match } from '@/lib/types';
 import { BALL_HIT_MS, BallHit } from './BallHit';
 import { Court } from './Court';
@@ -84,7 +84,7 @@ export function SwipeDeck({ matches, onJoin, onOpen, empty }: { matches: Match[]
               </View>
               <View style={{ alignItems: 'flex-end' }}>
                 <T style={{ fontFamily: fonts.bold, fontSize: 17 }}>
-                  {fmtLevel(top.minLevel)}–{fmtLevel(top.maxLevel)}
+                  {fmtRange(top.minLevel, top.maxLevel)}
                 </T>
                 <T variant="small">المستوى</T>
               </View>

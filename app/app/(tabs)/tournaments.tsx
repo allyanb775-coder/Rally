@@ -3,7 +3,7 @@ import { Led, ledNum, ledTime } from '@/components/Led';
 import { Glass } from '@/components/Glass';
 import { Bar, Board, Button, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
-import { fmtLevel, fmtNum } from '@/lib/format';
+import { fmtNum, fmtRange, ltr } from '@/lib/format';
 import { useStore } from '@/lib/store';
 
 export default function Tournaments() {
@@ -12,7 +12,7 @@ export default function Tournaments() {
     <Screen tabBar>
       <View>
         <T variant="h1">البطولات</T>
-        <T variant="muted">بطولات دور ١٦ وليالي أمريكانو في القصيم</T>
+        <T variant="muted">بطولات دور 16 وليالي أمريكانو في القصيم</T>
       </View>
 
       {tournaments.length === 0 && (
@@ -32,13 +32,13 @@ export default function Tournaments() {
             <Board style={s.board}>
               <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <View style={{ gap: 6 }}>
-                  <T style={s.lbl}>{d.toLocaleDateString('ar-SA', { weekday: 'long', month: 'long' })}</T>
+                  <T style={s.lbl}>{d.toLocaleDateString('ar-SA-u-nu-latn', { weekday: 'long', month: 'long' })}</T>
                   <Row style={{ gap: 14, alignItems: 'flex-end' }}>
                     <Led value={ledNum(d.getDate())} dot={6} />
                     <Led value={ledTime(t.startsAt)} dot={3} color={colors.text} off={false} />
                   </Row>
                 </View>
-                <T style={s.format}>{t.format === 'americano' ? 'أمريكانو' : 'دور ١٦'}</T>
+                <T style={s.format}>{t.format === 'americano' ? 'أمريكانو' : 'دور 16'}</T>
               </Row>
               <T style={s.name}>{t.name}</T>
               <T style={s.venue}>{t.venue}</T>
@@ -46,9 +46,9 @@ export default function Tournaments() {
 
             <Glass bolts={false} style={s.body}>
               <Row style={{ justifyContent: 'space-between' }}>
-                <Info label="المستوى" value={`${fmtLevel(t.minLevel)}–${fmtLevel(t.maxLevel)}`} />
+                <Info label="المستوى" value={fmtRange(t.minLevel, t.maxLevel)} />
                 <Info label="الرسوم" value={`${fmtNum(t.fee)} ر.س`} />
-                <Info label="المقاعد" value={`${fmtNum(t.registered)}/${fmtNum(t.capacity)}`} />
+                <Info label="المقاعد" value={ltr(`${fmtNum(t.registered)}/${fmtNum(t.capacity)}`)} />
               </Row>
               <Bar value={t.registered / t.capacity} />
               <T variant="small">{full ? 'اكتملت المقاعد' : `باقي ${fmtNum(t.capacity - t.registered)} مقاعد`}</T>
@@ -68,7 +68,7 @@ export default function Tournaments() {
           <T variant="h3">الترتيب الشهري</T>
           <T style={s.soon}>قريباً</T>
         </Row>
-        <T variant="muted">يتحدث بعد كل مباراة تنافسية، وأعلى ٣ كل شهر يدخلون البطولة مجاناً.</T>
+        <T variant="muted">يتحدث بعد كل مباراة تنافسية، وأعلى 3 كل شهر يدخلون البطولة مجاناً.</T>
       </Lined>
     </Screen>
   );

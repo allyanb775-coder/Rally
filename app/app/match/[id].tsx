@@ -8,7 +8,7 @@ import { Led, ledNum, ledTime } from '@/components/Led';
 import { PlayerRow } from '@/components/MatchCard';
 import { Board, Button, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtDay, fmtLevel } from '@/lib/format';
+import { fmtDay, fmtLevel, fmtRange } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 
@@ -75,7 +75,7 @@ export default function MatchDetail() {
         </View>
 
         <Row style={{ gap: space(3) }}>
-          <Stat label="المستوى المطلوب" value={`${fmtLevel(m.minLevel)} – ${fmtLevel(m.maxLevel)}`} />
+          <Stat label="المستوى المطلوب" value={fmtRange(m.minLevel, m.maxLevel)} />
           <Stat label="مستواك" value={fmtLevel(me.level)} warn={!eligible} />
         </Row>
 

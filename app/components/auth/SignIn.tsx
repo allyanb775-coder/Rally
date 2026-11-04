@@ -24,7 +24,7 @@ export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient;
 
   const send = async () => {
     const p = normalizeSaudiPhone(raw);
-    if (!p) return setMsg('اكتب رقم جوال سعودي صحيح يبدأ بـ ٥');
+    if (!p) return setMsg('اكتب رقم جوال سعودي صحيح يبدأ بـ 5');
     setBusy(true);
     setMsg(null);
     const { error } = await sb.auth.signInWithOtp({ phone: p });

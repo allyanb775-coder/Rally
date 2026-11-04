@@ -54,7 +54,7 @@ export default function LevelQuiz() {
           <View style={{ gap: space(4), marginTop: space(4) }}>
             <T variant="h1">هذا مستواك المبدئي</T>
             <LevelMeter level={level} />
-            <T variant="muted">يتعدل تلقائياً بعد كل مباراة تنافسية. الاستبيان يوصلك لـ ٥٫٥ كحد أعلى، والباقي تكسبه في الملعب.</T>
+            <T variant="muted">يتعدل تلقائياً بعد كل مباراة تنافسية. الاستبيان يوصلك لـ 5.5 كحد أعلى، والباقي تكسبه في الملعب.</T>
             <Button
               title="احفظ وابدأ"
               icon="check"

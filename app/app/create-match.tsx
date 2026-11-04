@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Board, Button, Chip, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtDay, fmtLevel, fmtTime } from '@/lib/format';
+import { fmtDay, fmtLevel, fmtRange, fmtTime } from '@/lib/format';
 import { clampLevel, MAX_LEVEL } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MatchKind } from '@/lib/types';
@@ -98,7 +98,7 @@ export default function CreateMatch() {
         </View>
         <Row style={{ justifyContent: 'space-between' }}>
           <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32 }}>
-            {fmtLevel(minLevel)} – {fmtLevel(maxLevel)}
+            {fmtRange(minLevel, maxLevel)}
           </T>
           <Row style={{ gap: 6 }}>
             {[0.5, 1, 1.5].map((n) => (

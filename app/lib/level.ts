@@ -16,10 +16,10 @@ export const levelQuestions: Question[] = [
     id: 'experience',
     text: 'كم صار لك تلعب بادل؟',
     options: [
-      { label: 'أول مرة / أقل من ٣ شهور', points: 0 },
-      { label: '٣ شهور إلى سنة', points: 1 },
-      { label: 'سنة إلى ٣ سنوات', points: 2 },
-      { label: 'أكثر من ٣ سنوات', points: 3 },
+      { label: 'أول مرة / أقل من 3 شهور', points: 0 },
+      { label: '3 شهور إلى سنة', points: 1 },
+      { label: 'سنة إلى 3 سنوات', points: 2 },
+      { label: 'أكثر من 3 سنوات', points: 3 },
     ],
   },
   {
@@ -28,8 +28,8 @@ export const levelQuestions: Question[] = [
     options: [
       { label: 'نادراً', points: 0 },
       { label: 'مرة', points: 0.5 },
-      { label: '٢–٣ مرات', points: 1 },
-      { label: 'أكثر من ٣', points: 1.5 },
+      { label: '2–3 مرات', points: 1 },
+      { label: 'أكثر من 3', points: 1.5 },
     ],
   },
   {

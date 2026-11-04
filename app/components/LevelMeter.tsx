@@ -11,7 +11,7 @@ export function LevelMeter({ level }: { level: number }) {
     <Board style={{ gap: 12 }}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <View style={{ gap: 6 }}>
-          <T variant="label" style={{ color: colors.inkMuted }}>مستواك من ٧</T>
+          <T variant="label" style={{ color: colors.inkMuted }}>مستواك من 7</T>
           <Led value={ledLevel(level)} dot={6} />
         </View>
         <T style={s.tag}>{levelLabel(level)}</T>

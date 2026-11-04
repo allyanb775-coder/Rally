@@ -30,7 +30,7 @@ export function PlayerCard({ player }: { player: Player }) {
         <View style={s.div} />
         <Stat k="فوز" v={ledNum(player.wins)} />
         <View style={s.div} />
-        <Stat k="٪ فوز" v={ledNum(winRate)} />
+        <Stat k="نسبة الفوز %" v={ledNum(winRate)} />
       </View>
     </View>
   );

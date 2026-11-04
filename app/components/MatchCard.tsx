@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtDay, fmtLevel, fmtNum } from '@/lib/format';
+import { fmtDay, fmtNum, fmtRange } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { Match, MATCH_SIZE } from '@/lib/types';
 import { Glass } from './Glass';
@@ -27,7 +27,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
           {match.kind === 'competitive' && <T style={s.comp}>تنافسية</T>}
         </Row>
         <T variant="small">
-          {match.city} · المستوى {fmtLevel(match.minLevel)}–{fmtLevel(match.maxLevel)}
+          {match.city} · المستوى {fmtRange(match.minLevel, match.maxLevel)}
         </T>
         <Row style={{ justifyContent: 'space-between', marginTop: 2 }}>
           <Row style={{ gap: 5 }}>

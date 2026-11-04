@@ -52,7 +52,7 @@ export default function Matches() {
           const n = open.filter((m) => sameDay(new Date(m.startsAt), d)).length;
           return (
             <Pressable key={i} onPress={() => setDay(d)} style={[s.day, on && s.dayOn]}>
-              <T style={[s.dayName, on && s.ink]}>{i === 0 ? 'اليوم' : d.toLocaleDateString('ar-SA', { weekday: 'short' })}</T>
+              <T style={[s.dayName, on && s.ink]}>{i === 0 ? 'اليوم' : d.toLocaleDateString('ar-SA-u-nu-latn', { weekday: 'short' })}</T>
               <Led value={ledNum(d.getDate())} dot={3} color={on ? colors.ink : colors.led} off={false} />
               <View style={[s.pip, { opacity: n ? 1 : 0 }, on && { backgroundColor: colors.ink }]} />
             </Pressable>
