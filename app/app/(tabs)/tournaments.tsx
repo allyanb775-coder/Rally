@@ -1,7 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 import { Led, ledNum, ledTime } from '@/components/Led';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Glass } from '@/components/Glass';
-import { Bar, Board, Button, Heading, Lined, Row, Screen, T } from '@/components/ui';
+import { ARENA_HERO, Photo } from '@/components/Photo';
+import { Bar, Board, Button, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { fmtNum, fmtRange, ltr } from '@/lib/format';
 import { useStore } from '@/lib/store';
@@ -10,7 +12,16 @@ export default function Tournaments() {
   const { tournaments, joinedTournaments, joinTournament, me } = useStore();
   return (
     <Screen tabBar>
-      <Heading en="Events" ar="بطولات دور 16 وليالي أمريكانو في القصيم" size="xl" />
+      <View style={s.bleed}>
+        <Photo source={ARENA_HERO.source} aspect={ARENA_HERO.aspect} style={{ borderRadius: 0 }}>
+          <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', '#000']} locations={[0, 0.35, 0.75, 1]} style={StyleSheet.absoluteFill} />
+          <View style={s.heroText}>
+            <T style={s.kicker}>QASSIM · {new Date().getFullYear()}</T>
+            <T style={s.heroTitle}>EVENTS</T>
+            <T style={s.heroSub}>بطولات دور 16 وليالي أمريكانو في القصيم</T>
+          </View>
+        </Photo>
+      </View>
 
       {tournaments.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
@@ -81,6 +92,11 @@ function Info({ label, value }: { label: string; value: string }) {
 }
 
 const s = StyleSheet.create({
+  bleed: { marginHorizontal: -space(4), marginTop: -space(3) },
+  heroText: { position: 'absolute', left: space(5), right: space(5), bottom: space(5), alignItems: 'center' },
+  kicker: { fontFamily: fonts.display, fontSize: 14, letterSpacing: 3, color: '#FFFFFF', textAlign: 'center', writingDirection: 'ltr' },
+  heroTitle: { fontFamily: fonts.display, fontSize: 96, lineHeight: 104, color: '#FFFFFF', textAlign: 'center', writingDirection: 'ltr', letterSpacing: 1, textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 16 },
+  heroSub: { fontFamily: fonts.medium, fontSize: 14, color: 'rgba(255,255,255,0.8)', textAlign: 'center' },
   card: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)' },
   board: { borderRadius: 0, borderWidth: 0, gap: space(2) },
   lbl: { fontFamily: fonts.kufi, fontSize: 11, lineHeight: 18, color: colors.inkMuted },
