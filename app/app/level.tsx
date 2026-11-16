@@ -7,6 +7,7 @@ import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtNum } from '@/lib/format';
 import { levelFromAnswers, levelQuestions } from '@/lib/level';
 import { useStore } from '@/lib/store';
+import { tr } from '@/lib/i18n';
 
 /** One question per step, then the resulting level. */
 export default function LevelQuiz() {
@@ -29,10 +30,10 @@ export default function LevelQuiz() {
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
           <Pressable onPress={() => (step > 0 ? setStep(step - 1) : router.back())} hitSlop={10}>
-            <T style={{ color: colors.muted, fontFamily: fonts.medium }}>{step > 0 ? 'السابق' : 'إلغاء'}</T>
+            <T style={{ color: colors.muted, fontFamily: fonts.medium }}>{step > 0 ? tr('السابق', 'Back') : tr('إلغاء', 'Cancel')}</T>
           </Pressable>
           <T variant="label">
-            {done ? 'النتيجة' : `${fmtNum(step + 1)} من ${fmtNum(total)}`}
+            {done ? tr('النتيجة', 'Result') : `${fmtNum(step + 1)} ${tr('من', 'of')} ${fmtNum(total)}`}
           </T>
         </Row>
         <Bar value={done ? 1 : step / total} />
@@ -52,11 +53,11 @@ export default function LevelQuiz() {
           </View>
         ) : (
           <View style={{ gap: space(4), marginTop: space(4) }}>
-            <T variant="h1">هذا مستواك المبدئي</T>
+            <T variant="h1">{tr('هذا مستواك المبدئي', 'Your starting level')}</T>
             <LevelMeter level={level} />
-            <T variant="muted">يتعدل تلقائياً بعد كل مباراة تنافسية. الاستبيان يوصلك لـ 5.5 كحد أعلى، والباقي تكسبه في الملعب.</T>
+            <T variant="muted">{tr('يتعدل تلقائياً بعد كل مباراة تنافسية. الاستبيان يوصلك لـ 5.5 كحد أعلى، والباقي تكسبه في الملعب.', 'It updates automatically after every competitive match. The questionnaire tops out at 5.5; the rest you earn on court.')}</T>
             <Button
-              title="احفظ وابدأ"
+              title={tr('احفظ وابدأ', 'Save and start')}
               icon="check"
               onPress={async () => {
                 await setMyLevel(level);

@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '@/constants/theme';
 import { Community } from '@/lib/types';
+import { tr } from '@/lib/i18n';
 
 /** Community logo, or its first letter on court blue when it has none. */
 export function CommunityLogo({ community, size = 56 }: { community: Pick<Community, 'name' | 'logo'>; size?: number }) {
@@ -17,7 +18,11 @@ export function CommunityLogo({ community, size = 56 }: { community: Pick<Commun
   );
 }
 
-export const KIND_LABEL = { community: 'مجتمع', court: 'ملعب', academy: 'أكاديمية' } as const;
+export const KIND_LABEL = {
+  get community() { return tr('مجتمع', 'Community'); },
+  get court() { return tr('ملعب', 'Court'); },
+  get academy() { return tr('أكاديمية', 'Academy'); },
+};
 
 const s = StyleSheet.create({
   fallback: { backgroundColor: colors.blue, alignItems: 'center', justifyContent: 'center' },

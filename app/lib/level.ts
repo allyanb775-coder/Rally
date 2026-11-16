@@ -1,3 +1,4 @@
+import { tr } from './i18n.ts';
 export const MIN_LEVEL = 0;
 export const MAX_LEVEL = 7;
 
@@ -30,51 +31,51 @@ export type Question = {
 export const levelQuestions: Question[] = [
   {
     id: 'experience',
-    text: 'كم صار لك تلعب بادل؟',
+    get text() { return tr('كم صار لك تلعب بادل؟', 'How long have you played padel?'); },
     options: [
-      { label: 'أول مرة / أقل من 3 شهور', points: 0 },
-      { label: '3 شهور إلى سنة', points: 1 },
-      { label: 'سنة إلى 3 سنوات', points: 2 },
-      { label: 'أكثر من 3 سنوات', points: 3 },
+      { get label() { return tr('أول مرة / أقل من 3 شهور', 'First time / under 3 months'); }, points: 0 },
+      { get label() { return tr('3 شهور إلى سنة', '3 months to a year'); }, points: 1 },
+      { get label() { return tr('سنة إلى 3 سنوات', '1 to 3 years'); }, points: 2 },
+      { get label() { return tr('أكثر من 3 سنوات', 'More than 3 years'); }, points: 3 },
     ],
   },
   {
     id: 'frequency',
-    text: 'كم مرة تلعب بالأسبوع؟',
+    get text() { return tr('كم مرة تلعب بالأسبوع؟', 'How often do you play per week?'); },
     options: [
-      { label: 'نادراً', points: 0 },
-      { label: 'مرة', points: 0.5 },
-      { label: '2–3 مرات', points: 1 },
-      { label: 'أكثر من 3', points: 1.5 },
+      { get label() { return tr('نادراً', 'Rarely'); }, points: 0 },
+      { get label() { return tr('مرة', 'Once'); }, points: 0.5 },
+      { get label() { return tr('2–3 مرات', '2–3 times'); }, points: 1 },
+      { get label() { return tr('أكثر من 3', 'More than 3'); }, points: 1.5 },
     ],
   },
   {
     id: 'walls',
-    text: 'كيف تتعامل مع الكرة بعد ما تضرب الجدار؟',
+    get text() { return tr('كيف تتعامل مع الكرة بعد ما تضرب الجدار؟', 'How do you handle the ball off the glass?'); },
     options: [
-      { label: 'أتجنبها غالباً', points: 0 },
-      { label: 'أرجعها أحياناً', points: 0.5 },
-      { label: 'أرجعها بثبات', points: 1 },
-      { label: 'أستخدمها للهجوم', points: 1.5 },
+      { get label() { return tr('أتجنبها غالباً', 'I usually avoid it'); }, points: 0 },
+      { get label() { return tr('أرجعها أحياناً', 'I sometimes return it'); }, points: 0.5 },
+      { get label() { return tr('أرجعها بثبات', 'I return it consistently'); }, points: 1 },
+      { get label() { return tr('أستخدمها للهجوم', 'I use it to attack'); }, points: 1.5 },
     ],
   },
   {
     id: 'shots',
-    text: 'وش الضربات اللي تتقنها؟',
+    get text() { return tr('وش الضربات اللي تتقنها؟', 'Which shots have you mastered?'); },
     options: [
-      { label: 'الأساسيات فقط', points: 0 },
-      { label: 'فولي ولوب', points: 0.5 },
-      { label: 'بانديخا', points: 1 },
-      { label: 'فيبورا وسماش خارج الملعب', points: 1.5 },
+      { get label() { return tr('الأساسيات فقط', 'Basics only'); }, points: 0 },
+      { get label() { return tr('فولي ولوب', 'Volley and lob'); }, points: 0.5 },
+      { get label() { return tr('بانديخا', 'Bandeja'); }, points: 1 },
+      { get label() { return tr('فيبورا وسماش خارج الملعب', 'Víbora and smash out of the court'); }, points: 1.5 },
     ],
   },
   {
     id: 'competition',
-    text: 'شاركت في بطولات؟',
+    get text() { return tr('شاركت في بطولات؟', 'Have you played tournaments?'); },
     options: [
-      { label: 'لا', points: 0 },
-      { label: 'بطولات ودية', points: 0.25 },
-      { label: 'بطولات محلية بانتظام', points: 0.5 },
+      { get label() { return tr('لا', 'No'); }, points: 0 },
+      { get label() { return tr('بطولات ودية', 'Friendly tournaments'); }, points: 0.25 },
+      { get label() { return tr('بطولات محلية بانتظام', 'Local tournaments regularly'); }, points: 0.5 },
     ],
   },
 ];
@@ -112,9 +113,9 @@ export function updatedLevel(
 }
 
 export function levelLabel(level: number): string {
-  if (level < 1.5) return 'مبتدئ';
-  if (level < 3) return 'متوسط';
-  if (level < 4.5) return 'متقدم';
-  if (level < 6) return 'محترف';
-  return 'نخبة';
+  if (level < 1.5) return tr('مبتدئ', 'Beginner');
+  if (level < 3) return tr('متوسط', 'Intermediate');
+  if (level < 4.5) return tr('متقدم', 'Advanced');
+  if (level < 6) return tr('محترف', 'Pro');
+  return tr('نخبة', 'Elite');
 }

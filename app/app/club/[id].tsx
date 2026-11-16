@@ -7,6 +7,8 @@ import { Button, Heading, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { useStore } from '@/lib/store';
 import { waLink } from '@/lib/whatsapp';
+import { tr } from '@/lib/i18n';
+import { cityLabel } from '@/lib/cities';
 
 export default function Club() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,7 +19,7 @@ export default function Club() {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
-        <T variant="h2">المجتمع غير موجود.</T>
+        <T variant="h2">{tr('المجتمع غير موجود.', 'Club not found.')}</T>
       </Screen>
     );
   }
@@ -30,7 +32,7 @@ export default function Club() {
     setBusy(false);
   };
   const share = () => {
-    const message = `انضم لـ ${c.name} على Rally 🎾`;
+    const message = tr(`انضم لـ ${c.name} على Rally 🎾`, `Join ${c.name} on Rally 🎾`);
     if (Platform.OS === 'web') (navigator as any).share?.({ text: message });
     else Share.share({ message });
   };
@@ -40,12 +42,12 @@ export default function Club() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/clubs'))} style={s.back} accessibilityLabel="رجوع">
+          <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/clubs'))} style={s.back} accessibilityLabel={tr('رجوع', 'Back')}>
             <View style={{ transform: [{ scaleX: -1 }] }}>
               <Icon name="arrow" size={20} />
             </View>
           </Pressable>
-          <Pressable onPress={share} style={s.back} accessibilityLabel="شارك">
+          <Pressable onPress={share} style={s.back} accessibilityLabel={tr('شارك', 'Share')}>
             <Icon name="share" size={18} />
           </Pressable>
         </Row>
@@ -54,7 +56,7 @@ export default function Club() {
           <CommunityLogo community={c} size={132} />
           <T style={s.name}>{c.name}</T>
           <T variant="muted" style={{ textAlign: 'center' }}>
-            {KIND_LABEL[c.kind]} · {c.city}
+            {KIND_LABEL[c.kind]} · {cityLabel(c.city)}
           </T>
         </View>
 
@@ -68,31 +70,31 @@ export default function Club() {
 
         {!owner && waLink(c.whatsapp, '') && (
           <Button
-            title="تواصل واتساب"
+            title={tr('تواصل واتساب', 'WhatsApp')}
             icon="chat"
             variant="ghost"
-            onPress={() => Linking.openURL(waLink(c.whatsapp, `السلام عليكم، شفت ${c.name} على Rally وأبي أستفسر.`)!).catch(() => {})}
+            onPress={() => Linking.openURL(waLink(c.whatsapp, tr(`السلام عليكم، شفت ${c.name} على Rally وأبي أستفسر.`, `Hi, I found ${c.name} on Rally and have a question.`))!).catch(() => {})}
           />
         )}
 
         {owner ? (
-          <Button title="أنت المؤسس · افتح مباراة للمجتمع" icon="plus" onPress={() => router.push({ pathname: '/create-match', params: { communityId: c.id } })} />
+          <Button title={tr('أنت المؤسس · افتح مباراة للمجتمع', "You're the founder · open a club match")} icon="plus" onPress={() => router.push({ pathname: '/create-match', params: { communityId: c.id } })} />
         ) : member ? (
           <View style={{ gap: space(3) }}>
-            <Button title="افتح مباراة للمجتمع" icon="plus" onPress={() => router.push({ pathname: '/create-match', params: { communityId: c.id } })} />
-            <Button title="اطلع من المجتمع" variant="ghost" disabled={busy} onPress={() => act(() => leaveCommunity(c.id))} />
+            <Button title={tr('افتح مباراة للمجتمع', 'Open a club match')} icon="plus" onPress={() => router.push({ pathname: '/create-match', params: { communityId: c.id } })} />
+            <Button title={tr('اطلع من المجتمع', 'Leave club')} variant="ghost" disabled={busy} onPress={() => act(() => leaveCommunity(c.id))} />
           </View>
         ) : (
-          <Button title={busy ? '...' : 'انضم للمجتمع'} icon="check" disabled={busy} onPress={() => act(() => joinCommunity(c.id))} />
+          <Button title={busy ? '...' : tr('انضم للمجتمع', 'Join club')} icon="check" disabled={busy} onPress={() => act(() => joinCommunity(c.id))} />
         )}
 
-        <Heading en="Matches" ar="مباريات المجتمع" />
-        {upcoming.length === 0 ? <T variant="muted">ما فيه مباريات قادمة للمجتمع.</T> : upcoming.map((m) => <MatchCard key={m.id} match={m} />)}
+        <Heading en="Matches" ar={tr('مباريات المجتمع', 'Club matches')} />
+        {upcoming.length === 0 ? <T variant="muted">{tr('ما فيه مباريات قادمة للمجتمع.', 'No upcoming club matches.')}</T> : upcoming.map((m) => <MatchCard key={m.id} match={m} />)}
 
-        <Heading en="Members" ar="الأعضاء" />
+        <Heading en="Members" ar={tr('الأعضاء', 'Members')} />
         <Lined style={{ gap: 0 }}>
           {c.memberIds.map((pid) => (
-            <PlayerRow key={pid} id={pid} host={pid === c.ownerId} hostLabel="المؤسس" />
+            <PlayerRow key={pid} id={pid} host={pid === c.ownerId} hostLabel={tr('المؤسس', 'Founder')} />
           ))}
         </Lined>
       </Screen>

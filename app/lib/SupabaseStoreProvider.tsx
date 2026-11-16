@@ -8,6 +8,7 @@ import { friendlyError, notify } from './notify';
 import { Store, StoreContext } from './store';
 import { clipExtension } from './clips';
 import { Community, Court, Highlight, Match, Player, Tournament, TournamentEntry } from './types';
+import { tr } from './i18n';
 
 type Data = {
   players: Record<string, Player>;
@@ -81,7 +82,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       name: t.name,
       format: t.format,
       startsAt: t.starts_at,
-      venue: [t.courts?.name, t.courts?.city].filter(Boolean).join('، '),
+      venue: [t.courts?.name, t.courts?.city].filter(Boolean).join(tr('، ', ', ')),
       minLevel: num(t.min_level),
       maxLevel: num(t.max_level),
       capacity: t.capacity,
@@ -223,7 +224,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
           return ok;
         } catch (e) {
           console.warn(e);
-          notify('ما قدرنا نرفع المقطع. تأكد من الاتصال وحاول مرة ثانية.');
+          notify(tr('ما قدرنا نرفع المقطع. تأكد من الاتصال وحاول مرة ثانية.', "We couldn't upload the clip. Check your connection and try again."));
           return false;
         }
       },
@@ -276,7 +277,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
             receipt_path = path;
           } catch (e) {
             console.warn(e);
-            notify('ما قدرنا نرفع الإيصال. تأكد من الاتصال وحاول مرة ثانية.');
+            notify(tr('ما قدرنا نرفع الإيصال. تأكد من الاتصال وحاول مرة ثانية.', "We couldn't upload the receipt. Check your connection and try again."));
             return false;
           }
         }
@@ -287,7 +288,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
 
   if (session === undefined) return <Loading />;
   if (!session) return <SignIn client={sb} />;
-  if (!data) return loadError ? <SignIn client={sb} error="تعذّر تحميل البيانات. تأكد من الاتصال." onRetry={refresh} /> : <Loading />;
+  if (!data) return loadError ? <SignIn client={sb} error={tr('تعذّر تحميل البيانات. تأكد من الاتصال.', "Couldn't load data. Check your connection.")} onRetry={refresh} /> : <Loading />;
   if (!data.players[session.user.id]) return <ProfileSetup client={sb} session={session} onDone={refresh} />;
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

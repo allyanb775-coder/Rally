@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { MatchCard } from '@/components/MatchCard';
 import { HIGH_FIVE_HERO, Photo } from '@/components/Photo';
 import { SwipeDeck } from '@/components/SwipeDeck';
@@ -11,6 +11,7 @@ import { needsResult } from '@/lib/result';
 import { greeting, sameDay } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
+import { tr } from '@/lib/i18n';
 
 export default function Home() {
   const { me, matches, joinMatch } = useStore();
@@ -21,7 +22,7 @@ export default function Home() {
   const mine = upcoming.filter((m) => m.playerIds.includes(me.id));
   const ranked = rankMatches(matches, me, now);
   const awaiting = matches.filter((m) => m.playerIds.includes(me.id) && needsResult(m, now));
-  const firstName = me.name === 'أنت' ? 'يا بطل' : me.name;
+  const firstName = me.name === tr('أنت', 'You') ? tr('يا بطل', 'champ') : me.name;
 
   return (
     <Screen tabBar>
@@ -30,13 +31,13 @@ export default function Home() {
           <LinearGradient colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.6)', '#000']} locations={[0, 0.25, 0.7, 1]} style={StyleSheet.absoluteFill} />
           <Row style={s.heroBar}>
             <T style={s.brand}>RALLY</T>
-            <Pressable onPress={() => router.push('/profile')} style={s.avatar} accessibilityLabel="ملفي">
+            <Pressable onPress={() => router.push('/profile')} style={s.avatar} accessibilityLabel={tr('ملفي', 'My profile')}>
               <T style={{ fontFamily: fonts.bold, fontSize: 16, lineHeight: 22, color: '#000' }}>{me.name[0]}</T>
             </Pressable>
           </Row>
           <View style={s.heroText}>
             <T style={s.heroTitle}>READY TO{'\n'}PLAY?</T>
-            <T style={s.heroHello}>{greeting()} {firstName} · لاقِ شريكك والعب بمستواك</T>
+            <T style={s.heroHello}>{greeting()} {firstName} · {tr('لاقِ شريكك والعب بمستواك', 'find partners and play at your level')}</T>
           </View>
         </Photo>
       </View>
@@ -51,14 +52,14 @@ export default function Home() {
 
       {awaiting.length > 0 && (
         <View style={{ gap: space(3) }}>
-          <Heading en="Awaiting result" ar="بانتظار النتيجة" />
+          <Heading en="Awaiting result" ar={tr('بانتظار النتيجة', 'Awaiting result')} />
           {awaiting.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
         </View>
       )}
 
-      <Heading en="Play now" ar="العب الحين · اسحب يمين تنضم، يسار للي بعدها" />
+      <Heading en="Play now" ar={tr('العب الحين · اسحب يمين تنضم، يسار للي بعدها', 'Swipe right to join, left to skip')} />
 
       <SwipeDeck
         matches={ranked}
@@ -69,10 +70,10 @@ export default function Home() {
         }}
         empty={
           <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
-            <T variant="h2" style={{ textAlign: 'center' }}>ما بقى مباريات تناسبك الحين</T>
-            <T variant="muted" style={{ textAlign: 'center' }}>افتح مباراة والباقين ينضمون لك</T>
+            <T variant="h2" style={{ textAlign: 'center' }}>{tr('ما بقى مباريات تناسبك الحين', 'No matches at your level right now')}</T>
+            <T variant="muted" style={{ textAlign: 'center' }}>{tr('افتح مباراة والباقين ينضمون لك', 'Open a match and others will join you')}</T>
             <View style={{ alignSelf: 'stretch', marginTop: space(2) }}>
-              <Button title="افتح مباراة" icon="plus" onPress={() => router.push('/create-match')} />
+              <Button title={tr('افتح مباراة', 'Open a match')} icon="plus" onPress={() => router.push('/create-match')} />
             </View>
           </Lined>
         }
@@ -82,17 +83,17 @@ export default function Home() {
         <Pressable onPress={() => router.push('/level')}>
           <Lined style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View style={{ flexShrink: 1 }}>
-              <T variant="h3">مستواك مبدئي</T>
-              <T variant="small">جاوب 5 أسئلة عشان نطابقك صح</T>
+              <T variant="h3">{tr('مستواك مبدئي', 'Your level is provisional')}</T>
+              <T variant="small">{tr('جاوب 5 أسئلة عشان نطابقك صح', 'Answer 5 questions so we match you right')}</T>
             </View>
-            <T style={{ fontFamily: fonts.kufi, color: colors.led, lineHeight: 26 }}>ابدأ ←</T>
+            <T style={{ fontFamily: fonts.kufi, color: colors.led, lineHeight: 26 }}>{tr('ابدأ ←', 'Start →')}</T>
           </Lined>
         </Pressable>
       )}
 
       {mine.length > 0 && (
         <View>
-          <SectionHeader title="مبارياتي" en="My matches" />
+          <SectionHeader title={tr('مبارياتي', 'My matches')} en="My matches" />
           {mine.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
@@ -122,6 +123,6 @@ const s = StyleSheet.create({
   statLabel: { fontFamily: fonts.display, fontSize: 11, letterSpacing: 1.5, lineHeight: 14, color: colors.muted, textAlign: 'center' },
   heroText: { position: 'absolute', bottom: space(5), left: space(5), right: space(5) },
   heroHello: { fontFamily: fonts.medium, fontSize: 14, lineHeight: 20, color: 'rgba(255,255,255,0.8)', marginTop: 6 },
-  heroTitle: { fontFamily: fonts.display, fontSize: 64, lineHeight: 66, color: '#FFFFFF', writingDirection: 'ltr', textAlign: Platform.OS === 'web' ? 'right' : 'left' },
+  heroTitle: { fontFamily: fonts.display, fontSize: 64, lineHeight: 66, color: '#FFFFFF', writingDirection: 'ltr' },
   avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
 });

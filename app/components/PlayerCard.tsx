@@ -3,6 +3,9 @@ import { colors, fonts, radius } from '@/constants/theme';
 import { levelLabel } from '@/lib/level';
 import { Player } from '@/lib/types';
 import { Led, ledLevel, ledNum } from './Led';
+import { tr } from '@/lib/i18n';
+import { align } from '@/components/ui';
+import { cityLabel } from '@/lib/cities';
 
 /** The player's card, built like a scoreboard plate, to share as a story. */
 export function PlayerCard({ player }: { player: Player }) {
@@ -11,7 +14,7 @@ export function PlayerCard({ player }: { player: Player }) {
     <View style={s.card}>
       <View style={s.head}>
         <Text style={s.brand}>RALLY</Text>
-        <Text style={s.city}>{player.city}</Text>
+        <Text style={s.city}>{cityLabel(player.city)}</Text>
       </View>
       <View style={s.mid}>
         <View style={s.avatar}>
@@ -22,15 +25,15 @@ export function PlayerCard({ player }: { player: Player }) {
           <Text style={s.label}>{levelLabel(player.level)}</Text>
         </View>
       </View>
-      <Text style={s.name} numberOfLines={1}>
+      <Text style={[s.name, { textAlign: align() }]} numberOfLines={1}>
         {player.name}
       </Text>
       <View style={s.stats}>
-        <Stat k="مباريات" v={ledNum(player.matchesPlayed)} />
+        <Stat k={tr('مباريات', 'Matches')} v={ledNum(player.matchesPlayed)} />
         <View style={s.div} />
-        <Stat k="فوز" v={ledNum(player.wins)} />
+        <Stat k={tr('فوز', 'Wins')} v={ledNum(player.wins)} />
         <View style={s.div} />
-        <Stat k="نسبة الفوز %" v={ledNum(winRate)} />
+        <Stat k={tr('نسبة الفوز %', 'Win rate %')} v={ledNum(winRate)} />
       </View>
     </View>
   );
@@ -54,7 +57,7 @@ const s = StyleSheet.create({
   avatar: { width: 96, height: 96, borderRadius: 48, backgroundColor: colors.turf, borderWidth: 3, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.text, fontSize: 40, lineHeight: 80, fontFamily: fonts.black },
   label: { fontFamily: fonts.kufi, fontSize: 13, lineHeight: 22, color: colors.led },
-  name: { color: colors.text, fontSize: 26, lineHeight: 34, fontFamily: fonts.black, paddingHorizontal: 18, textAlign: 'right' },
+  name: { color: colors.text, fontSize: 26, lineHeight: 34, fontFamily: fonts.black, paddingHorizontal: 18 },
   stats: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 2, borderColor: '#1A2340', paddingVertical: 14, marginTop: 6 },
   div: { width: 2, alignSelf: 'stretch', backgroundColor: '#1A2340' },
   statK: { color: colors.inkMuted, fontSize: 11, fontFamily: fonts.medium },

@@ -6,6 +6,7 @@ import { Button, Icon, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDate } from '@/lib/format';
 import { useStore } from '@/lib/store';
+import { tr } from '@/lib/i18n';
 
 /** Full-screen clip with its owner; your own clips can be deleted (asks once). */
 export default function Clip() {
@@ -22,8 +23,8 @@ export default function Clip() {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
-        <T variant="h2">اللقطة انحذفت.</T>
-        <Button title="رجوع" variant="ghost" onPress={() => router.back()} />
+        <T variant="h2">{tr('اللقطة انحذفت.', 'This clip was deleted.')}</T>
+        <Button title={tr('رجوع', 'Back')} variant="ghost" onPress={() => router.back()} />
       </Screen>
     );
   }
@@ -42,11 +43,11 @@ export default function Clip() {
               <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{owner?.name[0]}</T>
             </View>
             <View>
-              <T variant="h3">{owner?.name ?? 'لاعب'}</T>
+              <T variant="h3">{owner?.name ?? tr('لاعب', 'Player')}</T>
               <T variant="small">{fmtDate(clip.createdAt)}</T>
             </View>
           </Pressable>
-          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
+          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel={tr('إغلاق', 'Close')}>
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
@@ -59,7 +60,7 @@ export default function Clip() {
             <Row style={{ gap: space(3) }}>
               <View style={{ flex: 1 }}>
                 <Button
-                  title="احذفها"
+                  title={tr('احذفها', 'Delete it')}
                   icon="trash"
                   onPress={async () => {
                     if (await deleteHighlight(clip.id)) router.back();
@@ -67,11 +68,11 @@ export default function Clip() {
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <Button title="لا، خلّها" variant="ghost" onPress={() => setConfirming(false)} />
+                <Button title={tr('لا، خلّها', 'No, keep it')} variant="ghost" onPress={() => setConfirming(false)} />
               </View>
             </Row>
           ) : (
-            <Button title="احذف اللقطة" variant="ghost" icon="trash" onPress={() => setConfirming(true)} />
+            <Button title={tr('احذف اللقطة', 'Delete clip')} variant="ghost" icon="trash" onPress={() => setConfirming(true)} />
           ))}
       </Screen>
     </View>

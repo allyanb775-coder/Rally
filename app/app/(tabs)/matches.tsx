@@ -8,6 +8,7 @@ import { sameDay } from '@/lib/format';
 import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
+import { locale, tr } from '@/lib/i18n';
 
 type Filter = 'mine-level' | 'my-city' | 'competitive';
 
@@ -34,7 +35,7 @@ export default function Matches() {
   return (
     <Screen tabBar>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <Heading en="Matches" ar="المباريات المفتوحة" size="xl" />
+        <Heading en="Matches" ar={tr('المباريات المفتوحة', 'Open matches')} size="xl" />
         <View style={s.count}>
           <Led value={ledNum(list.length)} dot={4} color="#FFFFFF" />
         </View>
@@ -42,15 +43,15 @@ export default function Matches() {
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space(2) }}>
         <Pressable onPress={() => setDay(null)} style={[s.day, !day && s.dayOn]}>
-          <T style={[s.dayName, !day && s.ink]}>كل</T>
-          <T style={[s.dayAll, !day && s.ink]}>الأيام</T>
+          <T style={[s.dayName, !day && s.ink]}>{tr('كل', 'All')}</T>
+          <T style={[s.dayAll, !day && s.ink]}>{tr('الأيام', 'days')}</T>
         </Pressable>
         {days.map((d, i) => {
           const on = !!day && sameDay(d, day);
           const n = open.filter((m) => sameDay(new Date(m.startsAt), d)).length;
           return (
             <Pressable key={i} onPress={() => setDay(d)} style={[s.day, on && s.dayOn]}>
-              <T style={[s.dayName, on && s.ink]}>{i === 0 ? 'اليوم' : d.toLocaleDateString('ar-SA-u-nu-latn', { weekday: 'short' })}</T>
+              <T style={[s.dayName, on && s.ink]}>{i === 0 ? tr('اليوم', 'Today') : d.toLocaleDateString(locale(), { weekday: 'short' })}</T>
               <Led value={ledNum(d.getDate())} dot={3} color={on ? colors.ink : colors.led} off={false} />
               <View style={[s.pip, { opacity: n ? 1 : 0 }, on && { backgroundColor: colors.ink }]} />
             </Pressable>
@@ -59,16 +60,16 @@ export default function Matches() {
       </ScrollView>
 
       <Row style={{ flexWrap: 'wrap' }}>
-        <Chip label="بمستواي" active={filters.includes('mine-level')} onPress={() => toggle('mine-level')} />
-        <Chip label="بمدينتي" active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
-        <Chip label="تنافسية" active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
+        <Chip label={tr('بمستواي', 'My level')} active={filters.includes('mine-level')} onPress={() => toggle('mine-level')} />
+        <Chip label={tr('بمدينتي', 'My city')} active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
+        <Chip label={tr('تنافسية', 'Competitive')} active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
       </Row>
 
       <View style={{ gap: space(3) }}>
         {list.length === 0 ? (
           <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
-            <T variant="h3">ما فيه مباريات بهالاختيار</T>
-            <T variant="muted">جرّب يوم ثاني، أو افتح مباراة من زر +</T>
+            <T variant="h3">{tr('ما فيه مباريات بهالاختيار', 'No matches for this filter')}</T>
+            <T variant="muted">{tr('جرّب يوم ثاني، أو افتح مباراة من زر +', 'Try another day, or open a match with +')}</T>
           </Lined>
         ) : (
           list.map((m) => <MatchCard key={m.id} match={m} />)

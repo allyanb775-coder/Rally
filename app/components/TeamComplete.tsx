@@ -10,6 +10,7 @@ import { teamOf, teams } from '@/lib/result';
 import { useStore } from '@/lib/store';
 import { Match, MATCH_SIZE } from '@/lib/types';
 import { Button } from './ui';
+import { and, tr } from '@/lib/i18n';
 
 const SEEN_KEY = 'rally.teamCompleteSeen';
 const highFive = require('@/assets/images/high-five.jpg');
@@ -56,7 +57,7 @@ export function TeamComplete() {
   if (!current) return null;
   const t = teams(current);
   const mine = teamOf(current, me.id) ?? 1;
-  const pair = (ids: string[]) => ids.map((id) => (id === me.id ? 'أنت' : players[id]?.name ?? '')).join(' و ');
+  const pair = (ids: string[]) => ids.map((id) => (id === me.id ? tr('أنت', 'You') : players[id]?.name ?? '')).join(and());
   const imageScale = fade.interpolate({ inputRange: [0, 1], outputRange: [1.12, 1] });
 
   return (
@@ -69,16 +70,16 @@ export function TeamComplete() {
             <Text style={s.kicker}>
               {current.court} · {fmtDay(current.startsAt)} {fmtTime(current.startsAt)}
             </Text>
-            <Text style={s.title}>اكتمل الفريق</Text>
+            <Text style={s.title}>{tr('اكتمل الفريق', 'Team complete')}</Text>
             <Text style={s.pairs}>
               <Text style={{ color: colors.led }}>{pair(t[mine])}</Text>
-              <Text style={s.vs}>  ضد  </Text>
+              <Text style={s.vs}>{tr('  ضد  ', '  vs  ')}</Text>
               <Text>{pair(t[mine === 1 ? 2 : 1])}</Text>
             </Text>
           </View>
           <View style={{ gap: space(3) }}>
-            <Button title="شوف المباراة" onPress={() => close(true)} />
-            <Button title="تمام" variant="ghost" onPress={() => close()} />
+            <Button title={tr('شوف المباراة', 'View match')} onPress={() => close(true)} />
+            <Button title={tr('تمام', 'OK')} variant="ghost" onPress={() => close()} />
           </View>
         </SafeAreaView>
       </Animated.View>

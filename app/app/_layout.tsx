@@ -4,22 +4,16 @@ import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { I18nManager, Platform } from 'react-native';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { TeamComplete } from '@/components/TeamComplete';
 import { colors } from '@/constants/theme';
+import { lang, onLangChange } from '@/lib/i18n';
+import { loadLang } from '@/lib/langSwitch';
 import { StoreProvider } from '@/lib/StoreProvider';
 
 export { ErrorBoundary } from 'expo-router';
 
-// Arabic-first app: force right-to-left layout on native (web uses <html dir="rtl">).
-I18nManager.allowRTL(true);
-I18nManager.forceRTL(true);
-if (Platform.OS === 'web' && typeof document !== 'undefined') {
-  document.documentElement.dir = 'rtl';
-  document.documentElement.lang = 'ar';
-}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,13 +31,20 @@ export default function RootLayout() {
     IBMPlexSansArabic_500Medium,
     IBMPlexSansArabic_700Bold,
   });
+  // Arabic by default (right-to-left); the saved language is applied before the first screen renders.
+  const [langReady, setLangReady] = useState(false);
+  const [langKey, setLangKey] = useState(lang());
   useEffect(() => {
-    if (loaded || error) SplashScreen.hideAsync();
-  }, [loaded, error]);
-  if (!loaded && !error) return null;
+    loadLang().finally(() => setLangReady(true));
+    return onLangChange(setLangKey);
+  }, []);
+  useEffect(() => {
+    if ((loaded || error) && langReady) SplashScreen.hideAsync();
+  }, [loaded, error, langReady]);
+  if ((!loaded && !error) || !langReady) return null;
 
   return (
-    <StoreProvider>
+    <StoreProvider key={langKey}>
       <ThemeProvider value={theme}>
         <StatusBar style="light" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>

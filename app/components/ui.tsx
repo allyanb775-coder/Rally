@@ -1,6 +1,7 @@
 import { SymbolView } from 'expo-symbols';
 import { ReactNode } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, TextProps, View, ViewStyle } from 'react-native';
+import { isAr } from '@/lib/i18n';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtLevel } from '@/lib/format';
@@ -32,7 +33,7 @@ export function Screen({ children, scroll = true, tabBar = false }: { children: 
 
 type Variant = 'display' | 'h1' | 'h2' | 'h3' | 'body' | 'muted' | 'small' | 'label';
 export function T({ style, variant = 'body', ...p }: TextProps & { variant?: Variant }) {
-  return <Text {...p} style={[s.text, s[variant], style]} />;
+  return <Text {...p} style={[s.text, dirText(), s[variant], style]} />;
 }
 
 /** Black scoreboard panel. */
@@ -80,7 +81,7 @@ export function Button({
 }
 
 export function Input(props: TextInputProps) {
-  return <TextInput placeholderTextColor={colors.inkMuted} {...props} style={[s.input, props.style]} />;
+  return <TextInput placeholderTextColor={colors.inkMuted} {...props} style={[s.input, { textAlign: align() }, props.style]} />;
 }
 
 export function Row({ children, style }: { children: ReactNode; style?: ViewStyle | ViewStyle[] }) {
@@ -169,13 +170,17 @@ export function Icon({ name, color = colors.text, size = 20 }: { name: IconName;
   return <SymbolView name={icons[name] as any} tintColor={color} size={size} />;
 }
 
-const align = Platform.OS === 'web' ? 'right' : 'left'; // native flips 'left' under forced RTL
-/** Physical side where a 0→max scale starts in RTL: native mirrors 'left' itself, web needs 'right'. */
-export const scaleStart = Platform.OS === 'web' ? ('right' as const) : ('left' as const);
+/** Arabic reads right-to-left. Native mirrors 'left' itself under RTL; web needs the physical side. */
+export const isRTL = () => isAr();
+export const align = () => (Platform.OS === 'web' && isRTL() ? ('right' as const) : ('left' as const));
+/** Direction styles are read at render time so a live language switch on web takes effect. */
+const dirText = () => ({ textAlign: align(), writingDirection: isRTL() ? ('rtl' as const) : ('ltr' as const) });
+/** Physical side where a 0→max scale starts. */
+export const scaleStart = align;
 
 const s = StyleSheet.create({
   content: { paddingHorizontal: space(4), paddingTop: space(3), gap: space(4), width: '100%', maxWidth: 560, alignSelf: 'center' },
-  text: { color: colors.text, textAlign: align, writingDirection: 'rtl', fontFamily: fonts.body },
+  text: { color: colors.text, fontFamily: fonts.body },
   display: { fontFamily: fonts.display, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 0.5, writingDirection: 'ltr' },
   headingAr: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: colors.muted, marginTop: 2 },
   h1: { fontFamily: fonts.bold, fontSize: 26, lineHeight: 36 },
@@ -192,7 +197,7 @@ const s = StyleSheet.create({
   btnGhost: { backgroundColor: 'transparent', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)' },
   btnDark: { backgroundColor: colors.ink },
   btnText: { fontSize: 16, fontFamily: fonts.bold },
-  input: { backgroundColor: colors.ink, borderRadius: radius.sm, color: colors.text, fontSize: 20, fontFamily: fonts.medium, height: 60, paddingHorizontal: space(4), textAlign: 'right' },
+  input: { backgroundColor: colors.ink, borderRadius: radius.sm, color: colors.text, fontSize: 20, fontFamily: fonts.medium, height: 60, paddingHorizontal: space(4) },
   badge: { backgroundColor: 'rgba(47,98,255,0.18)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 2, minWidth: 40, alignItems: 'center' },
   badgeText: { color: '#8FB0FF', fontFamily: fonts.bold, fontSize: 13 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', backgroundColor: 'transparent', borderRadius: radius.pill, paddingHorizontal: 16, height: 38 },

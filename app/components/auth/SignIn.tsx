@@ -2,9 +2,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HIGH_FIVE_WIDE, Photo } from '@/components/Photo';
-import { Button, Input, Row, Screen, T } from '@/components/ui';
+import { Button, Input, isRTL, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { normalizeSaudiPhone } from '@/lib/phone';
+import { tr } from '@/lib/i18n';
+import { LangSwitch } from '@/components/LangSwitch';
 
 export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient; error?: string; onRetry?: () => void }) {
   const [raw, setRaw] = useState('');
@@ -17,19 +19,19 @@ export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient;
     return (
       <Screen>
         <T variant="h2" style={{ marginTop: 60 }}>{error}</T>
-        {onRetry && <Button title="حاول مرة ثانية" onPress={onRetry} />}
+        {onRetry && <Button title={tr('حاول مرة ثانية', 'Try again')} onPress={onRetry} />}
       </Screen>
     );
   }
 
   const send = async () => {
     const p = normalizeSaudiPhone(raw);
-    if (!p) return setMsg('اكتب رقم جوال سعودي صحيح يبدأ بـ 5');
+    if (!p) return setMsg(tr('اكتب رقم جوال سعودي صحيح يبدأ بـ 5', 'Enter a valid Saudi mobile number starting with 5'));
     setBusy(true);
     setMsg(null);
     const { error } = await sb.auth.signInWithOtp({ phone: p });
     setBusy(false);
-    if (error) return setMsg('ما قدرنا نرسل الرمز. حاول بعد شوي.');
+    if (error) return setMsg(tr('ما قدرنا نرسل الرمز. حاول بعد شوي.', "We couldn't send the code. Try again shortly."));
     setPhone(p);
   };
 
@@ -39,7 +41,7 @@ export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient;
     setMsg(null);
     const { error } = await sb.auth.verifyOtp({ phone, token: code.trim(), type: 'sms' });
     setBusy(false);
-    if (error) setMsg('الرمز غير صحيح أو انتهى.');
+    if (error) setMsg(tr('الرمز غير صحيح أو انتهى.', 'The code is wrong or expired.'));
     // On success onAuthStateChange moves the app forward.
   };
 
@@ -47,23 +49,23 @@ export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient;
     <SignInShell>
       {!phone ? (
         <>
-          <T variant="label">رقم جوالك</T>
-          <Row style={{ gap: space(2) }}>
+          <T variant="label">{tr('رقم جوالك', 'Your mobile number')}</T>
+          <Row style={{ gap: space(2), flexDirection: isRTL() ? 'row' : 'row-reverse' }}>
             <View style={{ flex: 1 }}>
               <Input value={raw} onChangeText={setRaw} placeholder="5X XXX XXXX" keyboardType="phone-pad" autoComplete="tel" />
             </View>
             <View style={s.cc}>
-              <T style={{ fontFamily: fonts.bold, fontSize: 17 }}>966+</T>
+              <T style={{ fontFamily: fonts.bold, fontSize: 17 }}>{tr('966+', '+966')}</T>
             </View>
           </Row>
-          <Button title={busy ? '...' : 'أرسل رمز التحقق'} disabled={busy} onPress={send} />
+          <Button title={busy ? '...' : tr('أرسل رمز التحقق', 'Send verification code')} disabled={busy} onPress={send} />
         </>
       ) : (
         <>
-          <T variant="label">الرمز اللي وصلك على {phone}</T>
+          <T variant="label">{tr(`الرمز اللي وصلك على ${phone}`, `The code sent to ${phone}`)}</T>
           <Input value={code} onChangeText={setCode} placeholder="------" keyboardType="number-pad" autoComplete="one-time-code" maxLength={6} style={{ textAlign: 'center', letterSpacing: 12, fontSize: 26 }} />
-          <Button title={busy ? '...' : 'تأكيد'} disabled={busy || code.trim().length < 6} onPress={verify} />
-          <Button title="غيّر الرقم" variant="dark" onPress={() => { setPhone(null); setCode(''); }} />
+          <Button title={busy ? '...' : tr('تأكيد', 'Confirm')} disabled={busy || code.trim().length < 6} onPress={verify} />
+          <Button title={tr('غيّر الرقم', 'Change number')} variant="dark" onPress={() => { setPhone(null); setCode(''); }} />
         </>
       )}
       {msg && <T style={{ color: colors.danger }}>{msg}</T>}
@@ -72,7 +74,7 @@ export function SignIn({ client: sb, error, onRetry }: { client: SupabaseClient;
 }
 
 /** Shared hero for sign-in and first-run screens. */
-export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّر.' }: { children: React.ReactNode; title?: string }) {
+export function SignInShell({ children, title = tr('العب.\nنافس.\nتطوّر.', 'Play.\nCompete.\nImprove.') }: { children: React.ReactNode; title?: string }) {
   return (
     <Screen>
       <View style={{ marginTop: space(6), gap: space(5) }}>
@@ -81,9 +83,10 @@ export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّ�
           <View style={s.logo} />
         </View>
         <T style={s.title}>{title}</T>
-        <T variant="muted">لاعبين البادل بمكان واحد: لاقِ مباراة بمستواك، كمّل الناقصين، وشارك في البطولات.</T>
+        <T variant="muted">{tr('لاعبين البادل بمكان واحد: لاقِ مباراة بمستواك، كمّل الناقصين، وشارك في البطولات.', 'All padel players in one place: find a match at your level, fill open spots, and join tournaments.')}</T>
         <Photo source={HIGH_FIVE_WIDE.source} aspect={HIGH_FIVE_WIDE.aspect} />
         <View style={{ gap: space(3) }}>{children}</View>
+        <LangSwitch />
       </View>
     </Screen>
   );

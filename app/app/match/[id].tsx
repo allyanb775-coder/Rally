@@ -13,6 +13,8 @@ import { fmtDay, fmtLevel, fmtRange } from '@/lib/format';
 import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
+import { tr } from '@/lib/i18n';
+import { cityLabel } from '@/lib/cities';
 
 export default function MatchDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,7 +26,7 @@ export default function MatchDetail() {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
-        <T variant="h2">المباراة غير موجودة.</T>
+        <T variant="h2">{tr('المباراة غير موجودة.', 'Match not found.')}</T>
       </Screen>
     );
   }
@@ -45,13 +47,13 @@ export default function MatchDetail() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={s.back} accessibilityLabel="رجوع">
+          <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={s.back} accessibilityLabel={tr('رجوع', 'Back')}>
             <View style={{ transform: [{ scaleX: -1 }] }}>
               <Icon name="arrow" size={20} />
             </View>
           </Pressable>
           <T style={[s.kind, m.kind === 'competitive' && { color: colors.led, borderColor: colors.led }]}>
-            {m.kind === 'competitive' ? 'تنافسية · تعدّل المستوى' : 'ودية'}
+            {m.kind === 'competitive' ? tr('تنافسية · تعدّل المستوى', 'Competitive · affects level') : tr('ودية', 'Friendly')}
           </T>
         </Row>
 
@@ -62,12 +64,12 @@ export default function MatchDetail() {
               <Led value={ledTime(m.startsAt)} dot={7} />
             </View>
             <View style={{ alignItems: 'flex-end', gap: 8 }}>
-              <T style={s.boardLabel}>ناقص</T>
+              <T style={s.boardLabel}>{tr('ناقص', 'Need')}</T>
               <Led value={ledNum(missing, 1)} dot={7} color={missing ? colors.led : colors.inkMuted} />
             </View>
           </Row>
           <T style={{ fontFamily: fonts.bold, color: colors.text }}>
-            {m.court} · {m.city}
+            {m.court} · {cityLabel(m.city)}
           </T>
         </Board>
 
@@ -77,14 +79,14 @@ export default function MatchDetail() {
         </View>
 
         <Row style={{ gap: space(3) }}>
-          <Stat label="المستوى المطلوب" value={fmtRange(m.minLevel, m.maxLevel)} />
-          <Stat label="مستواك" value={fmtLevel(me.level)} warn={!eligible} />
+          <Stat label={tr('المستوى المطلوب', 'Required level')} value={fmtRange(m.minLevel, m.maxLevel)} />
+          <Stat label={tr('مستواك', 'Your level')} value={fmtLevel(me.level)} warn={!eligible} />
         </Row>
 
         <ResultPanel match={m} />
 
         <Lined style={{ gap: 0 }}>
-          <T variant="h3" style={{ marginBottom: 4 }}>اللاعبين</T>
+          <T variant="h3" style={{ marginBottom: 4 }}>{tr('اللاعبين', 'Players')}</T>
           {m.playerIds.map((p) => (
             <PlayerRow key={p} id={p} host={p === m.hostId} />
           ))}
@@ -95,16 +97,16 @@ export default function MatchDetail() {
       <SafeAreaView edges={['bottom']} style={s.cta}>
         <View style={s.ctaInner}>
           {new Date(m.startsAt) <= new Date() ? (
-            <Button title={joined ? 'المباراة انتهت' : 'المباراة بدأت'} variant="dark" disabled onPress={() => {}} />
+            <Button title={joined ? tr('المباراة انتهت', 'Match finished') : tr('المباراة بدأت', 'Match started')} variant="dark" disabled onPress={() => {}} />
           ) : joined ? (
             isHost ? (
-              <Button title="أنت صاحب المباراة" variant="dark" disabled onPress={() => {}} />
+              <Button title={tr('أنت صاحب المباراة', "You're the host")} variant="dark" disabled onPress={() => {}} />
             ) : (
-              <Button title="انسحب من المباراة" variant="ghost" disabled={busy} onPress={() => act(() => leaveMatch(m.id))} />
+              <Button title={tr('انسحب من المباراة', 'Leave match')} variant="ghost" disabled={busy} onPress={() => act(() => leaveMatch(m.id))} />
             )
           ) : (
             <Button
-              title={full ? 'المباراة مكتملة' : !eligible ? 'مو بمستواك' : busy ? '...' : 'انضم للمباراة'}
+              title={full ? tr('المباراة مكتملة', 'Match is full') : !eligible ? tr('مو بمستواك', 'Not your level') : busy ? '...' : tr('انضم للمباراة', 'Join match')}
               icon={!full && eligible ? 'check' : undefined}
               disabled={busy || full || !eligible}
               onPress={() =>

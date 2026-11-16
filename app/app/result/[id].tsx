@@ -9,6 +9,7 @@ import { ltr } from '@/lib/format';
 import { levelChanges, needsResult, nextGames, scoreFromSets, SetScore, teamOf, teams, winnerFromSets } from '@/lib/result';
 import { useStore } from '@/lib/store';
 import { Team } from '@/lib/types';
+import { and, tr } from '@/lib/i18n';
 
 const EMPTY: SetScore[] = [
   [null, null],
@@ -28,8 +29,8 @@ export default function ReportResult() {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
-        <T variant="h2">ما تقدر تسجل نتيجة هالمباراة.</T>
-        <Button title="رجوع" variant="ghost" onPress={() => router.back()} />
+        <T variant="h2">{tr('ما تقدر تسجل نتيجة هالمباراة.', "You can't report a result for this match.")}</T>
+        <Button title={tr('رجوع', 'Back')} variant="ghost" onPress={() => router.back()} />
       </Screen>
     );
   }
@@ -56,36 +57,36 @@ export default function ReportResult() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Heading en="Result" ar="النتيجة" size="xl" />
-          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
+          <Heading en="Result" ar={tr('النتيجة', 'Result')} size="xl" />
+          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel={tr('إغلاق', 'Close')}>
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
-        <T variant="muted">اضغط على خانة الشوط عشان تزيد الأشواط، مثل لوحة الملعب.</T>
+        <T variant="muted">{tr('اضغط على خانة الشوط عشان تزيد الأشواط، مثل لوحة الملعب.', 'Tap a set box to add games, like the court scoreboard.')}</T>
 
-        <Scoreboard teams={names} sets={sets} venue={m.court} status={winner ? 'جاهزة للإرسال' : 'سجّل الأشواط'} onTap={tap} highlightTeam={myTeam} />
+        <Scoreboard teams={names} sets={sets} venue={m.court} status={winner ? tr('جاهزة للإرسال', 'Ready to send') : tr('سجّل الأشواط', 'Enter sets')} onTap={tap} highlightTeam={myTeam} />
 
         <Row style={{ justifyContent: 'space-between' }}>
-          <T variant="small">{winner ? `الفايز: ${names[winner].join(' و ')}` : 'لين يتحدد الفايز من الأشواط'}</T>
+          <T variant="small">{winner ? `${tr('الفايز', 'Winner')}: ${names[winner].join(and())}` : tr('لين يتحدد الفايز من الأشواط', 'The winner is set from the sets')}</T>
           <Pressable onPress={() => setSets(EMPTY)} hitSlop={8}>
-            <T style={{ color: colors.led, fontFamily: fonts.bold, textDecorationLine: 'underline' }}>صفّر</T>
+            <T style={{ color: colors.led, fontFamily: fonts.bold, textDecorationLine: 'underline' }}>{tr('صفّر', 'Reset')}</T>
           </Pressable>
         </Row>
 
         {change && (
           <Board style={{ gap: space(2) }}>
-            <T style={s.label}>بعد التأكيد يصير مستواك</T>
+            <T style={s.label}>{tr('بعد التأكيد يصير مستواك', 'After confirmation your level will be')}</T>
             <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
               <Led value={ledLevel(change.after)} dot={6} color={change.after >= change.before ? colors.led : colors.danger} />
               <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32, color: change.after >= change.before ? colors.led : colors.danger }}>
                 {ltr(`${change.after >= change.before ? '+' : ''}${(change.after - change.before).toFixed(2)}`)}
               </T>
             </Row>
-            <T style={{ color: colors.inkMuted, fontSize: 12 }}>يتعدل مستوى الأربعة بعد ما يأكد لاعب من الفريق الثاني.</T>
+            <T style={{ color: colors.inkMuted, fontSize: 12 }}>{tr('يتعدل مستوى الأربعة بعد ما يأكد لاعب من الفريق الثاني.', 'All four levels update once a player from the other team confirms.')}</T>
           </Board>
         )}
 
-        <Button title={busy ? '...' : 'أرسل النتيجة'} icon="check" disabled={!winner || busy} onPress={submit} />
+        <Button title={busy ? '...' : tr('أرسل النتيجة', 'Send result')} icon="check" disabled={!winner || busy} onPress={submit} />
       </Screen>
     </View>
   );

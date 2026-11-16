@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '@/constants/theme';
 import { Icon, IconName } from './ui';
+import { tr } from '@/lib/i18n';
 
 const meta: Record<string, { title: string; icon: IconName }> = {
   index: { title: 'PLAY', icon: 'home' },
@@ -33,7 +34,7 @@ export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
     <View style={s.bar}>
       <View style={[s.glass, { paddingBottom: Math.max(insets.bottom, 8) }]}>
       {items.slice(0, mid)}
-      <Pressable accessibilityRole="button" accessibilityLabel="افتح مباراة" onPress={() => router.push('/create-match')} style={s.plus}>
+      <Pressable accessibilityRole="button" accessibilityLabel={tr('افتح مباراة', 'Open a match')} onPress={() => router.push('/create-match')} style={s.plus}>
         <Icon name="plus" size={26} color="#FFFFFF" />
       </Pressable>
       {items.slice(mid)}

@@ -4,6 +4,7 @@ import { fmtNum } from '@/lib/format';
 import { levelLabel, MAX_LEVEL } from '@/lib/level';
 import { Led, ledLevel } from './Led';
 import { Board, Row, scaleStart, T } from './ui';
+import { tr } from '@/lib/i18n';
 
 /** Scoreboard readout of the 0–7 level with a segment per whole level. */
 export function LevelMeter({ level }: { level: number }) {
@@ -11,7 +12,7 @@ export function LevelMeter({ level }: { level: number }) {
     <Board style={{ gap: 12 }}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <View style={{ gap: 6 }}>
-          <T variant="label" style={{ color: colors.inkMuted }}>مستواك من 7</T>
+          <T variant="label" style={{ color: colors.inkMuted }}>{tr('مستواك من 7', 'Your level out of 7')}</T>
           <Led value={ledLevel(level)} dot={6} />
         </View>
         <T style={s.tag}>{levelLabel(level)}</T>
@@ -21,7 +22,7 @@ export function LevelMeter({ level }: { level: number }) {
           const fill = Math.max(0, Math.min(1, level - i));
           return (
             <View key={i} style={s.seg}>
-              <View style={[s.segFill, { [scaleStart]: 0, width: `${fill * 100}%` }]} />
+              <View style={[s.segFill, { [scaleStart()]: 0, width: `${fill * 100}%` }]} />
             </View>
           );
         })}

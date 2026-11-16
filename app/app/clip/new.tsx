@@ -6,6 +6,7 @@ import { Button, Icon, Input, Row, Screen, T } from '@/components/ui';
 import { colors, radius, space } from '@/constants/theme';
 import { MAX_CAPTION } from '@/lib/clips';
 import { useStore } from '@/lib/store';
+import { tr } from '@/lib/i18n';
 
 /** Preview the picked clip, add a caption, post it to your profile. */
 export default function NewClip() {
@@ -32,17 +33,17 @@ export default function NewClip() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <T variant="h1">لقطة جديدة</T>
-          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
+          <T variant="h1">{tr('لقطة جديدة', 'New clip')}</T>
+          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel={tr('إغلاق', 'Close')}>
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
         <View style={s.video}>
           <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="contain" nativeControls />
         </View>
-        <Input value={caption} onChangeText={setCaption} placeholder="وش صار في اللقطة؟ (اختياري)" maxLength={MAX_CAPTION} style={{ fontSize: 16 }} />
-        <T variant="small">تظهر في ملفك لكل لاعبين Rally.</T>
-        <Button title={busy ? 'جاري الرفع...' : 'انشر اللقطة'} icon="video" disabled={busy || !uri} onPress={post} />
+        <Input value={caption} onChangeText={setCaption} placeholder={tr('وش صار في اللقطة؟ (اختياري)', 'What happened in this clip? (optional)')} maxLength={MAX_CAPTION} style={{ fontSize: 16 }} />
+        <T variant="small">{tr('تظهر في ملفك لكل لاعبين Rally.', 'Shows on your profile to all Rally players.')}</T>
+        <Button title={busy ? tr('جاري الرفع...', 'Uploading...') : tr('انشر اللقطة', 'Post clip')} icon="video" disabled={busy || !uri} onPress={post} />
       </Screen>
     </View>
   );

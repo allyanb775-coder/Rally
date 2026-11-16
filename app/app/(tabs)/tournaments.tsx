@@ -9,6 +9,7 @@ import { colors, fonts, space } from '@/constants/theme';
 import { fmtNum, fmtRange, ltr } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { tournamentMessage, waLink } from '@/lib/whatsapp';
+import { locale, tr } from '@/lib/i18n';
 
 export default function Tournaments() {
   const { tournaments, myEntries, me } = useStore();
@@ -20,15 +21,15 @@ export default function Tournaments() {
           <View style={s.heroText}>
             <T style={s.kicker}>RALLY · {new Date().getFullYear()}</T>
             <T style={s.heroTitle}>EVENTS</T>
-            <T style={s.heroSub}>بطولات دور 16 وليالي أمريكانو</T>
+            <T style={s.heroSub}>{tr('بطولات دور 16 وليالي أمريكانو', 'Round-of-16 tournaments and Americano nights')}</T>
           </View>
         </Photo>
       </View>
 
       {tournaments.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
-          <T variant="h3">ما فيه بطولات قادمة حالياً</T>
-          <T variant="muted">أول ما تنزل بطولة بتلقاها هنا.</T>
+          <T variant="h3">{tr('ما فيه بطولات قادمة حالياً', 'No upcoming tournaments')}</T>
+          <T variant="muted">{tr('أول ما تنزل بطولة بتلقاها هنا.', 'New tournaments will show up here.')}</T>
         </Lined>
       )}
 
@@ -42,13 +43,13 @@ export default function Tournaments() {
             <Board style={s.board}>
               <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <View style={{ gap: 6 }}>
-                  <T style={s.lbl}>{d.toLocaleDateString('ar-SA-u-nu-latn', { weekday: 'long', month: 'long' })}</T>
+                  <T style={s.lbl}>{d.toLocaleDateString(locale(), { weekday: 'long', month: 'long' })}</T>
                   <Row style={{ gap: 14, alignItems: 'flex-end' }}>
                     <Led value={ledNum(d.getDate())} dot={6} />
                     <Led value={ledTime(t.startsAt)} dot={3} color={colors.text} off={false} />
                   </Row>
                 </View>
-                <T style={s.format}>{t.format === 'americano' ? 'أمريكانو' : 'دور 16'}</T>
+                <T style={s.format}>{t.format === 'americano' ? tr('أمريكانو', 'Americano') : tr('دور 16', 'Round of 16')}</T>
               </Row>
               <T style={s.name}>{t.name}</T>
               <T style={s.venue}>{t.venue}</T>
@@ -56,21 +57,21 @@ export default function Tournaments() {
 
             <Glass bolts={false} style={s.body}>
               <Row style={{ justifyContent: 'space-between' }}>
-                <Info label="المستوى" value={fmtRange(t.minLevel, t.maxLevel)} />
-                <Info label="الرسوم" value={`${fmtNum(t.fee)} ر.س`} />
-                <Info label="المقاعد" value={ltr(`${fmtNum(t.registered)}/${fmtNum(t.capacity)}`)} />
+                <Info label={tr('المستوى', 'Level')} value={fmtRange(t.minLevel, t.maxLevel)} />
+                <Info label={tr('الرسوم', 'Fee')} value={tr(`${fmtNum(t.fee)} ر.س`, `SAR ${fmtNum(t.fee)}`)} />
+                <Info label={tr('المقاعد', 'Spots')} value={ltr(`${fmtNum(t.registered)}/${fmtNum(t.capacity)}`)} />
               </Row>
               <Bar value={t.registered / t.capacity} />
-              <T variant="small">{full ? 'اكتملت المقاعد' : `باقي ${fmtNum(t.capacity - t.registered)} مقاعد`}</T>
+              <T variant="small">{full ? tr('اكتملت المقاعد', 'Fully booked') : tr(`باقي ${fmtNum(t.capacity - t.registered)} مقاعد`, `${fmtNum(t.capacity - t.registered)} spots left`)}</T>
               <Button
-                title={entry ? (entry.status === 'confirmed' ? 'مسجّل ✓' : 'بانتظار تأكيد الدفع') : full ? 'مكتملة' : !eligible ? 'خارج مستواك' : 'سجّل وادفع'}
+                title={entry ? (entry.status === 'confirmed' ? tr('مسجّل ✓', 'Registered ✓') : tr('بانتظار تأكيد الدفع', 'Awaiting payment confirmation')) : full ? tr('مكتملة', 'Full') : !eligible ? tr('خارج مستواك', 'Outside your level') : tr('سجّل وادفع', 'Register & pay')}
                 variant={entry ? 'dark' : 'primary'}
                 disabled={(!entry && (full || !eligible))}
                 onPress={() => router.push({ pathname: '/pay/[id]', params: { id: t.id } })}
               />
               {!!waLink(t.whatsapp, '') && (
                 <Button
-                  title="تواصل مع المنظّم"
+                  title={tr('تواصل مع المنظّم', 'Contact organizer')}
                   icon="chat"
                   variant="ghost"
                   onPress={() => Linking.openURL(waLink(t.whatsapp, tournamentMessage(t, me))!).catch(() => {})}
@@ -83,10 +84,10 @@ export default function Tournaments() {
 
       <Lined>
         <Row style={{ justifyContent: 'space-between' }}>
-          <T variant="h3">الترتيب الشهري</T>
-          <T style={s.soon}>قريباً</T>
+          <T variant="h3">{tr('الترتيب الشهري', 'Monthly ranking')}</T>
+          <T style={s.soon}>{tr('قريباً', 'Soon')}</T>
         </Row>
-        <T variant="muted">يتحدث بعد كل مباراة تنافسية، وأعلى 3 كل شهر يدخلون البطولة مجاناً.</T>
+        <T variant="muted">{tr('يتحدث بعد كل مباراة تنافسية، وأعلى 3 كل شهر يدخلون البطولة مجاناً.', 'Updates after every competitive match. The top 3 each month enter the tournament for free.')}</T>
       </Lined>
     </Screen>
   );

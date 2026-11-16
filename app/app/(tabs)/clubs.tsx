@@ -6,6 +6,8 @@ import { Button, Chip, Heading, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { useStore } from '@/lib/store';
 import { CommunityKind } from '@/lib/types';
+import { tr } from '@/lib/i18n';
+import { cityLabel } from '@/lib/cities';
 
 /** Communities, courts and academies anyone can add; yours first. */
 export default function Clubs() {
@@ -19,21 +21,21 @@ export default function Clubs() {
 
   return (
     <Screen tabBar>
-      <Heading en="Clubs" ar="مجتمعات وملاعب وأكاديميات البادل" size="xl" />
-      <Button title="أضف مجتمعك أو ملعبك" icon="plus" onPress={() => router.push('/club/new')} />
+      <Heading en="Clubs" ar={tr('مجتمعات وملاعب وأكاديميات البادل', 'Padel communities, courts and academies')} size="xl" />
+      <Button title={tr('أضف مجتمعك أو ملعبك', 'Add your community or court')} icon="plus" onPress={() => router.push('/club/new')} />
 
       <Row style={{ flexWrap: 'wrap' }}>
-        <Chip label="الكل" active={!kind} onPress={() => setKind(null)} />
+        <Chip label={tr('الكل', 'All')} active={!kind} onPress={() => setKind(null)} />
         {(Object.keys(KIND_LABEL) as CommunityKind[]).map((k) => (
           <Chip key={k} label={KIND_LABEL[k]} active={kind === k} onPress={() => setKind(kind === k ? null : k)} />
         ))}
-        <Chip label="بمدينتي" active={cityOnly} onPress={() => setCityOnly(!cityOnly)} />
+        <Chip label={tr('بمدينتي', 'My city')} active={cityOnly} onPress={() => setCityOnly(!cityOnly)} />
       </Row>
 
       {list.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
-          <T variant="h3">ما فيه شي هنا للحين</T>
-          <T variant="muted">كن أول واحد يضيف مجتمعه.</T>
+          <T variant="h3">{tr('ما فيه شي هنا للحين', 'Nothing here yet')}</T>
+          <T variant="muted">{tr('كن أول واحد يضيف مجتمعه.', 'Be the first to add your community.')}</T>
         </Lined>
       )}
 
@@ -46,7 +48,7 @@ export default function Clubs() {
               <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
                 <T variant="h3" numberOfLines={1}>{c.name}</T>
                 <T variant="small">
-                  {KIND_LABEL[c.kind]} · {c.city} · {c.memberIds.length} عضو
+                  {KIND_LABEL[c.kind]} · {cityLabel(c.city)} · {c.memberIds.length} {tr('عضو', c.memberIds.length === 1 ? 'member' : 'members')}
                 </T>
                 {!!c.description && (
                   <T variant="small" numberOfLines={1} style={{ color: colors.muted }}>

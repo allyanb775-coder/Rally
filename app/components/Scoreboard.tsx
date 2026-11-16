@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { and, tr } from '@/lib/i18n';
 import { colors, fonts } from '@/constants/theme';
 import { SetScore, winnerFromSets } from '@/lib/result';
 import { Team } from '@/lib/types';
@@ -75,7 +76,7 @@ export function Scoreboard({
                   key={i}
                   onPress={() => onTap(i, team)}
                   accessibilityRole="button"
-                  accessibilityLabel={`الشوط ${i + 1}، ${teams[team].join(' و ')}: ${v ?? 'فاضي'}`}
+                  accessibilityLabel={`${tr('الشوط', 'Set')} ${i + 1}, ${teams[team].join(and())}: ${v ?? tr('فاضي', 'empty')}`}
                   style={({ pressed }) => pressed && { transform: [{ scale: 0.94 }] }}>
                   {box}
                 </Pressable>

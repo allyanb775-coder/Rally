@@ -8,6 +8,8 @@ import { Match, MATCH_SIZE } from '@/lib/types';
 import { Glass } from './Glass';
 import { Led, ledTime } from './Led';
 import { LevelBadge, Row, T } from './ui';
+import { tr } from '@/lib/i18n';
+import { cityLabel } from '@/lib/cities';
 
 /** One fixture on the schedule board: LED time block, venue, and the four spots. */
 export function MatchCard({ match }: { match: Match; highlight?: boolean; compact?: boolean }) {
@@ -18,7 +20,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
   let resultNote: string | null = null;
   if (needsResult(match) && match.playerIds.includes(me.id)) {
     const r = match.result;
-    resultNote = !r ? 'سجّل النتيجة' : teamOf(match, r.reportedBy) === teamOf(match, me.id) ? 'بانتظار تأكيدهم' : 'أكّد النتيجة';
+    resultNote = !r ? tr('سجّل النتيجة', 'Enter result') : teamOf(match, r.reportedBy) === teamOf(match, me.id) ? tr('بانتظار تأكيدهم', 'Awaiting their confirmation') : tr('أكّد النتيجة', 'Confirm result');
   }
   return (
     <Pressable
@@ -35,7 +37,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
           {match.kind === 'competitive' && <T style={s.comp}>RANKED</T>}
         </Row>
         <T variant="small">
-          {community ? `${community.name} · ` : ''}{match.city} · المستوى {fmtRange(match.minLevel, match.maxLevel)}
+          {community ? `${community.name} · ` : ''}{cityLabel(match.city)} · {tr('المستوى', 'Level')} {fmtRange(match.minLevel, match.maxLevel)}
         </T>
         <Row style={{ justifyContent: 'space-between', marginTop: 2 }}>
           <Row style={{ gap: 5 }}>
@@ -46,10 +48,10 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
             })}
           </Row>
           {resultNote ? (
-            <T style={[s.missing, { color: resultNote === 'بانتظار تأكيدهم' ? colors.muted : colors.led }]}>{resultNote} ←</T>
+            <T style={[s.missing, { color: resultNote === tr('بانتظار تأكيدهم', 'Awaiting their confirmation') ? colors.muted : colors.led }]}>{resultNote} {tr('←', '→')}</T>
           ) : (
             <T style={[s.missing, missing === 0 && { color: colors.muted }]}>
-              {missing === 0 ? 'مكتملة' : missing === 1 ? 'ناقص لاعب' : `ناقص ${fmtNum(missing)}`}
+              {missing === 0 ? tr('مكتملة', 'Full') : missing === 1 ? tr('ناقص لاعب', 'Need 1 player') : tr(`ناقص ${fmtNum(missing)}`, `Need ${fmtNum(missing)}`)}
             </T>
           )}
         </Row>
@@ -59,7 +61,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
   );
 }
 
-export function PlayerRow({ id, host, hostLabel = 'صاحب المباراة' }: { id: string; host?: boolean; hostLabel?: string }) {
+export function PlayerRow({ id, host, hostLabel = tr('صاحب المباراة', 'Host') }: { id: string; host?: boolean; hostLabel?: string }) {
   const { players, me } = useStore();
   const p = players[id];
   if (!p) return null;
@@ -71,7 +73,7 @@ export function PlayerRow({ id, host, hostLabel = 'صاحب المباراة' }:
       </View>
       <View style={{ flex: 1 }}>
         <T variant="h3">{p.name}</T>
-        <T variant="small">{host ? hostLabel : `${fmtNum(p.matchesPlayed)} مباراة`}</T>
+        <T variant="small">{host ? hostLabel : `${fmtNum(p.matchesPlayed)} ${tr('مباراة', 'matches')}`}</T>
       </View>
       <LevelBadge level={p.level} />
     </Row>

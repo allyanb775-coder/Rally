@@ -8,6 +8,7 @@ import { colors, fonts, radius, space } from '@/constants/theme';
 import { formatIban, isSaudiIban, normalizeIban } from '@/lib/iban';
 import { useStore } from '@/lib/store';
 import { tournamentMessage, waLink } from '@/lib/whatsapp';
+import { tr } from '@/lib/i18n';
 
 /** Pay a tournament fee by bank transfer: copy the organizer's IBAN, transfer, upload the receipt. */
 export default function Pay() {
@@ -22,7 +23,7 @@ export default function Pay() {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
-        <T variant="h2">البطولة غير موجودة.</T>
+        <T variant="h2">{tr('البطولة غير موجودة.', 'Tournament not found.')}</T>
       </Screen>
     );
   }
@@ -57,70 +58,70 @@ export default function Pay() {
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
           <Heading en="Payment" ar={t.name} size="xl" />
-          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
+          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel={tr('إغلاق', 'Close')}>
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
 
         <Lined style={{ alignItems: 'center', paddingVertical: space(5) }}>
-          <T variant="small">رسوم التسجيل</T>
+          <T variant="small">{tr('رسوم التسجيل', 'Entry fee')}</T>
           <T style={s.fee}>{`⁦${t.fee} SAR⁩`}</T>
         </Lined>
 
         {entry ? (
           <Lined style={{ gap: space(2) }}>
-            <T variant="h3">{entry.status === 'confirmed' ? 'تم تأكيد دفعك ✓' : 'وصل إيصالك'}</T>
+            <T variant="h3">{entry.status === 'confirmed' ? tr('تم تأكيد دفعك ✓', 'Payment confirmed ✓') : tr('وصل إيصالك', 'Receipt received')}</T>
             <T variant="muted">
-              {entry.status === 'confirmed' ? 'مكانك في البطولة ثابت.' : 'بانتظار المنظّم يأكد التحويل، وبعدها يثبت مكانك في البطولة.'}
+              {entry.status === 'confirmed' ? tr('مكانك في البطولة ثابت.', 'Your spot is confirmed.') : tr('بانتظار المنظّم يأكد التحويل، وبعدها يثبت مكانك في البطولة.', 'Waiting for the organizer to confirm the transfer, then your spot is confirmed.')}
             </T>
           </Lined>
         ) : (
           <>
-            <T variant="label">١. حوّل الرسوم على هذا الآيبان</T>
+            <T variant="label">{tr('١. حوّل الرسوم على هذا الآيبان', '1. Transfer the fee to this IBAN')}</T>
             {hasIban ? (
               <Lined style={{ gap: space(2) }}>
                 {!!t.ibanName && (
                   <>
-                    <T variant="small">اسم صاحب الحساب</T>
+                    <T variant="small">{tr('اسم صاحب الحساب', 'Account holder')}</T>
                     <T variant="h3">{t.ibanName}</T>
                   </>
                 )}
                 <T variant="small" style={{ marginTop: space(1) }}>
-                  الآيبان
+                  {tr('الآيبان', 'IBAN')}
                 </T>
                 <T selectable style={s.iban}>
                   {formatIban(t.iban!)}
                 </T>
-                <Button title={copied ? 'تم النسخ ✓' : 'انسخ الآيبان'} icon={copied ? 'check' : undefined} variant="ghost" onPress={copy} />
+                <Button title={copied ? tr('تم النسخ ✓', 'Copied ✓') : tr('انسخ الآيبان', 'Copy IBAN')} icon={copied ? 'check' : undefined} variant="ghost" onPress={copy} />
               </Lined>
             ) : (
               <Lined>
-                <T variant="muted">المنظّم ما أضاف آيبان للحين. تواصل معه عشان تعرف طريقة الدفع.</T>
+                <T variant="muted">{tr('المنظّم ما أضاف آيبان للحين. تواصل معه عشان تعرف طريقة الدفع.', "The organizer hasn't added an IBAN yet. Contact them to ask how to pay.")}</T>
               </Lined>
             )}
 
-            <T variant="label">٢. ارفع إيصال التحويل</T>
-            <Pressable onPress={pick} accessibilityRole="button" accessibilityLabel="ارفع الإيصال">
+            <T variant="label">{tr('٢. ارفع إيصال التحويل', '2. Upload the transfer receipt')}</T>
+            <Pressable onPress={pick} accessibilityRole="button" accessibilityLabel={tr('ارفع الإيصال', 'Upload receipt')}>
               <View style={[s.drop, receipt && { borderStyle: 'solid', borderColor: colors.blue }]}>
                 {receipt ? (
                   <Image source={{ uri: receipt.uri }} style={s.preview} resizeMode="contain" />
                 ) : (
                   <View style={{ alignItems: 'center', gap: 6 }}>
                     <Icon name="plus" size={28} color={colors.muted} />
-                    <T variant="muted">صورة أو لقطة شاشة من تطبيق البنك</T>
+                    <T variant="muted">{tr('صورة أو لقطة شاشة من تطبيق البنك', 'A photo or screenshot from your bank app')}</T>
                   </View>
                 )}
               </View>
             </Pressable>
-            {receipt && <T variant="small" style={{ textAlign: 'center' }}>اضغط على الصورة عشان تغيّرها</T>}
-            <T variant="small">الإيصال يشوفه المنظّم بس.</T>
+            {receipt && <T variant="small" style={{ textAlign: 'center' }}>{tr('اضغط على الصورة عشان تغيّرها', 'Tap the image to change it')}</T>}
+            <T variant="small">{tr('الإيصال يشوفه المنظّم بس.', 'Only the organizer can see your receipt.')}</T>
 
-            <Button title={busy ? 'جاري الإرسال...' : 'أرسل الإيصال وسجّل'} icon="check" disabled={!receipt || busy} onPress={send} />
+            <Button title={busy ? tr('جاري الإرسال...', 'Sending...') : tr('أرسل الإيصال وسجّل', 'Send receipt & register')} icon="check" disabled={!receipt || busy} onPress={send} />
           </>
         )}
 
         {contact && (
-          <Button title="تواصل مع المنظّم" icon="chat" variant="ghost" onPress={() => Linking.openURL(contact).catch(() => {})} />
+          <Button title={tr('تواصل مع المنظّم', 'Contact organizer')} icon="chat" variant="ghost" onPress={() => Linking.openURL(contact).catch(() => {})} />
         )}
       </Screen>
     </View>

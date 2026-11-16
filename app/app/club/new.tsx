@@ -5,10 +5,11 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { CommunityLogo, KIND_LABEL } from '@/components/CommunityLogo';
 import { Button, Chip, Heading, Icon, Input, Row, Screen, T } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
-import { CITIES } from '@/lib/cities';
+import { CITIES, cityLabel } from '@/lib/cities';
 import { useStore } from '@/lib/store';
 import { waLink } from '@/lib/whatsapp';
 import { CommunityKind } from '@/lib/types';
+import { tr } from '@/lib/i18n';
 
 /** Add a community, court or academy: name, type, city, a line about it, and a logo. */
 export default function NewClub() {
@@ -38,49 +39,49 @@ export default function NewClub() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Heading en="New club" ar="أضف مجتمعك أو ملعبك" size="xl" />
-          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
+          <Heading en="New club" ar={tr('أضف مجتمعك أو ملعبك', 'Add your community or court')} size="xl" />
+          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel={tr('إغلاق', 'Close')}>
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
 
-        <Pressable onPress={pickLogo} style={{ alignSelf: 'center', alignItems: 'center', gap: 8 }} accessibilityRole="button" accessibilityLabel="اختر الشعار">
+        <Pressable onPress={pickLogo} style={{ alignSelf: 'center', alignItems: 'center', gap: 8 }} accessibilityRole="button" accessibilityLabel={tr('اختر الشعار', 'Choose logo')}>
           <CommunityLogo community={{ name: name || '+', logo: logo?.uri }} size={112} />
-          <T style={{ color: colors.blue, fontSize: 13 }}>{logo ? 'غيّر الشعار' : 'أضف شعار (اختياري)'}</T>
+          <T style={{ color: colors.blue, fontSize: 13 }}>{logo ? tr('غيّر الشعار', 'Change logo') : tr('أضف شعار (اختياري)', 'Add a logo (optional)')}</T>
         </Pressable>
 
-        <T variant="label">الاسم</T>
-        <Input value={name} onChangeText={setName} placeholder="مثلاً: The Court Club" maxLength={40} />
+        <T variant="label">{tr('الاسم', 'Name')}</T>
+        <Input value={name} onChangeText={setName} placeholder={tr('مثلاً: The Court Club', 'e.g. The Court Club')} maxLength={40} />
 
-        <T variant="label">النوع</T>
+        <T variant="label">{tr('النوع', 'Type')}</T>
         <Row style={{ flexWrap: 'wrap' }}>
           {(Object.keys(KIND_LABEL) as CommunityKind[]).map((k) => (
             <Chip key={k} label={KIND_LABEL[k]} active={kind === k} onPress={() => setKind(k)} />
           ))}
         </Row>
 
-        <T variant="label">المدينة</T>
+        <T variant="label">{tr('المدينة', 'City')}</T>
         <Row style={{ flexWrap: 'wrap' }}>
           {CITIES.map((c) => (
-            <Chip key={c} label={c} active={city === c} onPress={() => setCity(c)} />
+            <Chip key={c} label={cityLabel(c)} active={city === c} onPress={() => setCity(c)} />
           ))}
         </Row>
 
-        <T variant="label">نبذة</T>
+        <T variant="label">{tr('نبذة', 'About')}</T>
         <Input
           value={description}
           onChangeText={setDescription}
-          placeholder="وش تسوون؟ مباريات أسبوعية، بطولات، تدريب..."
+          placeholder={tr('وش تسوون؟ مباريات أسبوعية، بطولات، تدريب...', 'What do you do? Weekly matches, tournaments, coaching...')}
           maxLength={200}
           multiline
           style={{ height: 100, fontSize: 15, textAlignVertical: 'top', paddingTop: 14 }}
         />
 
-        <T variant="label">رقم واتساب للتواصل (اختياري)</T>
+        <T variant="label">{tr('رقم واتساب للتواصل (اختياري)', 'WhatsApp number (optional)')}</T>
         <Input value={whatsapp} onChangeText={setWhatsapp} placeholder="05XXXXXXXX" keyboardType="phone-pad" />
-        {!!whatsapp && !waLink(whatsapp, '') && <T style={{ color: colors.danger, fontSize: 12 }}>اكتب رقم جوال سعودي صحيح</T>}
+        {!!whatsapp && !waLink(whatsapp, '') && <T style={{ color: colors.danger, fontSize: 12 }}>{tr('اكتب رقم جوال سعودي صحيح', 'Enter a valid Saudi mobile number')}</T>}
 
-        <Button title={busy ? '...' : 'أضف'} icon="check" disabled={busy || name.trim().length < 2 || (!!whatsapp && !waLink(whatsapp, ''))} onPress={save} />
+        <Button title={busy ? '...' : tr('أضف', 'Add')} icon="check" disabled={busy || name.trim().length < 2 || (!!whatsapp && !waLink(whatsapp, ''))} onPress={save} />
       </Screen>
     </View>
   );

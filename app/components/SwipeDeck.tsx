@@ -8,6 +8,8 @@ import { Court } from './Court';
 import { Glass } from './Glass';
 import { Led, ledTime } from './Led';
 import { Icon, Row, T } from './ui';
+import { tr } from '@/lib/i18n';
+import { cityLabel } from '@/lib/cities';
 
 const THRESHOLD = 110;
 
@@ -74,43 +76,43 @@ export function SwipeDeck({ matches, onJoin, onOpen, empty }: { matches: Match[]
                 <T variant="label">{fmtDay(top.startsAt)}</T>
                 <Led value={ledTime(top.startsAt)} dot={6} />
               </View>
-              <T style={[s.kind, top.kind === 'competitive' && s.kindComp]}>{top.kind === 'competitive' ? 'تنافسية' : 'ودية'}</T>
+              <T style={[s.kind, top.kind === 'competitive' && s.kindComp]}>{top.kind === 'competitive' ? tr('تنافسية', 'Competitive') : tr('ودية', 'Friendly')}</T>
             </Row>
             <Court playerIds={top.playerIds} />
             <Row style={{ justifyContent: 'space-between' }}>
               <View style={{ flexShrink: 1 }}>
                 <T variant="h2" numberOfLines={1}>{top.court}</T>
-                <T variant="small">{top.city}</T>
+                <T variant="small">{cityLabel(top.city)}</T>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
                 <T style={{ fontFamily: fonts.bold, fontSize: 17 }}>
                   {fmtRange(top.minLevel, top.maxLevel)}
                 </T>
-                <T variant="small">المستوى</T>
+                <T variant="small">{tr('المستوى', 'Level')}</T>
               </View>
             </Row>
           </Pressable>
           <BallHit play={hit} />
           </Glass>
           <Animated.View style={[s.stamp, s.stampJoin, { opacity: joinOpacity }]}>
-            <T style={[s.stampText, { color: colors.led }]}>انضم</T>
+            <T style={[s.stampText, { color: colors.led }]}>{tr('انضم', 'Join')}</T>
           </Animated.View>
           <Animated.View style={[s.stamp, s.stampSkip, { opacity: skipOpacity }]}>
-            <T style={s.stampText}>التالي</T>
+            <T style={s.stampText}>{tr('التالي', 'Next')}</T>
           </Animated.View>
         </Animated.View>
       </View>
 
       <Row style={{ justifyContent: 'center', gap: space(6) }}>
-        <Pressable accessibilityLabel="التالي" onPress={() => fling(-1)} style={[s.round, s.no]}>
+        <Pressable accessibilityLabel={tr('التالي', 'Next')} onPress={() => fling(-1)} style={[s.round, s.no]}>
           <Icon name="close" size={28} color={colors.text} />
         </Pressable>
-        <Pressable accessibilityLabel="انضم" onPress={() => fling(1)} style={[s.round, s.yes]}>
+        <Pressable accessibilityLabel={tr('انضم', 'Join')} onPress={() => fling(1)} style={[s.round, s.yes]}>
           <Icon name="check" size={34} color={colors.ink} />
         </Pressable>
       </Row>
       <T variant="small" style={{ textAlign: 'center' }}>
-        اسحب يمين تنضم · يسار للي بعدها
+        {tr('اسحب يمين تنضم · يسار للي بعدها', 'Swipe right to join · left to skip')}
       </T>
     </View>
   );

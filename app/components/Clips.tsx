@@ -8,6 +8,7 @@ import { notify } from '@/lib/notify';
 import { Highlight } from '@/lib/types';
 import { Glass } from './Glass';
 import { Heading, Icon, Row, T } from './ui';
+import { tr } from '@/lib/i18n';
 
 /** Opens the phone's videos; on a valid pick, goes to the post screen. */
 export async function pickClip() {
@@ -33,13 +34,13 @@ export function ClipGrid({ clips, mine }: { clips: Highlight[]; mine?: boolean }
   return (
     <View style={s.grid}>
       {mine && (
-        <Pressable onPress={pickClip} style={s.cell} accessibilityRole="button" accessibilityLabel="أضف لقطة">
+        <Pressable onPress={pickClip} style={s.cell} accessibilityRole="button" accessibilityLabel={tr('أضف لقطة', 'Add clip')}>
           <Glass style={s.add}>
             <View style={s.plus}>
               <Icon name="plus" size={26} color={colors.ink} />
             </View>
-            <T style={s.addText}>أضف لقطة</T>
-            <T style={s.addHint}>حتى {MAX_CLIP_SECONDS} ثانية</T>
+            <T style={s.addText}>{tr('أضف لقطة', 'Add clip')}</T>
+            <T style={s.addHint}>{tr(`حتى ${MAX_CLIP_SECONDS} ثانية`, `Up to ${MAX_CLIP_SECONDS}s`)}</T>
           </Glass>
         </Pressable>
       )}
@@ -59,7 +60,7 @@ export function ClipGrid({ clips, mine }: { clips: Highlight[]; mine?: boolean }
           </View>
         </Pressable>
       ))}
-      {!mine && clips.length === 0 && <T variant="muted">ما نزّل لقطات للحين.</T>}
+      {!mine && clips.length === 0 && <T variant="muted">{tr('ما نزّل لقطات للحين.', 'No clips yet.')}</T>}
     </View>
   );
 }
@@ -68,8 +69,8 @@ export function ClipGrid({ clips, mine }: { clips: Highlight[]; mine?: boolean }
 export function ClipsHeader({ count }: { count: number }) {
   return (
     <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end', marginTop: space(3) }}>
-      <Heading en="Highlights" ar="لقطات اللعب" />
-      <T variant="small">{count} لقطة</T>
+      <Heading en="Highlights" ar={tr('لقطات اللعب', 'Gameplay clips')} />
+      <T variant="small">{count} {tr('لقطة', count === 1 ? 'clip' : 'clips')}</T>
     </Row>
   );
 }

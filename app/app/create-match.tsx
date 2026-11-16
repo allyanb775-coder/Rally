@@ -7,6 +7,8 @@ import { fmtDay, fmtLevel, fmtRange, fmtTime } from '@/lib/format';
 import { LEVEL_WINDOW, matchRange, MAX_LEVEL } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MatchKind } from '@/lib/types';
+import { tr } from '@/lib/i18n';
+import { cityLabel } from '@/lib/cities';
 
 /** Next start times on the hour, starting two hours from now, 4pm–1am only (when courts are busy). */
 function nextSlots(now = new Date()) {
@@ -47,16 +49,16 @@ export default function CreateMatch() {
       <Stack.Screen options={{ headerShown: false }} />
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Heading en="New match" ar="افتح مباراة" size="xl" />
-          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel="إغلاق">
+          <Heading en="New match" ar={tr('افتح مباراة', 'Open a match')} size="xl" />
+          <Pressable onPress={() => router.back()} style={s.close} accessibilityLabel={tr('إغلاق', 'Close')}>
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
 
-        {community && <T style={{ color: colors.blue, fontFamily: fonts.bold }}>مباراة ضمن {community.name}</T>}
+        {community && <T style={{ color: colors.blue, fontFamily: fonts.bold }}>{tr(`مباراة ضمن ${community.name}`, `${community.name} match`)}</T>}
 
-        <T variant="label">الملعب</T>
-        {courts.length === 0 && <T variant="muted">ما فيه ملاعب مضافة بعد.</T>}
+        <T variant="label">{tr('الملعب', 'Court')}</T>
+        {courts.length === 0 && <T variant="muted">{tr('ما فيه ملاعب مضافة بعد.', 'No courts added yet.')}</T>}
         <View style={s.grid}>
           {sorted.map((c) => {
             const active = c.id === courtId;
@@ -68,51 +70,51 @@ export default function CreateMatch() {
                 <T variant="h3" numberOfLines={1} style={active ? { color: colors.text } : undefined}>{c.name}</T>
                 <Row style={{ gap: 4 }}>
                   <Icon name="pin" size={11} color={colors.muted} />
-                  <T variant="small">{c.city}</T>
+                  <T variant="small">{cityLabel(c.city)}</T>
                 </Row>
               </Pressable>
             );
           })}
         </View>
 
-        <T variant="label">الوقت</T>
+        <T variant="label">{tr('الوقت', 'Time')}</T>
         <Row style={{ flexWrap: 'wrap' }}>
           {slots.map((d) => (
             <Chip key={d.toISOString()} label={`${fmtDay(d.toISOString())} ${fmtTime(d.toISOString())}`} active={d === slot} onPress={() => setSlot(d)} />
           ))}
         </Row>
 
-        <T variant="label">نوع المباراة</T>
+        <T variant="label">{tr('نوع المباراة', 'Match type')}</T>
         <View style={s.segment}>
           {(['friendly', 'competitive'] as MatchKind[]).map((k) => (
             <Pressable key={k} onPress={() => setKind(k)} style={[s.segItem, kind === k && s.segActive]}>
-              <T style={[s.segText, kind === k && { color: colors.accentInk }]}>{k === 'friendly' ? 'ودية' : 'تنافسية'}</T>
-              <T style={[s.segSub, kind === k && { color: colors.accentInk }]}>{k === 'friendly' ? 'للمتعة' : 'تعدّل المستوى'}</T>
+              <T style={[s.segText, kind === k && { color: colors.accentInk }]}>{k === 'friendly' ? tr('ودية', 'Friendly') : tr('تنافسية', 'Competitive')}</T>
+              <T style={[s.segSub, kind === k && { color: colors.accentInk }]}>{k === 'friendly' ? tr('للمتعة', 'Just for fun') : tr('تعدّل المستوى', 'Affects level')}</T>
             </Pressable>
           ))}
         </View>
 
-        <T variant="label">مين يقدر ينضم؟</T>
+        <T variant="label">{tr('مين يقدر ينضم؟', 'Who can join?')}</T>
         <Board style={{ gap: 10 }}>
         <View style={s.range}>
-          <View style={[s.rangeFill, { [scaleStart]: `${(minLevel / MAX_LEVEL) * 100}%`, width: `${((maxLevel - minLevel) / MAX_LEVEL) * 100}%` }]} />
-          <View style={[s.rangeMe, { [scaleStart]: `${(me.level / MAX_LEVEL) * 100}%`, marginHorizontal: -2 }]} />
+          <View style={[s.rangeFill, { [scaleStart()]: `${(minLevel / MAX_LEVEL) * 100}%`, width: `${((maxLevel - minLevel) / MAX_LEVEL) * 100}%` }]} />
+          <View style={[s.rangeMe, { [scaleStart()]: `${(me.level / MAX_LEVEL) * 100}%`, marginHorizontal: -2 }]} />
         </View>
         <Row style={{ justifyContent: 'space-between' }}>
           <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32 }}>
             {fmtRange(minLevel, maxLevel)}
           </T>
           <T variant="small" style={{ color: colors.inkMuted }}>
-            مستواك ± {fmtLevel(LEVEL_WINDOW)}
+            {tr('مستواك', 'Your level')} ± {fmtLevel(LEVEL_WINDOW)}
           </T>
         </Row>
         <T variant="small" style={{ color: colors.inkMuted }}>
-          في Rally تلعب بس مع ناس بمستواك، عشان تكون المباراة متكافئة.
+          {tr('في Rally تلعب بس مع ناس بمستواك، عشان تكون المباراة متكافئة.', 'On Rally you only play with people at your level, so every match is balanced.')}
         </T>
         </Board>
 
         <View style={{ marginTop: space(2) }}>
-          <Button title={busy ? '...' : 'افتح المباراة'} icon="bolt" disabled={busy || !courtId} onPress={submit} />
+          <Button title={busy ? '...' : tr('افتح المباراة', 'Open match')} icon="bolt" disabled={busy || !courtId} onPress={submit} />
         </View>
       </Screen>
     </View>
