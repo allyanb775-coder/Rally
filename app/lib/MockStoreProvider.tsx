@@ -103,6 +103,10 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       },
       joinCommunity: async (id) =>
         setCommunities((cs) => cs.map((c) => (c.id === id && !c.memberIds.includes(ME_ID) ? { ...c, memberIds: [...c.memberIds, ME_ID] } : c))),
+      setCommunityLink: async (id, link) => {
+        setCommunities((cs) => cs.map((c) => (c.id === id && c.ownerId === ME_ID ? { ...c, link: link ?? undefined } : c)));
+        return true;
+      },
       leaveCommunity: async (id) =>
         setCommunities((cs) => cs.map((c) => (c.id === id && c.ownerId !== ME_ID ? { ...c, memberIds: c.memberIds.filter((m) => m !== ME_ID) } : c))),
       addHighlight: async (clip, caption) => {

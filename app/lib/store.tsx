@@ -16,6 +16,8 @@ export type Store = {
   createCommunity: (c: NewCommunity) => Promise<string | null>;
   joinCommunity: (id: string) => Promise<void>;
   leaveCommunity: (id: string) => Promise<void>;
+  /** Owner sets or clears the club's public link. */
+  setCommunityLink: (id: string, link: string | null) => Promise<boolean>;
   addHighlight: (clip: PickedClip, caption: string) => Promise<boolean>;
   deleteHighlight: (id: string) => Promise<boolean>;
   setMyLevel: (level: number) => Promise<void>;

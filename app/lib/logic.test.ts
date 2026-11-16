@@ -141,3 +141,14 @@ test('Saudi IBAN check and grouping', () => {
   assert.ok(!isSaudiIban('SA0380000000608010167'));
   assert.equal(formatIban('SA0380000000608010167519'), 'SA03 8000 0000 6080 1016 7519');
 });
+
+import { linkHost, normalizeLink } from './link.ts';
+
+test('club links: add https, reject non-web schemes and junk', () => {
+  assert.equal(normalizeLink('instagram.com/thecourtclub'), 'https://instagram.com/thecourtclub');
+  assert.equal(normalizeLink(' https://maps.app.goo.gl/abc '), 'https://maps.app.goo.gl/abc');
+  assert.equal(normalizeLink('javascript:alert(1)'), null);
+  assert.equal(normalizeLink('not a link'), null);
+  assert.equal(normalizeLink('localhost'), null);
+  assert.equal(linkHost('https://www.instagram.com/x'), 'instagram.com');
+});

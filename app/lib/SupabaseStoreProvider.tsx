@@ -46,7 +46,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       .gte('starts_at', since)
       .order('starts_at'),
     sb.from('highlights').select('id,player_id,path,caption,created_at').order('created_at', { ascending: false }).limit(300),
-    sb.from('communities').select('id,name,kind,city,description,logo_path,whatsapp,iban,iban_name,owner_id,community_members(player_id)').order('created_at').limit(500),
+    sb.from('communities').select('id,name,kind,city,description,logo_path,whatsapp,iban,iban_name,link,owner_id,community_members(player_id)').order('created_at').limit(500),
   ]);
   for (const r of [profiles, courts, matches, tournaments, clips, comms]) if (r.error) throw r.error;
 
@@ -120,6 +120,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       whatsapp: c.whatsapp ?? undefined,
       iban: c.iban ?? undefined,
       ibanName: c.iban_name ?? undefined,
+      link: c.link ?? undefined,
       memberIds: c.community_members.map((m: any) => m.player_id),
     })),
     myEntries: Object.fromEntries(
@@ -302,6 +303,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
       joinCommunity: async (id) => {
         await run(() => sb.from('community_members').insert({ community_id: id, player_id: uid }));
       },
+      setCommunityLink: async (id, link) => run(() => sb.from('communities').update({ link }).eq('id', id)),
       leaveCommunity: async (id) => {
         await run(() => sb.from('community_members').delete().match({ community_id: id, player_id: uid }));
       },

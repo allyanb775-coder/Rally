@@ -161,6 +161,8 @@ const icons = {
   users: { ios: 'person.2.fill', android: 'group', web: 'group' },
   play: { ios: 'play.fill', android: 'play_arrow', web: 'play_arrow' },
   chat: { ios: 'message.fill', android: 'chat', web: 'chat' },
+  link: { ios: 'link', android: 'link', web: 'link' },
+  copy: { ios: 'doc.on.doc', android: 'content_copy', web: 'content_copy' },
   trash: { ios: 'trash', android: 'delete', web: 'delete' },
   video: { ios: 'video.fill', android: 'videocam', web: 'videocam' },
 } as const;

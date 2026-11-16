@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Linking, Platform, Pressable, Share, StyleSheet, View } from 'react-native';
 import { CommunityLogo, KIND_LABEL } from '@/components/CommunityLogo';
 import { MatchCard, PlayerRow } from '@/components/MatchCard';
-import { Button, Heading, Icon, Lined, Row, Screen, T } from '@/components/ui';
+import { Button, Heading, Icon, Input, Lined, Row, Screen, T } from '@/components/ui';
+import { linkHost, normalizeLink } from '@/lib/link';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { useStore } from '@/lib/store';
 import { waLink } from '@/lib/whatsapp';
@@ -12,8 +13,11 @@ import { cityLabel } from '@/lib/cities';
 
 export default function Club() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { communities, matches, me, joinCommunity, leaveCommunity } = useStore();
+  const { communities, matches, me, joinCommunity, leaveCommunity, setCommunityLink } = useStore();
   const [busy, setBusy] = useState(false);
+  const [linkDraft, setLinkDraft] = useState(communities.find((x) => x.id === id)?.link ?? '');
+  const [saved, setSaved] = useState(false);
+  const linkBad = !!linkDraft.trim() && !normalizeLink(linkDraft);
   const c = communities.find((x) => x.id === id);
   if (!c) {
     return (
@@ -31,8 +35,21 @@ export default function Club() {
     await fn();
     setBusy(false);
   };
+  const saveLink = async () => {
+    const clean = linkDraft.trim() ? normalizeLink(linkDraft) : null;
+    if (linkDraft.trim() && !clean) return;
+    setBusy(true);
+    const ok = await setCommunityLink(c.id, clean);
+    setBusy(false);
+    if (ok) {
+      setLinkDraft(clean ?? '');
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+  };
   const share = () => {
-    const message = tr(`انضم لـ ${c.name} على Rally 🎾`, `Join ${c.name} on Rally 🎾`);
+    const invite = tr(`انضم لـ ${c.name} على Rally 🎾`, `Join ${c.name} on Rally 🎾`);
+    const message = c.link ? `${invite}\n${c.link}` : invite;
     if (Platform.OS === 'web') (navigator as any).share?.({ text: message });
     else Share.share({ message });
   };
@@ -67,6 +84,34 @@ export default function Club() {
         </Row>
 
         {!!c.description && <T style={{ fontSize: 15, lineHeight: 24 }}>{c.description}</T>}
+
+        {!!c.link && (
+          <Button title={`${tr('افتح الرابط', 'Open link')} · ${linkHost(c.link)}`} icon="link" variant="ghost" onPress={() => Linking.openURL(c.link!).catch(() => {})} />
+        )}
+
+        {owner && (
+          <Lined style={{ gap: space(2) }}>
+            <T variant="h3">{tr('رابط المجتمع أو الملعب', 'Club or court link')}</T>
+            <T variant="small">{tr('حط رابط حسابك في انستقرام، أو موقعك، أو لوكيشن الملعب. يطلع لكل اللاعبين في صفحتك.', 'Add your Instagram, website or the court location. Every player sees it on your page.')}</T>
+            <Input value={linkDraft} onChangeText={setLinkDraft} placeholder="instagram.com/..." autoCapitalize="none" autoCorrect={false} keyboardType="url" style={{ fontSize: 16 }} />
+            {linkBad && <T style={{ color: colors.danger, fontSize: 12 }}>{tr('الرابط مو صحيح', 'That link is not valid')}</T>}
+            <Row>
+              <View style={{ flex: 1 }}>
+                <Button
+                  title={saved ? tr('انحفظ ✓', 'Saved ✓') : tr('احفظ الرابط', 'Save link')}
+                  icon="check"
+                  disabled={busy || linkBad || (normalizeLink(linkDraft) ?? '') === (c.link ?? '')}
+                  onPress={saveLink}
+                />
+              </View>
+              {!!c.link && (
+                <View style={{ flex: 1 }}>
+                  <Button title={tr('انشر الرابط', 'Share link')} icon="share" variant="ghost" onPress={share} />
+                </View>
+              )}
+            </Row>
+          </Lined>
+        )}
 
         {!owner && waLink(c.whatsapp, '') && (
           <Button

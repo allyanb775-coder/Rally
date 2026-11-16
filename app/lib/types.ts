@@ -84,6 +84,7 @@ export type Community = {
   memberIds: string[];
   whatsapp?: string; // contact mobile, optional
   iban?: string; // where paid club matches are transferred, set by the owner
+  link?: string; // Instagram, website or map location the owner shares
   ibanName?: string;
 };
 
