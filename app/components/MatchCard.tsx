@@ -34,7 +34,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
       <View style={{ flex: 1, gap: 4, minWidth: 0 }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <T variant="h3" numberOfLines={1} style={{ flexShrink: 1 }}>{match.court}</T>
-          {match.kind === 'competitive' && <T style={s.comp}>RANKED</T>}
+          {match.kind === 'competitive' && <T style={[s.comp, { flexShrink: 0 }]} numberOfLines={1}>RANKED</T>}
         </Row>
         <T variant="small">
           {community ? `${community.name} · ` : ''}{cityLabel(match.city)} · {tr('المستوى', 'Level')} {fmtRange(match.minLevel, match.maxLevel)}
