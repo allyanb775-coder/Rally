@@ -35,8 +35,8 @@ export default function Clubs() {
       <Heading en="Clubs" ar={tr('مجتمعات وملاعب وأكاديميات البادل', 'Padel communities, courts and academies')} size="xl" />
       <Lined style={{ gap: space(2) }}>
         <T variant="h3">{tr('عندك مجتمع أو ملعب أو أكاديمية؟', 'Run a community, court or academy?')}</T>
-        <T variant="muted">{tr('تواصل معنا على الواتساب ونضيفه لك في Rally.', 'Message us on WhatsApp and we will add it to Rally.')}</T>
-        <Button title={tr('تواصل معنا واتساب', 'Contact us on WhatsApp')} icon="chat" onPress={contactUs} />
+        <T variant="muted">{tr('تواصل معنا ونضيفه لك في Rally.', 'Get in touch and we will add it to Rally.')}</T>
+        <Button title={tr('تواصل معنا', 'Contact us')} icon="chat" onPress={contactUs} />
       </Lined>
 
       <Row style={{ flexWrap: 'wrap' }}>
