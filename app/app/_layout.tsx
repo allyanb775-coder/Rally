@@ -55,6 +55,8 @@ export default function RootLayout() {
           <Stack.Screen name="clip/new" options={{ presentation: 'modal' }} />
           <Stack.Screen name="clip/[id]" options={{ presentation: 'modal' }} />
           <Stack.Screen name="player/[id]" />
+          <Stack.Screen name="club/[id]" />
+          <Stack.Screen name="club/new" options={{ presentation: 'modal' }} />
         </Stack>
         <TeamComplete />
       </ThemeProvider>

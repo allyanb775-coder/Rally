@@ -29,7 +29,7 @@ export default function Home() {
         <Photo source={HIGH_FIVE_HERO.source} aspect={HIGH_FIVE_HERO.aspect} style={{ borderRadius: 0 }}>
           <LinearGradient colors={['rgba(0,0,0,0.35)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.6)', '#000']} locations={[0, 0.25, 0.7, 1]} style={StyleSheet.absoluteFill} />
           <Row style={s.heroBar}>
-            <T style={s.brand}>RALLY · RIYADH</T>
+            <T style={s.brand}>RALLY</T>
             <Pressable onPress={() => router.push('/profile')} style={s.avatar} accessibilityLabel="ملفي">
               <T style={{ fontFamily: fonts.bold, fontSize: 16, lineHeight: 22, color: '#000' }}>{me.name[0]}</T>
             </Pressable>

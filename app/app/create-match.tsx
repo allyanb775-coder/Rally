@@ -1,4 +1,4 @@
-import { router, Stack } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Board, Button, Chip, Heading, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
@@ -22,7 +22,9 @@ function nextSlots(now = new Date()) {
 }
 
 export default function CreateMatch() {
-  const { me, courts, createMatch } = useStore();
+  const { communityId } = useLocalSearchParams<{ communityId?: string }>();
+  const { me, courts, createMatch, communities } = useStore();
+  const community = communities.find((c) => c.id === communityId);
   const slots = useMemo(() => nextSlots(), []);
   const [courtId, setCourtId] = useState(courts.find((c) => c.city === me.city)?.id ?? courts[0]?.id);
   const [slot, setSlot] = useState(slots[0]);
@@ -35,7 +37,7 @@ export default function CreateMatch() {
   const submit = async () => {
     if (!courtId) return;
     setBusy(true);
-    const id = await createMatch({ courtId, startsAt: slot.toISOString(), kind, minLevel, maxLevel });
+    const id = await createMatch({ courtId, startsAt: slot.toISOString(), kind, minLevel, maxLevel, communityId: community?.id });
     setBusy(false);
     if (id) router.replace({ pathname: '/match/[id]', params: { id } });
   };
@@ -50,6 +52,8 @@ export default function CreateMatch() {
             <Icon name="close" size={20} />
           </Pressable>
         </Row>
+
+        {community && <T style={{ color: colors.blue, fontFamily: fonts.bold }}>مباراة ضمن {community.name}</T>}
 
         <T variant="label">الملعب</T>
         {courts.length === 0 && <T variant="muted">ما فيه ملاعب مضافة بعد.</T>}

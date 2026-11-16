@@ -11,7 +11,8 @@ import { LevelBadge, Row, T } from './ui';
 
 /** One fixture on the schedule board: LED time block, venue, and the four spots. */
 export function MatchCard({ match }: { match: Match; highlight?: boolean; compact?: boolean }) {
-  const { players, me } = useStore();
+  const { players, me, communities } = useStore();
+  const community = match.communityId ? communities.find((c) => c.id === match.communityId) : undefined;
   const missing = MATCH_SIZE - match.playerIds.length;
   // After the match: what the result needs from me, if anything.
   let resultNote: string | null = null;
@@ -34,7 +35,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
           {match.kind === 'competitive' && <T style={s.comp}>RANKED</T>}
         </Row>
         <T variant="small">
-          {match.city} · المستوى {fmtRange(match.minLevel, match.maxLevel)}
+          {community ? `${community.name} · ` : ''}{match.city} · المستوى {fmtRange(match.minLevel, match.maxLevel)}
         </T>
         <Row style={{ justifyContent: 'space-between', marginTop: 2 }}>
           <Row style={{ gap: 5 }}>
@@ -58,7 +59,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
   );
 }
 
-export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
+export function PlayerRow({ id, host, hostLabel = 'صاحب المباراة' }: { id: string; host?: boolean; hostLabel?: string }) {
   const { players, me } = useStore();
   const p = players[id];
   if (!p) return null;
@@ -70,7 +71,7 @@ export function PlayerRow({ id, host }: { id: string; host?: boolean }) {
       </View>
       <View style={{ flex: 1 }}>
         <T variant="h3">{p.name}</T>
-        <T variant="small">{host ? 'صاحب المباراة' : `${fmtNum(p.matchesPlayed)} مباراة`}</T>
+        <T variant="small">{host ? hostLabel : `${fmtNum(p.matchesPlayed)} مباراة`}</T>
       </View>
       <LevelBadge level={p.level} />
     </Row>

@@ -34,6 +34,7 @@ export type Match = {
   playerIds: string[]; // up to 4, in join order
   distanceKm: number;
   result?: MatchResult;
+  communityId?: string; // the community the match was opened in, if any
 };
 
 export type TournamentFormat = 'knockout16' | 'americano';
@@ -52,6 +53,22 @@ export type Tournament = {
 };
 
 export const MATCH_SIZE = 4;
+
+export type CommunityKind = 'community' | 'court' | 'academy';
+
+/** A padel community, court or academy anyone can add; players join to follow it. */
+export type Community = {
+  id: string;
+  name: string;
+  kind: CommunityKind;
+  city: string;
+  description: string;
+  logo?: string | number | object; // image URL, or a bundled image
+  ownerId: string;
+  memberIds: string[];
+};
+
+export type NewCommunity = Pick<Community, 'name' | 'kind' | 'city' | 'description'> & { logoUri?: string; logoMime?: string };
 
 /** A short gameplay clip a player posts on their profile. */
 export type Highlight = {

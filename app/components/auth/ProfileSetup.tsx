@@ -2,7 +2,7 @@ import type { Session, SupabaseClient } from '@supabase/supabase-js';
 import { useState } from 'react';
 import { Button, Chip, Input, Row, T } from '@/components/ui';
 import { colors } from '@/constants/theme';
-import { RIYADH_AREAS } from '@/lib/cities';
+import { CITIES } from '@/lib/cities';
 import { SignInShell } from './SignIn';
 
 export function ProfileSetup({ client: sb, session, onDone }: { client: SupabaseClient; session: Session; onDone: () => void }) {
@@ -24,9 +24,9 @@ export function ProfileSetup({ client: sb, session, onDone }: { client: Supabase
     <SignInShell title={'هلا فيك\nفي الملعب'}>
       <T variant="label">اسمك (يظهر للاعبين وعلى بطاقتك)</T>
       <Input value={name} onChangeText={setName} placeholder="الاسم" maxLength={30} autoComplete="name" />
-      <T variant="label">وين تلعب غالباً في الرياض؟</T>
+      <T variant="label">وش مدينتك؟</T>
       <Row style={{ flexWrap: 'wrap' }}>
-        {RIYADH_AREAS.map((c) => (
+        {CITIES.map((c) => (
           <Chip key={c} label={c} active={city === c} onPress={() => setCity(c)} />
         ))}
       </Row>

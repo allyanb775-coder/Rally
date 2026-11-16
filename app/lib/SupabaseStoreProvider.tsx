@@ -7,7 +7,7 @@ import { colors } from '@/constants/theme';
 import { friendlyError, notify } from './notify';
 import { Store, StoreContext } from './store';
 import { clipExtension } from './clips';
-import { Court, Highlight, Match, Player, Tournament } from './types';
+import { Community, Court, Highlight, Match, Player, Tournament } from './types';
 
 type Data = {
   players: Record<string, Player>;
@@ -16,6 +16,7 @@ type Data = {
   tournaments: Tournament[];
   joinedTournaments: string[];
   highlights: Highlight[];
+  communities: Community[];
 };
 
 const num = (v: unknown) => Number(v ?? 0);
@@ -29,12 +30,12 @@ function toResult(r: any): Match['result'] {
 
 async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
   const since = new Date(Date.now() - 3 * 24 * 36e5).toISOString(); // keep recent matches for results
-  const [profiles, courts, matches, tournaments, clips] = await Promise.all([
+  const [profiles, courts, matches, tournaments, clips, comms] = await Promise.all([
     sb.from('profiles').select('id,name,city,level,matches_played,wins'),
     sb.from('courts').select('id,name,city').order('city').order('name'),
     sb
       .from('matches')
-      .select('id,host_id,court_id,starts_at,kind,min_level,max_level,courts(name,city),match_players(player_id,joined_at),match_results(winning_team,score,status,reported_by)')
+      .select('id,host_id,court_id,community_id,starts_at,kind,min_level,max_level,courts(name,city),match_players(player_id,joined_at),match_results(winning_team,score,status,reported_by)')
       .gte('starts_at', since)
       .order('starts_at'),
     sb
@@ -43,8 +44,9 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       .gte('starts_at', since)
       .order('starts_at'),
     sb.from('highlights').select('id,player_id,path,caption,created_at').order('created_at', { ascending: false }).limit(300),
+    sb.from('communities').select('id,name,kind,city,description,logo_path,owner_id,community_members(player_id)').order('created_at').limit(500),
   ]);
-  for (const r of [profiles, courts, matches, tournaments, clips]) if (r.error) throw r.error;
+  for (const r of [profiles, courts, matches, tournaments, clips, comms]) if (r.error) throw r.error;
 
   const players = Object.fromEntries(
     (profiles.data ?? []).map((p: any) => [
@@ -71,6 +73,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
         .map((p: any) => p.player_id),
       distanceKm: 0, // TODO: compute from court coordinates once we have player location
       result: toResult(m.match_results),
+      communityId: m.community_id ?? undefined,
     })),
     tournaments: (tournaments.data ?? []).map((t: any) => ({
       id: t.id,
@@ -90,6 +93,16 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       url: sb.storage.from('highlights').getPublicUrl(h.path).data.publicUrl,
       caption: h.caption,
       createdAt: h.created_at,
+    })),
+    communities: (comms.data ?? []).map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      kind: c.kind,
+      city: c.city,
+      description: c.description,
+      logo: c.logo_path ? sb.storage.from('logos').getPublicUrl(c.logo_path).data.publicUrl : undefined,
+      ownerId: c.owner_id,
+      memberIds: c.community_members.map((m: any) => m.player_id),
     })),
     joinedTournaments: (tournaments.data ?? [])
       .filter((t: any) => t.tournament_entries.some((e: any) => e.player_id === uid))
@@ -173,6 +186,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
             kind: m.kind,
             min_level: m.minLevel,
             max_level: m.maxLevel,
+            community_id: m.communityId ?? null,
           })
           .select('id')
           .single();
@@ -206,6 +220,36 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
         const ok = await run(() => sb.from('highlights').delete().eq('id', id));
         if (ok && row?.path) await sb.storage.from('highlights').remove([row.path]);
         return ok;
+      },
+      createCommunity: async (c) => {
+        let logo_path: string | null = null;
+        if (c.logoUri) {
+          try {
+            const body = await (await fetch(c.logoUri)).arrayBuffer();
+            const path = `${uid}/${Date.now()}.${c.logoMime === 'image/png' ? 'png' : 'jpg'}`;
+            const up = await sb.storage.from('logos').upload(path, body, { contentType: c.logoMime ?? 'image/jpeg' });
+            if (!up.error) logo_path = path;
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+        const { data: row, error } = await sb
+          .from('communities')
+          .insert({ owner_id: uid, name: c.name, kind: c.kind, city: c.city, description: c.description, logo_path })
+          .select('id')
+          .single();
+        if (error || !row) {
+          notify(friendlyError(error));
+          return null;
+        }
+        await run(() => sb.from('community_members').insert({ community_id: row.id, player_id: uid, role: 'owner' }));
+        return row.id as string;
+      },
+      joinCommunity: async (id) => {
+        await run(() => sb.from('community_members').insert({ community_id: id, player_id: uid }));
+      },
+      leaveCommunity: async (id) => {
+        await run(() => sb.from('community_members').delete().match({ community_id: id, player_id: uid }));
       },
       joinTournament: async (id) => {
         await run(() => sb.from('tournament_entries').insert({ tournament_id: id, player_id: uid }));

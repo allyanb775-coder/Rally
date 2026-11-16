@@ -1,8 +1,8 @@
 import { ReactNode, useMemo, useState } from 'react';
-import { ME_ID, seedCourts, seedMatches, seedPlayers, seedTournaments } from './mock';
+import { ME_ID, seedCommunities, seedCourts, seedMatches, seedPlayers, seedTournaments } from './mock';
 import { Store, StoreContext } from './store';
 import { levelChanges, teamOf } from './result';
-import { Highlight, Match, MATCH_SIZE, Team } from './types';
+import { Community, Highlight, Match, MATCH_SIZE, Team } from './types';
 
 /** In-memory demo data, used when Supabase isn't configured. Resets on reload. */
 export function MockStoreProvider({ children }: { children: ReactNode }) {
@@ -11,6 +11,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [tournaments, setTournaments] = useState(seedTournaments);
   const [joinedTournaments, setJoined] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const [communities, setCommunities] = useState<Community[]>(seedCommunities);
 
   // Applies a result to everyone's level, as the database does on confirmation.
   const confirm = (m: Match) => {
@@ -70,6 +71,19 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         return true;
       },
       highlights,
+      communities,
+      createCommunity: async (c) => {
+        const id = `cm${Date.now()}`;
+        setCommunities((cs) => [
+          { id, name: c.name, kind: c.kind, city: c.city, description: c.description, logo: c.logoUri, ownerId: ME_ID, memberIds: [ME_ID] },
+          ...cs,
+        ]);
+        return id;
+      },
+      joinCommunity: async (id) =>
+        setCommunities((cs) => cs.map((c) => (c.id === id && !c.memberIds.includes(ME_ID) ? { ...c, memberIds: [...c.memberIds, ME_ID] } : c))),
+      leaveCommunity: async (id) =>
+        setCommunities((cs) => cs.map((c) => (c.id === id && c.ownerId !== ME_ID ? { ...c, memberIds: c.memberIds.filter((m) => m !== ME_ID) } : c))),
       addHighlight: async (clip, caption) => {
         setHighlights((hs) => [{ id: `h${Date.now()}`, playerId: ME_ID, url: clip.uri, caption, createdAt: new Date().toISOString() }, ...hs]);
         return true;
@@ -84,7 +98,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         setTournaments((ts) => ts.map((t) => (t.id === id && t.registered < t.capacity ? { ...t, registered: t.registered + 1 } : t)));
       },
     }),
-    [players, matches, tournaments, joinedTournaments, highlights],
+    [players, matches, tournaments, joinedTournaments, highlights, communities],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

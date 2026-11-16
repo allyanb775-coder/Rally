@@ -1,2 +1,2 @@
-/** Riyadh is big, so players pick the part of the city they usually play in. */
-export const RIYADH_AREAS = ['شمال الرياض', 'شرق الرياض', 'غرب الرياض', 'جنوب الرياض', 'وسط الرياض'];
+/** Saudi cities players can pick; Rally is not tied to one region. */
+export const CITIES = ['الرياض', 'جدة', 'مكة', 'المدينة', 'الدمام', 'الخبر', 'الظهران', 'بريدة', 'عنيزة', 'أبها', 'الطائف', 'تبوك', 'حائل', 'الأحساء'];

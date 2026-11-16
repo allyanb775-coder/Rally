@@ -8,6 +8,7 @@ import { Icon, IconName } from './ui';
 const meta: Record<string, { title: string; icon: IconName }> = {
   index: { title: 'PLAY', icon: 'home' },
   matches: { title: 'MATCHES', icon: 'tennis' },
+  clubs: { title: 'CLUBS', icon: 'users' },
   tournaments: { title: 'EVENTS', icon: 'trophy' },
   profile: { title: 'CARD', icon: 'person' },
 };
