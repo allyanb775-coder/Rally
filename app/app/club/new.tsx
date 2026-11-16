@@ -8,6 +8,7 @@ import { colors, radius } from '@/constants/theme';
 import { CITIES, cityLabel } from '@/lib/cities';
 import { useStore } from '@/lib/store';
 import { waLink } from '@/lib/whatsapp';
+import { isSaudiIban, normalizeIban } from '@/lib/iban';
 import { CommunityKind } from '@/lib/types';
 import { tr } from '@/lib/i18n';
 
@@ -19,6 +20,8 @@ export default function NewClub() {
   const [city, setCity] = useState(me.city);
   const [description, setDescription] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
+  const [iban, setIban] = useState('');
+  const ibanBad = !!iban && !isSaudiIban(iban);
   const [logo, setLogo] = useState<{ uri: string; mime?: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -29,7 +32,7 @@ export default function NewClub() {
 
   const save = async () => {
     setBusy(true);
-    const id = await createCommunity({ name: name.trim(), kind, city, description: description.trim(), whatsapp: whatsapp.trim() || undefined, logoUri: logo?.uri, logoMime: logo?.mime });
+    const id = await createCommunity({ name: name.trim(), kind, city, description: description.trim(), whatsapp: whatsapp.trim() || undefined, iban: iban ? normalizeIban(iban) : undefined, ibanName: iban ? name.trim() : undefined, logoUri: logo?.uri, logoMime: logo?.mime });
     setBusy(false);
     if (id) router.replace({ pathname: '/club/[id]', params: { id } });
   };
@@ -81,7 +84,11 @@ export default function NewClub() {
         <Input value={whatsapp} onChangeText={setWhatsapp} placeholder="05XXXXXXXX" keyboardType="phone-pad" />
         {!!whatsapp && !waLink(whatsapp, '') && <T style={{ color: colors.danger, fontSize: 12 }}>{tr('اكتب رقم جوال سعودي صحيح', 'Enter a valid Saudi mobile number')}</T>}
 
-        <Button title={busy ? '...' : tr('أضف', 'Add')} icon="check" disabled={busy || name.trim().length < 2 || (!!whatsapp && !waLink(whatsapp, ''))} onPress={save} />
+        <T variant="label">{tr('آيبان المجتمع للمباريات المدفوعة (اختياري)', 'Club IBAN for paid matches (optional)')}</T>
+        <Input value={iban} onChangeText={setIban} placeholder="SA00 0000 0000 0000 0000 0000" autoCapitalize="characters" style={{ fontSize: 16 }} />
+        {ibanBad && <T style={{ color: colors.danger, fontSize: 12 }}>{tr('آيبان سعودي يبدأ بـ SA وبعده 22 رقم', 'A Saudi IBAN is SA followed by 22 digits')}</T>}
+
+        <Button title={busy ? '...' : tr('أضف', 'Add')} icon="check" disabled={busy || name.trim().length < 2 || (!!whatsapp && !waLink(whatsapp, '')) || ibanBad} onPress={save} />
       </Screen>
     </View>
   );

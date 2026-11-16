@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BALL_HIT_MS, BallHit } from '@/components/BallHit';
 import { Court } from '@/components/Court';
@@ -9,16 +9,16 @@ import { PlayerRow } from '@/components/MatchCard';
 import { ResultPanel } from '@/components/ResultPanel';
 import { Board, Button, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
-import { fmtDay, fmtLevel, fmtRange } from '@/lib/format';
+import { fmtDay, fmtLevel, fmtNum, fmtRange } from '@/lib/format';
 import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
-import { tr } from '@/lib/i18n';
+import { isAr, tr } from '@/lib/i18n';
 import { cityLabel } from '@/lib/cities';
 
 export default function MatchDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { matches, me, joinMatch, leaveMatch } = useStore();
+  const { matches, me, players, joinMatch, leaveMatch, confirmPayment, receiptUrl } = useStore();
   const [busy, setBusy] = useState(false);
   const [hit, setHit] = useState(0);
   const m = matches.find((x) => x.id === id);
@@ -36,7 +36,19 @@ export default function MatchDetail() {
   const eligible = levelFits(me.level, m);
   const isHost = m.hostId === me.id;
   const missing = MATCH_SIZE - m.playerIds.length;
-  const act = async (fn: () => Promise<void>) => {
+  const paid = !!m.fee && !isHost; // you join by uploading a transfer receipt
+  const myPay = m.payments?.[me.id];
+  const pending = Object.entries(m.payments ?? {}).filter(([, p]) => p.status === 'pending');
+  const payNote = (pid: string) => {
+    const p = m.payments?.[pid];
+    if (!m.fee || !p) return undefined;
+    return p.status === 'confirmed' ? { text: tr('دفع ✓', 'Paid ✓'), color: colors.led } : { text: tr('بانتظار تأكيد الدفع', 'Awaiting payment confirmation'), color: '#F5B700' };
+  };
+  const openReceipt = async (r?: string) => {
+    const url = r ? await receiptUrl(r) : null;
+    if (url) Linking.openURL(url).catch(() => {});
+  };
+  const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     await fn();
     setBusy(false);
@@ -48,7 +60,7 @@ export default function MatchDetail() {
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
           <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={s.back} accessibilityLabel={tr('رجوع', 'Back')}>
-            <View style={{ transform: [{ scaleX: -1 }] }}>
+            <View style={{ transform: [{ scaleX: isAr() ? -1 : 1 }] }}>
               <Icon name="arrow" size={20} />
             </View>
           </Pressable>
@@ -83,12 +95,54 @@ export default function MatchDetail() {
           <Stat label={tr('مستواك', 'Your level')} value={fmtLevel(me.level)} warn={!eligible} />
         </Row>
 
+        {!!m.fee && (
+          <Lined style={{ gap: 2 }}>
+            <T variant="small">{tr('رسوم المباراة لكل لاعب', 'Match fee per player')}</T>
+            <T style={{ fontFamily: fonts.extra, fontSize: 18, lineHeight: 32 }}>{tr(`${fmtNum(m.fee)} ر.س`, `SAR ${fmtNum(m.fee)}`)}</T>
+            <T variant="small">
+              {isHost
+                ? tr('كل لاعب يرفع إيصال التحويل عشان ينضم، وأنت تأكد الدفع من هنا.', 'Each player uploads a transfer receipt to join; you confirm payments here.')
+                : tr('تنضم برفع إيصال التحويل، ويثبت مكانك بعد ما يأكد المنظّم.', 'You join by uploading the transfer receipt; your spot is confirmed once the organizer checks it.')}
+            </T>
+          </Lined>
+        )}
+
+        {joined && myPay && (
+          <Lined style={{ gap: 2, borderColor: myPay.status === 'confirmed' ? colors.led : '#F5B700' }}>
+            <T variant="h3">{myPay.status === 'confirmed' ? tr('تم تأكيد دفعك ✓', 'Payment confirmed ✓') : tr('بانتظار تأكيد الدفع', 'Awaiting payment confirmation')}</T>
+            <T variant="small">
+              {myPay.status === 'confirmed' ? tr('مكانك ثابت.', 'Your spot is confirmed.') : tr('مكانك محجوز لك، وبانتظار المنظّم يأكد التحويل.', 'Your spot is held while the organizer confirms the transfer.')}
+            </T>
+          </Lined>
+        )}
+
+        {isHost && pending.length > 0 && (
+          <Lined style={{ gap: space(2), borderColor: '#F5B700' }}>
+            <T variant="h3">{tr('إيصالات تنتظر تأكيدك', 'Receipts waiting for you')}</T>
+            {pending.map(([pid, p]) => (
+              <View key={pid} style={{ gap: space(2) }}>
+                <T style={{ fontFamily: fonts.bold }}>{players[pid]?.name ?? tr('لاعب', 'Player')}</T>
+                <Row>
+                  {p.receipt && (
+                    <View style={{ flex: 1 }}>
+                      <Button title={tr('شوف الإيصال', 'View receipt')} variant="ghost" onPress={() => openReceipt(p.receipt)} />
+                    </View>
+                  )}
+                  <View style={{ flex: 1 }}>
+                    <Button title={tr('أكّد الدفع', 'Confirm payment')} icon="check" disabled={busy} onPress={() => act(() => confirmPayment(m.id, pid))} />
+                  </View>
+                </Row>
+              </View>
+            ))}
+          </Lined>
+        )}
+
         <ResultPanel match={m} />
 
         <Lined style={{ gap: 0 }}>
           <T variant="h3" style={{ marginBottom: 4 }}>{tr('اللاعبين', 'Players')}</T>
           {m.playerIds.map((p) => (
-            <PlayerRow key={p} id={p} host={p === m.hostId} />
+            <PlayerRow key={p} id={p} host={p === m.hostId} note={payNote(p)} />
           ))}
         </Lined>
         <View style={{ height: 90 }} />
@@ -106,11 +160,23 @@ export default function MatchDetail() {
             )
           ) : (
             <Button
-              title={full ? tr('المباراة مكتملة', 'Match is full') : !eligible ? tr('مو بمستواك', 'Not your level') : busy ? '...' : tr('انضم للمباراة', 'Join match')}
+              title={
+                full
+                  ? tr('المباراة مكتملة', 'Match is full')
+                  : !eligible
+                    ? tr('مو بمستواك', 'Not your level')
+                    : busy
+                      ? '...'
+                      : paid
+                        ? tr(`سجّل وادفع · ${fmtNum(m.fee!)} ر.س`, `Register & pay · SAR ${fmtNum(m.fee!)}`)
+                        : tr('انضم للمباراة', 'Join match')
+              }
               icon={!full && eligible ? 'check' : undefined}
               disabled={busy || full || !eligible}
               onPress={() =>
-                act(async () => {
+                paid
+                  ? router.push({ pathname: '/pay/[id]', params: { id: m.id, type: 'match' } })
+                  : act(async () => {
                   setHit((n) => n + 1);
                   await new Promise((r) => setTimeout(r, BALL_HIT_MS));
                   await joinMatch(m.id);

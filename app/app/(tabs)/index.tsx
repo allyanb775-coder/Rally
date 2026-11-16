@@ -65,6 +65,8 @@ export default function Home() {
         matches={ranked}
         onOpen={(m) => router.push({ pathname: '/match/[id]', params: { id: m.id } })}
         onJoin={async (m) => {
+          // Paid club matches go through the receipt upload first.
+          if (m.fee && m.hostId !== me.id) return router.push({ pathname: '/pay/[id]', params: { id: m.id, type: 'match' } });
           await joinMatch(m.id);
           router.push({ pathname: '/match/[id]', params: { id: m.id } });
         }}

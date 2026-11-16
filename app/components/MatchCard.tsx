@@ -34,7 +34,10 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
       <View style={{ flex: 1, gap: 4, minWidth: 0 }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <T variant="h3" numberOfLines={1} style={{ flexShrink: 1 }}>{match.court}</T>
-          {match.kind === 'competitive' && <T style={[s.comp, { flexShrink: 0 }]} numberOfLines={1}>RANKED</T>}
+          <Row style={{ gap: 4, flexShrink: 0 }}>
+            {!!match.fee && <T style={[s.comp, s.fee]} numberOfLines={1}>{tr(`${fmtNum(match.fee)} ر.س`, `SAR ${fmtNum(match.fee)}`)}</T>}
+            {match.kind === 'competitive' && <T style={s.comp} numberOfLines={1}>RANKED</T>}
+          </Row>
         </Row>
         <T variant="small">
           {community ? `${community.name} · ` : ''}{cityLabel(match.city)} · {tr('المستوى', 'Level')} {fmtRange(match.minLevel, match.maxLevel)}
@@ -61,7 +64,7 @@ export function MatchCard({ match }: { match: Match; highlight?: boolean; compac
   );
 }
 
-export function PlayerRow({ id, host, hostLabel = tr('صاحب المباراة', 'Host') }: { id: string; host?: boolean; hostLabel?: string }) {
+export function PlayerRow({ id, host, hostLabel = tr('صاحب المباراة', 'Host'), note, children }: { id: string; host?: boolean; hostLabel?: string; note?: { text: string; color?: string }; children?: React.ReactNode }) {
   const { players, me } = useStore();
   const p = players[id];
   if (!p) return null;
@@ -73,10 +76,13 @@ export function PlayerRow({ id, host, hostLabel = tr('صاحب المباراة'
       </View>
       <View style={{ flex: 1 }}>
         <T variant="h3">{p.name}</T>
-        <T variant="small">{host ? hostLabel : `${fmtNum(p.matchesPlayed)} ${tr('مباراة', 'matches')}`}</T>
+        <T variant="small" style={note?.color ? { color: note.color } : undefined}>
+          {host ? hostLabel : note ? note.text : `${fmtNum(p.matchesPlayed)} ${tr('مباراة', 'matches')}`}
+        </T>
       </View>
       <LevelBadge level={p.level} />
     </Row>
+    {children}
     </Pressable>
   );
 }
@@ -86,6 +92,7 @@ const s = StyleSheet.create({
   time: { backgroundColor: colors.blue, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', gap: 2, minWidth: 84 },
   day: { fontFamily: fonts.bold, fontSize: 11, color: 'rgba(255,255,255,0.8)', textAlign: 'center' },
   comp: { fontFamily: fonts.display, fontSize: 10, letterSpacing: 1, lineHeight: 18, color: '#FFFFFF', backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 8, borderRadius: 999, overflow: 'hidden' },
+  fee: { backgroundColor: 'rgba(245,183,0,0.16)', color: '#F5B700', fontFamily: fonts.bold, letterSpacing: 0 },
   spot: { width: 16, height: 16, borderRadius: 8 },
   spotEmpty: { borderWidth: 1.5, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.5)' },
   missing: { fontFamily: fonts.bold, fontSize: 13, color: '#8FB0FF' },

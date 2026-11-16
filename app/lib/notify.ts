@@ -18,6 +18,7 @@ export function friendlyError(e: unknown): string {
   if (msg.includes('opponent must confirm')) return tr('لازم واحد من الفريق الثاني يأكد النتيجة.', 'A player from the other team must confirm the result.');
   if (msg.includes('match not started')) return tr('ما تقدر تسجل النتيجة قبل وقت المباراة.', "You can't report a result before the match starts.");
   if (msg.includes('match not full')) return tr('النتيجة تتسجل بس للمباريات المكتملة بـ4 لاعبين.', 'Results can only be reported for full 4-player matches.');
+  if (msg.includes('receipt required')) return tr('لازم ترفع إيصال التحويل عشان تنضم.', 'Upload the transfer receipt to join.');
   if (msg.includes('level locked')) return tr('مستواك صار يتحدد من نتائج مبارياتك.', 'Your level is now set by your match results.');
   return tr('صار خطأ، حاول مرة ثانية.', 'Something went wrong, please try again.');
 }

@@ -39,16 +39,35 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       myEntries,
       refresh: async () => {},
       setMyLevel: async (level) => setPlayers((ps) => ({ ...ps, [ME_ID]: { ...ps[ME_ID], level } })),
-      joinMatch: async (id) =>
+      joinMatch: async (id, receipt) => {
+        const m = matches.find((x) => x.id === id);
+        if (!m || m.playerIds.length >= MATCH_SIZE || m.playerIds.includes(ME_ID)) return false;
+        const paid = !!m.fee && m.hostId !== ME_ID;
+        if (paid && !receipt) return false;
         setMatches((ms) =>
-          ms.map((m) =>
-            m.id === id && m.playerIds.length < MATCH_SIZE && !m.playerIds.includes(ME_ID)
-              ? { ...m, playerIds: [...m.playerIds, ME_ID] }
-              : m,
+          ms.map((x) =>
+            x.id === id
+              ? { ...x, playerIds: [...x.playerIds, ME_ID], payments: paid ? { ...x.payments, [ME_ID]: { status: 'pending', receipt: receipt!.uri } } : x.payments }
+              : x,
           ),
-        ),
+        );
+        return true;
+      },
       leaveMatch: async (id) =>
-        setMatches((ms) => ms.map((m) => (m.id === id ? { ...m, playerIds: m.playerIds.filter((p) => p !== ME_ID) } : m))),
+        setMatches((ms) =>
+          ms.map((m) => {
+            if (m.id !== id) return m;
+            const { [ME_ID]: _gone, ...payments } = m.payments ?? {};
+            return { ...m, playerIds: m.playerIds.filter((p) => p !== ME_ID), payments };
+          }),
+        ),
+      confirmPayment: async (matchId, playerId) => {
+        const m = matches.find((x) => x.id === matchId);
+        if (!m || m.hostId !== ME_ID || !m.payments?.[playerId]) return false;
+        setMatches((ms) => ms.map((x) => (x.id === matchId ? { ...x, payments: { ...x.payments, [playerId]: { ...x.payments![playerId], status: 'confirmed' } } } : x)));
+        return true;
+      },
+      receiptUrl: async (r) => r,
       createMatch: async (m) => {
         const id = `m${Date.now()}`;
         const c = seedCourts.find((x) => x.id === m.courtId);
@@ -77,7 +96,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       createCommunity: async (c) => {
         const id = `cm${Date.now()}`;
         setCommunities((cs) => [
-          { id, name: c.name, kind: c.kind, city: c.city, description: c.description, logo: c.logoUri, ownerId: ME_ID, memberIds: [ME_ID], whatsapp: c.whatsapp },
+          { id, name: c.name, kind: c.kind, city: c.city, description: c.description, logo: c.logoUri, ownerId: ME_ID, memberIds: [ME_ID], whatsapp: c.whatsapp, iban: c.iban, ibanName: c.ibanName },
           ...cs,
         ]);
         return id;

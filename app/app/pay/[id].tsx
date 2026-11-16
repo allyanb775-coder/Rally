@@ -9,25 +9,33 @@ import { formatIban, isSaudiIban, normalizeIban } from '@/lib/iban';
 import { useStore } from '@/lib/store';
 import { tournamentMessage, waLink } from '@/lib/whatsapp';
 import { tr } from '@/lib/i18n';
+import { fmtDay, fmtTime } from '@/lib/format';
+import type { Receipt } from '@/lib/types';
 
 /** Pay a tournament fee by bank transfer: copy the organizer's IBAN, transfer, upload the receipt. */
 export default function Pay() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { tournaments, myEntries, me, joinTournament } = useStore();
-  const t = tournaments.find((x) => x.id === id);
+  const { id, type } = useLocalSearchParams<{ id: string; type?: 'match' | 'tournament' }>();
+  const { tournaments, matches, communities, myEntries, me, joinTournament, joinMatch } = useStore();
   const [copied, setCopied] = useState(false);
-  const [receipt, setReceipt] = useState<{ uri: string; mime?: string } | null>(null);
+  const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Paid club matches and tournaments share this screen.
+  const match = type === 'match' ? matches.find((x) => x.id === id) : undefined;
+  const club = match?.communityId ? communities.find((c) => c.id === match.communityId) : undefined;
+  const t = match
+    ? { id: match.id, name: `${match.court} · ${fmtDay(match.startsAt)} ${fmtTime(match.startsAt)}`, fee: match.fee ?? 0, iban: match.iban, ibanName: match.ibanName, whatsapp: club?.whatsapp }
+    : tournaments.find((x) => x.id === id);
 
   if (!t) {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
-        <T variant="h2">{tr('البطولة غير موجودة.', 'Tournament not found.')}</T>
+        <T variant="h2">{match === undefined && type === 'match' ? tr('المباراة غير موجودة.', 'Match not found.') : tr('البطولة غير موجودة.', 'Tournament not found.')}</T>
       </Screen>
     );
   }
-  const entry = myEntries[t.id];
+  const entry = match ? match.payments?.[me.id] : myEntries[t.id];
   const hasIban = !!t.iban && isSaudiIban(t.iban);
   const contact = waLink(t.whatsapp, tournamentMessage(t, me));
 
@@ -47,7 +55,7 @@ export default function Pay() {
   const send = async () => {
     if (!receipt) return;
     setBusy(true);
-    const ok = await joinTournament(t.id, receipt);
+    const ok = match ? await joinMatch(t.id, receipt) : await joinTournament(t.id, receipt);
     setBusy(false);
     if (ok) router.back();
   };
@@ -72,7 +80,7 @@ export default function Pay() {
           <Lined style={{ gap: space(2) }}>
             <T variant="h3">{entry.status === 'confirmed' ? tr('تم تأكيد دفعك ✓', 'Payment confirmed ✓') : tr('وصل إيصالك', 'Receipt received')}</T>
             <T variant="muted">
-              {entry.status === 'confirmed' ? tr('مكانك في البطولة ثابت.', 'Your spot is confirmed.') : tr('بانتظار المنظّم يأكد التحويل، وبعدها يثبت مكانك في البطولة.', 'Waiting for the organizer to confirm the transfer, then your spot is confirmed.')}
+              {entry.status === 'confirmed' ? tr('مكانك ثابت.', 'Your spot is confirmed.') : tr('مكانك محجوز لك، وبانتظار المنظّم يأكد التحويل.', 'Your spot is held while the organizer confirms the transfer.')}
             </T>
           </Lined>
         ) : (

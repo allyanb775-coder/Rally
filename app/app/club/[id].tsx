@@ -7,7 +7,7 @@ import { Button, Heading, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { useStore } from '@/lib/store';
 import { waLink } from '@/lib/whatsapp';
-import { tr } from '@/lib/i18n';
+import { isAr, tr } from '@/lib/i18n';
 import { cityLabel } from '@/lib/cities';
 
 export default function Club() {
@@ -43,7 +43,7 @@ export default function Club() {
       <Screen>
         <Row style={{ justifyContent: 'space-between' }}>
           <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/clubs'))} style={s.back} accessibilityLabel={tr('رجوع', 'Back')}>
-            <View style={{ transform: [{ scaleX: -1 }] }}>
+            <View style={{ transform: [{ scaleX: isAr() ? -1 : 1 }] }}>
               <Icon name="arrow" size={20} />
             </View>
           </Pressable>

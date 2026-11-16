@@ -35,7 +35,17 @@ export type Match = {
   distanceKm: number;
   result?: MatchResult;
   communityId?: string; // the community the match was opened in, if any
+  /** Paid community match: each player except the host transfers this fee (SAR) and uploads the receipt. */
+  fee?: number;
+  iban?: string;
+  ibanName?: string;
+  /** Payment state per player who joined a paid match; the spot is held while pending. */
+  payments?: Record<string, Payment>;
 };
+
+/** A transfer receipt the organizer still has to check (pending) or has accepted (confirmed). */
+export type Payment = { status: 'pending' | 'confirmed'; receipt?: string };
+export type Receipt = { uri: string; mime?: string };
 
 export type TournamentFormat = 'knockout16' | 'americano';
 
@@ -58,7 +68,7 @@ export type Tournament = {
 export const MATCH_SIZE = 4;
 
 /** Your entry in a tournament: pending until the organizer confirms your transfer. */
-export type TournamentEntry = { status: 'pending' | 'confirmed'; receipt?: string };
+export type TournamentEntry = Payment;
 
 export type CommunityKind = 'community' | 'court' | 'academy';
 
@@ -73,9 +83,11 @@ export type Community = {
   ownerId: string;
   memberIds: string[];
   whatsapp?: string; // contact mobile, optional
+  iban?: string; // where paid club matches are transferred, set by the owner
+  ibanName?: string;
 };
 
-export type NewCommunity = Pick<Community, 'name' | 'kind' | 'city' | 'description' | 'whatsapp'> & { logoUri?: string; logoMime?: string };
+export type NewCommunity = Pick<Community, 'name' | 'kind' | 'city' | 'description' | 'whatsapp' | 'iban' | 'ibanName'> & { logoUri?: string; logoMime?: string };
 
 /** A short gameplay clip a player posts on their profile. */
 export type Highlight = {

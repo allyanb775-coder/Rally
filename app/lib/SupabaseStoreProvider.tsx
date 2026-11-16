@@ -7,7 +7,7 @@ import { colors } from '@/constants/theme';
 import { friendlyError, notify } from './notify';
 import { Store, StoreContext } from './store';
 import { clipExtension } from './clips';
-import { Community, Court, Highlight, Match, Player, Tournament, TournamentEntry } from './types';
+import { Community, Court, Highlight, Match, Player, Receipt, Tournament, TournamentEntry } from './types';
 import { tr } from './i18n';
 
 type Data = {
@@ -37,7 +37,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
     sb.from('courts').select('id,name,city').order('city').order('name'),
     sb
       .from('matches')
-      .select('id,host_id,court_id,community_id,starts_at,kind,min_level,max_level,courts(name,city),match_players(player_id,joined_at),match_results(winning_team,score,status,reported_by)')
+      .select('id,host_id,court_id,community_id,starts_at,kind,min_level,max_level,courts(name,city),fee_sar,iban,iban_name,match_players(player_id,joined_at,paid,receipt_path),match_results(winning_team,score,status,reported_by)')
       .gte('starts_at', since)
       .order('starts_at'),
     sb
@@ -46,7 +46,7 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       .gte('starts_at', since)
       .order('starts_at'),
     sb.from('highlights').select('id,player_id,path,caption,created_at').order('created_at', { ascending: false }).limit(300),
-    sb.from('communities').select('id,name,kind,city,description,logo_path,whatsapp,owner_id,community_members(player_id)').order('created_at').limit(500),
+    sb.from('communities').select('id,name,kind,city,description,logo_path,whatsapp,iban,iban_name,owner_id,community_members(player_id)').order('created_at').limit(500),
   ]);
   for (const r of [profiles, courts, matches, tournaments, clips, comms]) if (r.error) throw r.error;
 
@@ -76,6 +76,16 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       distanceKm: 0, // TODO: compute from court coordinates once we have player location
       result: toResult(m.match_results),
       communityId: m.community_id ?? undefined,
+      fee: m.fee_sar || undefined,
+      iban: m.iban ?? undefined,
+      ibanName: m.iban_name ?? undefined,
+      payments: m.fee_sar
+        ? Object.fromEntries(
+            m.match_players
+              .filter((p: any) => p.player_id !== m.host_id)
+              .map((p: any) => [p.player_id, { status: p.paid ? 'confirmed' : 'pending', receipt: p.receipt_path ?? undefined }]),
+          )
+        : undefined,
     })),
     tournaments: (tournaments.data ?? []).map((t: any) => ({
       id: t.id,
@@ -108,6 +118,8 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       logo: c.logo_path ? sb.storage.from('logos').getPublicUrl(c.logo_path).data.publicUrl : undefined,
       ownerId: c.owner_id,
       whatsapp: c.whatsapp ?? undefined,
+      iban: c.iban ?? undefined,
+      ibanName: c.iban_name ?? undefined,
       memberIds: c.community_members.map((m: any) => m.player_id),
     })),
     myEntries: Object.fromEntries(
@@ -167,6 +179,21 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
 
   const value = useMemo<Store | null>(() => {
     if (!uid || !data || !data.players[uid]) return null;
+    // Receipts go to a private bucket at <folder>/<your id>.<ext>: only you and the organizer can open them.
+    const uploadReceipt = async (folder: string, receipt: Receipt): Promise<string | null> => {
+      try {
+        const body = await (await fetch(receipt.uri)).arrayBuffer();
+        const ext = receipt.mime === 'image/png' ? 'png' : receipt.mime === 'application/pdf' ? 'pdf' : 'jpg';
+        const path = `${folder}/${uid}.${ext}`;
+        const up = await sb.storage.from('receipts').upload(path, body, { contentType: receipt.mime ?? 'image/jpeg', upsert: true });
+        if (up.error) throw up.error;
+        return path;
+      } catch (e) {
+        console.warn(e);
+        notify(tr('ما قدرنا نرفع الإيصال. تأكد من الاتصال وحاول مرة ثانية.', "We couldn't upload the receipt. Check your connection and try again."));
+        return null;
+      }
+    };
     const run = async (fn: () => PromiseLike<{ error: unknown }>) => {
       const { error } = await fn();
       if (error) notify(friendlyError(error));
@@ -183,8 +210,19 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
       setMyLevel: async (level) => {
         await run(() => sb.from('profiles').update({ level }).eq('id', uid));
       },
-      joinMatch: async (id) => {
-        await run(() => sb.from('match_players').insert({ match_id: id, player_id: uid }));
+      joinMatch: async (id, receipt) => {
+        let receipt_path: string | null = null;
+        if (receipt) {
+          receipt_path = await uploadReceipt(`m/${id}`, receipt);
+          if (!receipt_path) return false;
+        }
+        return run(() => sb.from('match_players').insert({ match_id: id, player_id: uid, receipt_path }));
+      },
+      confirmPayment: async (matchId, playerId) =>
+        run(() => sb.from('match_players').update({ paid: true }).match({ match_id: matchId, player_id: playerId })),
+      receiptUrl: async (path) => {
+        const { data: signed } = await sb.storage.from('receipts').createSignedUrl(path, 600);
+        return signed?.signedUrl ?? null;
       },
       leaveMatch: async (id) => {
         await run(() => sb.from('match_players').delete().match({ match_id: id, player_id: uid }));
@@ -200,6 +238,9 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
             min_level: m.minLevel,
             max_level: m.maxLevel,
             community_id: m.communityId ?? null,
+            fee_sar: m.fee ?? 0,
+            iban: m.iban || null,
+            iban_name: m.ibanName || null,
           })
           .select('id')
           .single();
@@ -248,7 +289,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
         }
         const { data: row, error } = await sb
           .from('communities')
-          .insert({ owner_id: uid, name: c.name, kind: c.kind, city: c.city, description: c.description, logo_path, whatsapp: c.whatsapp || null })
+          .insert({ owner_id: uid, name: c.name, kind: c.kind, city: c.city, description: c.description, logo_path, whatsapp: c.whatsapp || null, iban: c.iban || null, iban_name: c.ibanName || null })
           .select('id')
           .single();
         if (error || !row) {
@@ -268,18 +309,8 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
         // Receipts go to a private bucket: only you and the tournament's organizer can open them.
         let receipt_path: string | null = null;
         if (receipt) {
-          try {
-            const body = await (await fetch(receipt.uri)).arrayBuffer();
-            const ext = receipt.mime === 'image/png' ? 'png' : receipt.mime === 'application/pdf' ? 'pdf' : 'jpg';
-            const path = `${id}/${uid}.${ext}`;
-            const up = await sb.storage.from('receipts').upload(path, body, { contentType: receipt.mime ?? 'image/jpeg', upsert: true });
-            if (up.error) throw up.error;
-            receipt_path = path;
-          } catch (e) {
-            console.warn(e);
-            notify(tr('ما قدرنا نرفع الإيصال. تأكد من الاتصال وحاول مرة ثانية.', "We couldn't upload the receipt. Check your connection and try again."));
-            return false;
-          }
+          receipt_path = await uploadReceipt(id, receipt);
+          if (!receipt_path) return false;
         }
         return run(() => sb.from('tournament_entries').insert({ tournament_id: id, player_id: uid, receipt_path }));
       },

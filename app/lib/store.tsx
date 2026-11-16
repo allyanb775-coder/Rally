@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
-import { Community, Court, Highlight, Match, NewCommunity, PickedClip, Player, Team, Tournament, TournamentEntry } from './types';
+import { Community, Court, Highlight, Match, NewCommunity, PickedClip, Player, Receipt, Team, Tournament, TournamentEntry } from './types';
 
-export type NewMatch = Pick<Match, 'courtId' | 'startsAt' | 'kind' | 'minLevel' | 'maxLevel' | 'communityId'>;
+export type NewMatch = Pick<Match, 'courtId' | 'startsAt' | 'kind' | 'minLevel' | 'maxLevel' | 'communityId' | 'fee' | 'iban' | 'ibanName'>;
 
 export type Store = {
   me: Player;
@@ -19,11 +19,16 @@ export type Store = {
   addHighlight: (clip: PickedClip, caption: string) => Promise<boolean>;
   deleteHighlight: (id: string) => Promise<boolean>;
   setMyLevel: (level: number) => Promise<void>;
-  joinMatch: (id: string) => Promise<void>;
+  /** Join a match. A paid match needs the transfer receipt; the spot stays pending until the host confirms. */
+  joinMatch: (id: string, receipt?: Receipt) => Promise<boolean>;
+  /** Host of a paid match accepts a player's transfer. */
+  confirmPayment: (matchId: string, playerId: string) => Promise<boolean>;
+  /** A viewable link to a receipt (receipts are private). */
+  receiptUrl: (receipt: string) => Promise<string | null>;
   leaveMatch: (id: string) => Promise<void>;
   createMatch: (m: NewMatch) => Promise<string | null>;
   /** Register for a tournament with the transfer receipt (an image picked from the phone). */
-  joinTournament: (id: string, receipt?: { uri: string; mime?: string }) => Promise<boolean>;
+  joinTournament: (id: string, receipt?: Receipt) => Promise<boolean>;
   /** Any of the four players reports who won; returns false if it was rejected. */
   reportResult: (matchId: string, winningTeam: Team, score: string) => Promise<boolean>;
   /** A player from the other team confirms (levels update) or disputes (result is cleared). */

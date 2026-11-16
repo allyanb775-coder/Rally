@@ -1,7 +1,8 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Board, Button, Chip, Heading, Icon, Row, scaleStart, Screen, T } from '@/components/ui';
+import { Board, Button, Chip, Heading, Icon, Input, Row, scaleStart, Screen, T } from '@/components/ui';
+import { isSaudiIban, normalizeIban } from '@/lib/iban';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDay, fmtLevel, fmtRange, fmtTime } from '@/lib/format';
 import { LEVEL_WINDOW, matchRange, MAX_LEVEL } from '@/lib/level';
@@ -23,6 +24,8 @@ function nextSlots(now = new Date()) {
   return out;
 }
 
+const FEES = [0, 25, 50, 75, 100];
+
 export default function CreateMatch() {
   const { communityId } = useLocalSearchParams<{ communityId?: string }>();
   const { me, courts, createMatch, communities } = useStore();
@@ -32,6 +35,11 @@ export default function CreateMatch() {
   const [slot, setSlot] = useState(slots[0]);
   const [kind, setKind] = useState<MatchKind>('friendly');
   const [busy, setBusy] = useState(false);
+  // Club matches can charge a fee; players then join by uploading a transfer receipt.
+  const [fee, setFee] = useState(0);
+  const [iban, setIban] = useState(community?.iban ?? '');
+  const [ibanName, setIbanName] = useState(community?.ibanName ?? community?.name ?? '');
+  const ibanOk = isSaudiIban(iban);
 
   const { minLevel, maxLevel } = matchRange(me.level);
   const sorted = [...courts].sort((a, b) => Number(b.city === me.city) - Number(a.city === me.city));
@@ -39,7 +47,8 @@ export default function CreateMatch() {
   const submit = async () => {
     if (!courtId) return;
     setBusy(true);
-    const id = await createMatch({ courtId, startsAt: slot.toISOString(), kind, minLevel, maxLevel, communityId: community?.id });
+    const payment = community && fee > 0 ? { fee, iban: normalizeIban(iban), ibanName: ibanName.trim() } : {};
+    const id = await createMatch({ courtId, startsAt: slot.toISOString(), kind, minLevel, maxLevel, communityId: community?.id, ...payment });
     setBusy(false);
     if (id) router.replace({ pathname: '/match/[id]', params: { id } });
   };
@@ -113,8 +122,31 @@ export default function CreateMatch() {
         </T>
         </Board>
 
+        {community && (
+          <>
+            <T variant="label">{tr('رسوم المباراة لكل لاعب', 'Match fee per player')}</T>
+            <Row style={{ flexWrap: 'wrap' }}>
+              {FEES.map((f) => (
+                <Chip key={f} label={f === 0 ? tr('مجانية', 'Free') : tr(`${f} ر.س`, `SAR ${f}`)} active={fee === f} onPress={() => setFee(f)} />
+              ))}
+            </Row>
+            {fee > 0 && (
+              <Board style={{ gap: 10 }}>
+                <T variant="small" style={{ color: colors.inkMuted }}>
+                  {tr('اللاعب يحوّل على هذا الآيبان ويرفع الإيصال عشان ينضم، وأنت تأكد الدفع من صفحة المباراة.', 'Players transfer to this IBAN and upload the receipt to join; you confirm payments on the match page.')}
+                </T>
+                <T variant="label">{tr('الآيبان', 'IBAN')}</T>
+                <Input value={iban} onChangeText={setIban} placeholder="SA00 0000 0000 0000 0000 0000" autoCapitalize="characters" style={{ fontSize: 16 }} />
+                {!!iban && !ibanOk && <T style={{ color: colors.danger, fontSize: 12 }}>{tr('آيبان سعودي يبدأ بـ SA وبعده 22 رقم', 'A Saudi IBAN is SA followed by 22 digits')}</T>}
+                <T variant="label">{tr('اسم صاحب الحساب', 'Account holder')}</T>
+                <Input value={ibanName} onChangeText={setIbanName} maxLength={60} style={{ fontSize: 16 }} />
+              </Board>
+            )}
+          </>
+        )}
+
         <View style={{ marginTop: space(2) }}>
-          <Button title={busy ? '...' : tr('افتح المباراة', 'Open match')} icon="bolt" disabled={busy || !courtId} onPress={submit} />
+          <Button title={busy ? '...' : tr('افتح المباراة', 'Open match')} icon="bolt" disabled={busy || !courtId || (!!community && fee > 0 && (!ibanOk || !ibanName.trim()))} onPress={submit} />
         </View>
       </Screen>
     </View>

@@ -39,11 +39,12 @@ const ago = (h: number) => {
 export const seedMatches: Match[] = [
   { id: 'm0', hostId: 'p1', courtId: 'c1', get court() { return tr('Padel Rush · حطين', 'Padel Rush · Hittin'); }, city: 'الرياض', startsAt: ago(2), kind: 'competitive', minLevel: 2.4, maxLevel: 3.4, playerIds: ['p1', ME_ID, 'p2', 'p5'], distanceKm: 0 },
   { id: 'm00', hostId: ME_ID, courtId: 'c4', get court() { return tr('Quattro Club · العليا', 'Quattro Club · Olaya'); }, city: 'الرياض', startsAt: ago(26), kind: 'competitive', minLevel: 2, maxLevel: 3, playerIds: [ME_ID, 'p5', 'p2', 'p1'], distanceKm: 0, result: { winningTeam: 2, score: '6-4 7-5', status: 'pending', reportedBy: 'p5' } },
-  { id: 'm1', communityId: 'tcc', hostId: 'p1', courtId: 'c1', get court() { return tr('Padel Rush · حطين', 'Padel Rush · Hittin'); }, city: 'الرياض', startsAt: slot(0, 20), kind: 'competitive', minLevel: 2.4, maxLevel: 3.4, playerIds: ['p1', 'p2', 'p5'], distanceKm: 0 },
+  { id: 'm1', communityId: 'tcc', hostId: 'p1', courtId: 'c1', get court() { return tr('Padel Rush · حطين', 'Padel Rush · Hittin'); }, city: 'الرياض', startsAt: slot(0, 20), kind: 'competitive', minLevel: 2.4, maxLevel: 3.4, playerIds: ['p1', 'p2', 'p5'], distanceKm: 0, fee: 50, iban: 'SA0000000000000000000000', ibanName: 'The Court Club', payments: { p2: { status: 'confirmed' }, p5: { status: 'confirmed' } } },
   { id: 'm2', hostId: 'p4', courtId: 'c2', get court() { return tr('Hala Padel · العارض', 'Hala Padel · Al Arid'); }, city: 'الرياض', startsAt: slot(0, 22, 30), kind: 'friendly', minLevel: 0.7, maxLevel: 1.7, playerIds: ['p4'], distanceKm: 0 },
   { id: 'm3', hostId: 'p3', courtId: 'c3', get court() { return tr('Valley Padel · وادي حنيفة', 'Valley Padel · Wadi Hanifa'); }, city: 'الرياض', startsAt: slot(1, 21), kind: 'competitive', minLevel: 3.7, maxLevel: 4.7, playerIds: ['p3', 'p6'], distanceKm: 0 },
   { id: 'm4', hostId: 'p5', courtId: 'c4', get court() { return tr('Quattro Club · العليا', 'Quattro Club · Olaya'); }, city: 'الرياض', startsAt: slot(1, 23), kind: 'friendly', minLevel: 2.3, maxLevel: 3.3, playerIds: ['p5', 'p2'], distanceKm: 0 },
   { id: 'm5', hostId: 'p2', courtId: 'c1', get court() { return tr('Padel Rush · حطين', 'Padel Rush · Hittin'); }, city: 'الرياض', startsAt: slot(2, 20, 30), kind: 'friendly', minLevel: 1.9, maxLevel: 2.9, playerIds: ['p2', 'p5', 'p1'], distanceKm: 0 },
+  { id: 'm6', communityId: 'tcc', hostId: ME_ID, courtId: 'c4', get court() { return tr('Quattro Club · العليا', 'Quattro Club · Olaya'); }, city: 'الرياض', startsAt: slot(2, 22), kind: 'competitive', minLevel: 2, maxLevel: 3, playerIds: [ME_ID, 'p5', 'p2'], distanceKm: 0, fee: 50, iban: 'SA0000000000000000000000', ibanName: 'The Court Club', payments: { p5: { status: 'pending' }, p2: { status: 'confirmed' } } },
 ];
 
 export const seedTournaments: Tournament[] = [
@@ -62,5 +63,7 @@ export const seedCommunities: Community[] = [
     ownerId: ME_ID,
     memberIds: [ME_ID, 'p1', 'p2', 'p3', 'p5'],
     whatsapp: '0500000000',
+    iban: 'SA0000000000000000000000',
+    ibanName: 'The Court Club',
   },
 ];
