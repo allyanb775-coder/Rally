@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { CommunityLogo, KIND_LABEL } from '@/components/CommunityLogo';
 import { Button, Chip, Heading, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
@@ -8,6 +8,8 @@ import { useStore } from '@/lib/store';
 import { CommunityKind } from '@/lib/types';
 import { tr } from '@/lib/i18n';
 import { cityLabel } from '@/lib/cities';
+import { waLink } from '@/lib/whatsapp';
+import { RALLY_WHATSAPP } from '@/constants/contact';
 
 /** Communities, courts and academies anyone can add; yours first. */
 export default function Clubs() {
@@ -19,10 +21,23 @@ export default function Clubs() {
     .filter((c) => (cityOnly ? c.city === me.city : true))
     .sort((a, b) => Number(b.memberIds.includes(me.id)) - Number(a.memberIds.includes(me.id)) || b.memberIds.length - a.memberIds.length);
 
+  const contactUs = () => {
+    const msg = tr(
+      `السلام عليكم، أبي أضيف مجتمعي/ملعبي في Rally.\nالاسم: \nالنوع (مجتمع / ملعب / أكاديمية): \nالمدينة: ${me.city}`,
+      `Hi, I'd like to add my community/court to Rally.\nName: \nType (community / court / academy): \nCity: ${cityLabel(me.city)}`,
+    );
+    const url = waLink(RALLY_WHATSAPP, msg);
+    if (url) Linking.openURL(url).catch(() => {});
+  };
+
   return (
     <Screen tabBar>
       <Heading en="Clubs" ar={tr('مجتمعات وملاعب وأكاديميات البادل', 'Padel communities, courts and academies')} size="xl" />
-      <Button title={tr('أضف مجتمعك أو ملعبك', 'Add your community or court')} icon="plus" onPress={() => router.push('/club/new')} />
+      <Lined style={{ gap: space(2) }}>
+        <T variant="h3">{tr('عندك مجتمع أو ملعب أو أكاديمية؟', 'Run a community, court or academy?')}</T>
+        <T variant="muted">{tr('تواصل معنا على الواتساب ونضيفه لك في Rally.', 'Message us on WhatsApp and we will add it to Rally.')}</T>
+        <Button title={tr('تواصل معنا واتساب', 'Contact us on WhatsApp')} icon="chat" onPress={contactUs} />
+      </Lined>
 
       <Row style={{ flexWrap: 'wrap' }}>
         <Chip label={tr('الكل', 'All')} active={!kind} onPress={() => setKind(null)} />
@@ -35,7 +50,7 @@ export default function Clubs() {
       {list.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>
           <T variant="h3">{tr('ما فيه شي هنا للحين', 'Nothing here yet')}</T>
-          <T variant="muted">{tr('كن أول واحد يضيف مجتمعه.', 'Be the first to add your community.')}</T>
+          <T variant="muted">{tr('تواصل معنا ونضيف مجتمعك.', 'Contact us to add your community.')}</T>
         </Lined>
       )}
 
