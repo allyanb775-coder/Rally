@@ -126,3 +126,18 @@ test('scoreboard: winner, stored score and round trip', () => {
   assert.deepEqual(nextGames(null), 0);
   assert.deepEqual(nextGames(7), null);
 });
+
+import { tournamentMessage, waLink } from './whatsapp.ts';
+test('waLink builds a wa.me link for Saudi numbers only', () => {
+  assert.equal(waLink('0551234567', 'هلا'), 'https://wa.me/966551234567?text=%D9%87%D9%84%D8%A7');
+  assert.equal(waLink('12345', 'x'), null);
+  assert.equal(waLink(undefined, 'x'), null);
+  assert.ok(tournamentMessage({ name: 'بطولة', fee: 150 }, { name: 'فهد', level: 2.5 }).includes('150'));
+});
+
+import { formatIban, isSaudiIban } from './iban.ts';
+test('Saudi IBAN check and grouping', () => {
+  assert.ok(isSaudiIban('sa03 8000 0000 6080 1016 7519'));
+  assert.ok(!isSaudiIban('SA0380000000608010167'));
+  assert.equal(formatIban('SA0380000000608010167519'), 'SA03 8000 0000 6080 1016 7519');
+});

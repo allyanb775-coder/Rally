@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { Linking, StyleSheet, View } from 'react-native';
 import { Led, ledNum, ledTime } from '@/components/Led';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Glass } from '@/components/Glass';
@@ -7,9 +8,10 @@ import { Bar, Board, Button, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, space } from '@/constants/theme';
 import { fmtNum, fmtRange, ltr } from '@/lib/format';
 import { useStore } from '@/lib/store';
+import { tournamentMessage, waLink } from '@/lib/whatsapp';
 
 export default function Tournaments() {
-  const { tournaments, joinedTournaments, joinTournament, me } = useStore();
+  const { tournaments, myEntries, me } = useStore();
   return (
     <Screen tabBar>
       <View style={s.bleed}>
@@ -31,7 +33,7 @@ export default function Tournaments() {
       )}
 
       {tournaments.map((t) => {
-        const joined = joinedTournaments.includes(t.id);
+        const entry = myEntries[t.id];
         const full = t.registered >= t.capacity;
         const eligible = me.level >= t.minLevel && me.level <= t.maxLevel;
         const d = new Date(t.startsAt);
@@ -61,11 +63,19 @@ export default function Tournaments() {
               <Bar value={t.registered / t.capacity} />
               <T variant="small">{full ? 'اكتملت المقاعد' : `باقي ${fmtNum(t.capacity - t.registered)} مقاعد`}</T>
               <Button
-                title={joined ? 'مسجّل ✓' : full ? 'مكتملة' : !eligible ? 'خارج مستواك' : 'سجّل الحين'}
-                variant={joined ? 'dark' : 'primary'}
-                disabled={joined || full || !eligible}
-                onPress={() => joinTournament(t.id)}
+                title={entry ? (entry.status === 'confirmed' ? 'مسجّل ✓' : 'بانتظار تأكيد الدفع') : full ? 'مكتملة' : !eligible ? 'خارج مستواك' : 'سجّل وادفع'}
+                variant={entry ? 'dark' : 'primary'}
+                disabled={(!entry && (full || !eligible))}
+                onPress={() => router.push({ pathname: '/pay/[id]', params: { id: t.id } })}
               />
+              {!!waLink(t.whatsapp, '') && (
+                <Button
+                  title="تواصل مع المنظّم"
+                  icon="chat"
+                  variant="ghost"
+                  onPress={() => Linking.openURL(waLink(t.whatsapp, tournamentMessage(t, me))!).catch(() => {})}
+                />
+              )}
             </Glass>
           </View>
         );

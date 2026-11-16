@@ -1,11 +1,12 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Platform, Pressable, Share, StyleSheet, View } from 'react-native';
+import { Linking, Platform, Pressable, Share, StyleSheet, View } from 'react-native';
 import { CommunityLogo, KIND_LABEL } from '@/components/CommunityLogo';
 import { MatchCard, PlayerRow } from '@/components/MatchCard';
 import { Button, Heading, Icon, Lined, Row, Screen, T } from '@/components/ui';
 import { colors, fonts, radius, space } from '@/constants/theme';
 import { useStore } from '@/lib/store';
+import { waLink } from '@/lib/whatsapp';
 
 export default function Club() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -64,6 +65,15 @@ export default function Club() {
         </Row>
 
         {!!c.description && <T style={{ fontSize: 15, lineHeight: 24 }}>{c.description}</T>}
+
+        {!owner && waLink(c.whatsapp, '') && (
+          <Button
+            title="تواصل واتساب"
+            icon="chat"
+            variant="ghost"
+            onPress={() => Linking.openURL(waLink(c.whatsapp, `السلام عليكم، شفت ${c.name} على Rally وأبي أستفسر.`)!).catch(() => {})}
+          />
+        )}
 
         {owner ? (
           <Button title="أنت المؤسس · افتح مباراة للمجتمع" icon="plus" onPress={() => router.push({ pathname: '/create-match', params: { communityId: c.id } })} />

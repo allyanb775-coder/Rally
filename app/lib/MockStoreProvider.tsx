@@ -2,14 +2,15 @@ import { ReactNode, useMemo, useState } from 'react';
 import { ME_ID, seedCommunities, seedCourts, seedMatches, seedPlayers, seedTournaments } from './mock';
 import { Store, StoreContext } from './store';
 import { levelChanges, teamOf } from './result';
-import { Community, Highlight, Match, MATCH_SIZE, Team } from './types';
+import { Community, Highlight, Match, MATCH_SIZE, Team, TournamentEntry } from './types';
 
 /** In-memory demo data, used when Supabase isn't configured. Resets on reload. */
 export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [players, setPlayers] = useState(() => Object.fromEntries(seedPlayers.map((p) => [p.id, p])));
   const [matches, setMatches] = useState(seedMatches);
   const [tournaments, setTournaments] = useState(seedTournaments);
-  const [joinedTournaments, setJoined] = useState<string[]>([]);
+  const [myEntries, setEntries] = useState<Record<string, TournamentEntry>>({});
+  const joinedTournaments = Object.keys(myEntries);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [communities, setCommunities] = useState<Community[]>(seedCommunities);
 
@@ -35,6 +36,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       matches,
       tournaments,
       joinedTournaments,
+      myEntries,
       refresh: async () => {},
       setMyLevel: async (level) => setPlayers((ps) => ({ ...ps, [ME_ID]: { ...ps[ME_ID], level } })),
       joinMatch: async (id) =>
@@ -75,7 +77,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       createCommunity: async (c) => {
         const id = `cm${Date.now()}`;
         setCommunities((cs) => [
-          { id, name: c.name, kind: c.kind, city: c.city, description: c.description, logo: c.logoUri, ownerId: ME_ID, memberIds: [ME_ID] },
+          { id, name: c.name, kind: c.kind, city: c.city, description: c.description, logo: c.logoUri, ownerId: ME_ID, memberIds: [ME_ID], whatsapp: c.whatsapp },
           ...cs,
         ]);
         return id;
@@ -92,13 +94,14 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         setHighlights((hs) => hs.filter((h) => h.id !== id));
         return true;
       },
-      joinTournament: async (id) => {
-        if (joinedTournaments.includes(id)) return;
-        setJoined((j) => [...j, id]);
+      joinTournament: async (id, receipt) => {
+        if (myEntries[id]) return false;
+        setEntries((e) => ({ ...e, [id]: { status: 'pending', receipt: receipt?.uri } }));
         setTournaments((ts) => ts.map((t) => (t.id === id && t.registered < t.capacity ? { ...t, registered: t.registered + 1 } : t)));
+        return true;
       },
     }),
-    [players, matches, tournaments, joinedTournaments, highlights, communities],
+    [players, matches, tournaments, myEntries, highlights, communities],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

@@ -7,7 +7,7 @@ import { colors } from '@/constants/theme';
 import { friendlyError, notify } from './notify';
 import { Store, StoreContext } from './store';
 import { clipExtension } from './clips';
-import { Community, Court, Highlight, Match, Player, Tournament } from './types';
+import { Community, Court, Highlight, Match, Player, Tournament, TournamentEntry } from './types';
 
 type Data = {
   players: Record<string, Player>;
@@ -15,6 +15,7 @@ type Data = {
   matches: Match[];
   tournaments: Tournament[];
   joinedTournaments: string[];
+  myEntries: Record<string, TournamentEntry>;
   highlights: Highlight[];
   communities: Community[];
 };
@@ -40,11 +41,11 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       .order('starts_at'),
     sb
       .from('tournaments')
-      .select('id,name,format,starts_at,min_level,max_level,capacity,fee_sar,courts(name,city),tournament_entries(player_id)')
+      .select('id,name,format,starts_at,min_level,max_level,capacity,fee_sar,whatsapp,iban,iban_name,courts(name,city),tournament_entries(player_id,paid,receipt_path)')
       .gte('starts_at', since)
       .order('starts_at'),
     sb.from('highlights').select('id,player_id,path,caption,created_at').order('created_at', { ascending: false }).limit(300),
-    sb.from('communities').select('id,name,kind,city,description,logo_path,owner_id,community_members(player_id)').order('created_at').limit(500),
+    sb.from('communities').select('id,name,kind,city,description,logo_path,whatsapp,owner_id,community_members(player_id)').order('created_at').limit(500),
   ]);
   for (const r of [profiles, courts, matches, tournaments, clips, comms]) if (r.error) throw r.error;
 
@@ -86,6 +87,9 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       capacity: t.capacity,
       registered: t.tournament_entries.length,
       fee: t.fee_sar,
+      whatsapp: t.whatsapp ?? undefined,
+      iban: t.iban ?? undefined,
+      ibanName: t.iban_name ?? undefined,
     })),
     highlights: (clips.data ?? []).map((h: any) => ({
       id: h.id,
@@ -102,8 +106,16 @@ async function fetchAll(sb: SupabaseClient, uid: string): Promise<Data> {
       description: c.description,
       logo: c.logo_path ? sb.storage.from('logos').getPublicUrl(c.logo_path).data.publicUrl : undefined,
       ownerId: c.owner_id,
+      whatsapp: c.whatsapp ?? undefined,
       memberIds: c.community_members.map((m: any) => m.player_id),
     })),
+    myEntries: Object.fromEntries(
+      (tournaments.data ?? []).flatMap((t: any) =>
+        t.tournament_entries
+          .filter((e: any) => e.player_id === uid)
+          .map((e: any) => [t.id, { status: e.paid ? 'confirmed' : 'pending', receipt: e.receipt_path ?? undefined } as TournamentEntry]),
+      ),
+    ),
     joinedTournaments: (tournaments.data ?? [])
       .filter((t: any) => t.tournament_entries.some((e: any) => e.player_id === uid))
       .map((t: any) => t.id),
@@ -235,7 +247,7 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
         }
         const { data: row, error } = await sb
           .from('communities')
-          .insert({ owner_id: uid, name: c.name, kind: c.kind, city: c.city, description: c.description, logo_path })
+          .insert({ owner_id: uid, name: c.name, kind: c.kind, city: c.city, description: c.description, logo_path, whatsapp: c.whatsapp || null })
           .select('id')
           .single();
         if (error || !row) {
@@ -251,8 +263,24 @@ export function SupabaseStoreProvider({ client: sb, children }: { client: Supaba
       leaveCommunity: async (id) => {
         await run(() => sb.from('community_members').delete().match({ community_id: id, player_id: uid }));
       },
-      joinTournament: async (id) => {
-        await run(() => sb.from('tournament_entries').insert({ tournament_id: id, player_id: uid }));
+      joinTournament: async (id, receipt) => {
+        // Receipts go to a private bucket: only you and the tournament's organizer can open them.
+        let receipt_path: string | null = null;
+        if (receipt) {
+          try {
+            const body = await (await fetch(receipt.uri)).arrayBuffer();
+            const ext = receipt.mime === 'image/png' ? 'png' : receipt.mime === 'application/pdf' ? 'pdf' : 'jpg';
+            const path = `${id}/${uid}.${ext}`;
+            const up = await sb.storage.from('receipts').upload(path, body, { contentType: receipt.mime ?? 'image/jpeg', upsert: true });
+            if (up.error) throw up.error;
+            receipt_path = path;
+          } catch (e) {
+            console.warn(e);
+            notify('ما قدرنا نرفع الإيصال. تأكد من الاتصال وحاول مرة ثانية.');
+            return false;
+          }
+        }
+        return run(() => sb.from('tournament_entries').insert({ tournament_id: id, player_id: uid, receipt_path }));
       },
     };
   }, [sb, uid, data, refresh]);

@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Community, Court, Highlight, Match, NewCommunity, PickedClip, Player, Team, Tournament } from './types';
+import { Community, Court, Highlight, Match, NewCommunity, PickedClip, Player, Team, Tournament, TournamentEntry } from './types';
 
 export type NewMatch = Pick<Match, 'courtId' | 'startsAt' | 'kind' | 'minLevel' | 'maxLevel' | 'communityId'>;
 
@@ -10,6 +10,7 @@ export type Store = {
   matches: Match[];
   tournaments: Tournament[];
   joinedTournaments: string[];
+  myEntries: Record<string, TournamentEntry>; // by tournament id
   highlights: Highlight[]; // newest first
   communities: Community[];
   createCommunity: (c: NewCommunity) => Promise<string | null>;
@@ -21,7 +22,8 @@ export type Store = {
   joinMatch: (id: string) => Promise<void>;
   leaveMatch: (id: string) => Promise<void>;
   createMatch: (m: NewMatch) => Promise<string | null>;
-  joinTournament: (id: string) => Promise<void>;
+  /** Register for a tournament with the transfer receipt (an image picked from the phone). */
+  joinTournament: (id: string, receipt?: { uri: string; mime?: string }) => Promise<boolean>;
   /** Any of the four players reports who won; returns false if it was rejected. */
   reportResult: (matchId: string, winningTeam: Team, score: string) => Promise<boolean>;
   /** A player from the other team confirms (levels update) or disputes (result is cleared). */

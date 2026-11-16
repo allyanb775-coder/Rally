@@ -49,10 +49,16 @@ export type Tournament = {
   maxLevel: number;
   capacity: number;
   registered: number;
-  fee: number; // SAR
+  fee: number; // SAR, paid to the organizer over WhatsApp
+  whatsapp?: string; // organizer's mobile
+  iban?: string; // organizer's bank account for the fee
+  ibanName?: string; // account holder, so players can check before transferring
 };
 
 export const MATCH_SIZE = 4;
+
+/** Your entry in a tournament: pending until the organizer confirms your transfer. */
+export type TournamentEntry = { status: 'pending' | 'confirmed'; receipt?: string };
 
 export type CommunityKind = 'community' | 'court' | 'academy';
 
@@ -66,9 +72,10 @@ export type Community = {
   logo?: string | number | object; // image URL, or a bundled image
   ownerId: string;
   memberIds: string[];
+  whatsapp?: string; // contact mobile, optional
 };
 
-export type NewCommunity = Pick<Community, 'name' | 'kind' | 'city' | 'description'> & { logoUri?: string; logoMime?: string };
+export type NewCommunity = Pick<Community, 'name' | 'kind' | 'city' | 'description' | 'whatsapp'> & { logoUri?: string; logoMime?: string };
 
 /** A short gameplay clip a player posts on their profile. */
 export type Highlight = {

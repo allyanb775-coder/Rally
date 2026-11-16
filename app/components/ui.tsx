@@ -159,6 +159,7 @@ const icons = {
   calendar: { ios: 'calendar', android: 'calendar_today', web: 'calendar_today' },
   users: { ios: 'person.2.fill', android: 'group', web: 'group' },
   play: { ios: 'play.fill', android: 'play_arrow', web: 'play_arrow' },
+  chat: { ios: 'message.fill', android: 'chat', web: 'chat' },
   trash: { ios: 'trash', android: 'delete', web: 'delete' },
   video: { ios: 'video.fill', android: 'videocam', web: 'videocam' },
 } as const;

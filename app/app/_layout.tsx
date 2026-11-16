@@ -57,6 +57,7 @@ export default function RootLayout() {
           <Stack.Screen name="player/[id]" />
           <Stack.Screen name="club/[id]" />
           <Stack.Screen name="club/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="pay/[id]" options={{ presentation: 'modal' }} />
         </Stack>
         <TeamComplete />
       </ThemeProvider>

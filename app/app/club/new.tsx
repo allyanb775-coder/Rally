@@ -7,6 +7,7 @@ import { Button, Chip, Heading, Icon, Input, Row, Screen, T } from '@/components
 import { colors, radius } from '@/constants/theme';
 import { CITIES } from '@/lib/cities';
 import { useStore } from '@/lib/store';
+import { waLink } from '@/lib/whatsapp';
 import { CommunityKind } from '@/lib/types';
 
 /** Add a community, court or academy: name, type, city, a line about it, and a logo. */
@@ -16,6 +17,7 @@ export default function NewClub() {
   const [kind, setKind] = useState<CommunityKind>('community');
   const [city, setCity] = useState(me.city);
   const [description, setDescription] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [logo, setLogo] = useState<{ uri: string; mime?: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -26,7 +28,7 @@ export default function NewClub() {
 
   const save = async () => {
     setBusy(true);
-    const id = await createCommunity({ name: name.trim(), kind, city, description: description.trim(), logoUri: logo?.uri, logoMime: logo?.mime });
+    const id = await createCommunity({ name: name.trim(), kind, city, description: description.trim(), whatsapp: whatsapp.trim() || undefined, logoUri: logo?.uri, logoMime: logo?.mime });
     setBusy(false);
     if (id) router.replace({ pathname: '/club/[id]', params: { id } });
   };
@@ -74,7 +76,11 @@ export default function NewClub() {
           style={{ height: 100, fontSize: 15, textAlignVertical: 'top', paddingTop: 14 }}
         />
 
-        <Button title={busy ? '...' : 'أضف'} icon="check" disabled={busy || name.trim().length < 2} onPress={save} />
+        <T variant="label">رقم واتساب للتواصل (اختياري)</T>
+        <Input value={whatsapp} onChangeText={setWhatsapp} placeholder="05XXXXXXXX" keyboardType="phone-pad" />
+        {!!whatsapp && !waLink(whatsapp, '') && <T style={{ color: colors.danger, fontSize: 12 }}>اكتب رقم جوال سعودي صحيح</T>}
+
+        <Button title={busy ? '...' : 'أضف'} icon="check" disabled={busy || name.trim().length < 2 || (!!whatsapp && !waLink(whatsapp, ''))} onPress={save} />
       </Screen>
     </View>
   );

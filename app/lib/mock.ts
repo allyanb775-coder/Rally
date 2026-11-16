@@ -46,8 +46,8 @@ export const seedMatches: Match[] = [
 ];
 
 export const seedTournaments: Tournament[] = [
-  { id: 't1', name: 'بطولة The Court Club الشهرية', format: 'knockout16', startsAt: slot(9, 19), venue: 'Padel Rush، حطين', minLevel: 2, maxLevel: 5, capacity: 16, registered: 11, fee: 150 },
-  { id: 't2', name: 'ليلة أمريكانو', format: 'americano', startsAt: slot(3, 21), venue: 'Quattro Club، العليا', minLevel: 0, maxLevel: 3, capacity: 12, registered: 8, fee: 60 },
+  { id: 't1', name: 'بطولة The Court Club الشهرية', format: 'knockout16', startsAt: slot(9, 19), venue: 'Padel Rush، حطين', minLevel: 2, maxLevel: 5, capacity: 16, registered: 11, fee: 150, whatsapp: '0500000000', iban: 'SA0000000000000000000000', ibanName: 'The Court Club' },
+  { id: 't2', name: 'ليلة أمريكانو', format: 'americano', startsAt: slot(3, 21), venue: 'Quattro Club، العليا', minLevel: 0, maxLevel: 3, capacity: 12, registered: 8, fee: 60, whatsapp: '0500000000', iban: 'SA0000000000000000000000', ibanName: 'The Court Club' },
 ];
 
 export const seedCommunities: Community[] = [
@@ -60,5 +60,6 @@ export const seedCommunities: Community[] = [
     logo: require('../assets/images/the-court-club.png'),
     ownerId: ME_ID,
     memberIds: [ME_ID, 'p1', 'p2', 'p3', 'p5'],
+    whatsapp: '0500000000',
   },
 ];
