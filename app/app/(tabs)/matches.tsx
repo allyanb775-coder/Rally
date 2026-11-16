@@ -34,7 +34,7 @@ export default function Matches() {
   return (
     <Screen tabBar>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <Heading en="Matches" ar="المباريات المفتوحة في القصيم" size="xl" />
+        <Heading en="Matches" ar="المباريات المفتوحة في الرياض" size="xl" />
         <View style={s.count}>
           <Led value={ledNum(list.length)} dot={4} color="#FFFFFF" />
         </View>
@@ -60,7 +60,7 @@ export default function Matches() {
 
       <Row style={{ flexWrap: 'wrap' }}>
         <Chip label="بمستواي" active={filters.includes('mine-level')} onPress={() => toggle('mine-level')} />
-        <Chip label="بمدينتي" active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
+        <Chip label="بمنطقتي" active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
         <Chip label="تنافسية" active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
       </Row>
 

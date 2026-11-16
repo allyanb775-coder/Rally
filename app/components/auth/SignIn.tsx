@@ -81,7 +81,7 @@ export function SignInShell({ children, title = 'العب.\nنافس.\nتطوّ�
           <View style={s.logo} />
         </View>
         <T style={s.title}>{title}</T>
-        <T variant="muted">لاعبين البادل في القصيم بمكان واحد: لاقِ مباراة بمستواك، كمّل الناقصين، وشارك في البطولات.</T>
+        <T variant="muted">لاعبين البادل في الرياض بمكان واحد: لاقِ مباراة بمستواك، كمّل الناقصين، وشارك في البطولات.</T>
         <Photo source={HIGH_FIVE_WIDE.source} aspect={HIGH_FIVE_WIDE.aspect} />
         <View style={{ gap: space(3) }}>{children}</View>
       </View>

@@ -16,9 +16,9 @@ export default function Tournaments() {
         <Photo source={ARENA_HERO.source} aspect={ARENA_HERO.aspect} style={{ borderRadius: 0 }}>
           <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', '#000']} locations={[0, 0.35, 0.75, 1]} style={StyleSheet.absoluteFill} />
           <View style={s.heroText}>
-            <T style={s.kicker}>QASSIM · {new Date().getFullYear()}</T>
+            <T style={s.kicker}>RIYADH · {new Date().getFullYear()}</T>
             <T style={s.heroTitle}>EVENTS</T>
-            <T style={s.heroSub}>بطولات دور 16 وليالي أمريكانو في القصيم</T>
+            <T style={s.heroSub}>بطولات دور 16 وليالي أمريكانو في الرياض</T>
           </View>
         </Photo>
       </View>
