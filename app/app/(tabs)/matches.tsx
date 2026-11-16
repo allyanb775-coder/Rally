@@ -9,6 +9,8 @@ import { levelFits } from '@/lib/level';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 import { locale, tr } from '@/lib/i18n';
+import { regionOf } from '@/lib/cities';
+import { RegionChips } from '@/components/RegionPicker';
 
 type Filter = 'mine-level' | 'my-city' | 'competitive';
 
@@ -22,6 +24,7 @@ export default function Matches() {
     d.setDate(d.getDate() + i);
     return d;
   });
+  const [region, setRegion] = useState<string | null>(null);
   const toggle = (f: Filter) => setFilters((fs) => (fs.includes(f) ? fs.filter((x) => x !== f) : [...fs, f]));
 
   const open = matches.filter((m) => m.playerIds.length < MATCH_SIZE && new Date(m.startsAt) > now);
@@ -29,6 +32,7 @@ export default function Matches() {
     .filter((m) => (day ? sameDay(new Date(m.startsAt), day) : true))
     .filter((m) => (filters.includes('mine-level') ? levelFits(me.level, m) : true))
     .filter((m) => (filters.includes('my-city') ? m.city === me.city : true))
+    .filter((m) => (region ? regionOf(m.city)?.id === region : true))
     .filter((m) => (filters.includes('competitive') ? m.kind === 'competitive' : true))
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 
@@ -64,6 +68,7 @@ export default function Matches() {
         <Chip label={tr('بمدينتي', 'My city')} active={filters.includes('my-city')} onPress={() => toggle('my-city')} />
         <Chip label={tr('تنافسية', 'Competitive')} active={filters.includes('competitive')} onPress={() => toggle('competitive')} />
       </Row>
+      <RegionChips value={region} onChange={setRegion} all first={regionOf(me.city)?.id} />
 
       <View style={{ gap: space(3) }}>
         {list.length === 0 ? (

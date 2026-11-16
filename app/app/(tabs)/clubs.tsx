@@ -7,7 +7,8 @@ import { colors, fonts, space } from '@/constants/theme';
 import { useStore } from '@/lib/store';
 import { CommunityKind } from '@/lib/types';
 import { tr } from '@/lib/i18n';
-import { cityLabel } from '@/lib/cities';
+import { cityLabel, regionOf } from '@/lib/cities';
+import { RegionChips } from '@/components/RegionPicker';
 import { waLink } from '@/lib/whatsapp';
 import { RALLY_WHATSAPP } from '@/constants/contact';
 
@@ -16,9 +17,11 @@ export default function Clubs() {
   const { communities, me } = useStore();
   const [kind, setKind] = useState<CommunityKind | null>(null);
   const [cityOnly, setCityOnly] = useState(false);
+  const [region, setRegion] = useState<string | null>(null);
   const list = communities
     .filter((c) => (kind ? c.kind === kind : true))
     .filter((c) => (cityOnly ? c.city === me.city : true))
+    .filter((c) => (region ? regionOf(c.city)?.id === region : true))
     .sort((a, b) => Number(b.memberIds.includes(me.id)) - Number(a.memberIds.includes(me.id)) || b.memberIds.length - a.memberIds.length);
 
   const contactUs = () => {
@@ -46,6 +49,7 @@ export default function Clubs() {
         ))}
         <Chip label={tr('بمدينتي', 'My city')} active={cityOnly} onPress={() => setCityOnly(!cityOnly)} />
       </Row>
+      <RegionChips value={region} onChange={setRegion} all first={regionOf(me.city)?.id} />
 
       {list.length === 0 && (
         <Lined style={{ alignItems: 'center', paddingVertical: space(8) }}>

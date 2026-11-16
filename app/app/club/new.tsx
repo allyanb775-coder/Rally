@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { CommunityLogo, KIND_LABEL } from '@/components/CommunityLogo';
 import { Button, Chip, Heading, Icon, Input, Row, Screen, T } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
-import { CITIES, cityLabel } from '@/lib/cities';
+import { CityPicker } from '@/components/RegionPicker';
 import { useStore } from '@/lib/store';
 import { waLink } from '@/lib/whatsapp';
 import { isSaudiIban, normalizeIban } from '@/lib/iban';
@@ -63,12 +63,8 @@ export default function NewClub() {
           ))}
         </Row>
 
-        <T variant="label">{tr('المدينة', 'City')}</T>
-        <Row style={{ flexWrap: 'wrap' }}>
-          {CITIES.map((c) => (
-            <Chip key={c} label={cityLabel(c)} active={city === c} onPress={() => setCity(c)} />
-          ))}
-        </Row>
+        <T variant="label">{tr('المنطقة والمدينة', 'Region and city')}</T>
+        <CityPicker city={city} onChange={setCity} />
 
         <T variant="label">{tr('نبذة', 'About')}</T>
         <Input

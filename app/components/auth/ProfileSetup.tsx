@@ -1,8 +1,8 @@
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
 import { useState } from 'react';
-import { Button, Chip, Input, Row, T } from '@/components/ui';
+import { Button, Input, T } from '@/components/ui';
 import { colors } from '@/constants/theme';
-import { CITIES, cityLabel } from '@/lib/cities';
+import { CityPicker } from '@/components/RegionPicker';
 import { SignInShell } from './SignIn';
 import { tr } from '@/lib/i18n';
 
@@ -26,11 +26,7 @@ export function ProfileSetup({ client: sb, session, onDone }: { client: Supabase
       <T variant="label">{tr('اسمك (يظهر للاعبين وعلى بطاقتك)', 'Your name (shown to players and on your card)')}</T>
       <Input value={name} onChangeText={setName} placeholder={tr('الاسم', 'Name')} maxLength={30} autoComplete="name" />
       <T variant="label">{tr('وش مدينتك؟', 'Your city')}</T>
-      <Row style={{ flexWrap: 'wrap' }}>
-        {CITIES.map((c) => (
-          <Chip key={c} label={cityLabel(c)} active={city === c} onPress={() => setCity(c)} />
-        ))}
-      </Row>
+      <CityPicker city={city ?? ''} onChange={setCity} />
       <Button title={busy ? '...' : tr('يلا نبدأ', "Let's go")} disabled={busy || name.trim().length < 2 || !city} onPress={save} />
       {msg && <T style={{ color: colors.danger }}>{msg}</T>}
     </SignInShell>

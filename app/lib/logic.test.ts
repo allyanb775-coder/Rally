@@ -152,3 +152,12 @@ test('club links: add https, reject non-web schemes and junk', () => {
   assert.equal(normalizeLink('localhost'), null);
   assert.equal(linkHost('https://www.instagram.com/x'), 'instagram.com');
 });
+
+import { CITIES, REGIONS, regionOf } from './cities.ts';
+
+test('regions: 13 regions, every city in exactly one, old city names kept', () => {
+  assert.equal(REGIONS.length, 13);
+  assert.equal(new Set(CITIES).size, CITIES.length);
+  for (const c of ['الرياض', 'جدة', 'مكة', 'المدينة', 'الدمام', 'الخبر', 'الظهران', 'بريدة', 'عنيزة', 'أبها', 'الطائف', 'تبوك', 'حائل', 'الأحساء']) assert.ok(regionOf(c), c);
+  assert.equal(regionOf('عنيزة')?.id, 'qassim');
+});
