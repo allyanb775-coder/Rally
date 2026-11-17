@@ -12,6 +12,7 @@ import { greeting, sameDay } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
 import { tr } from '@/lib/i18n';
+import { initial } from '@/lib/initial';
 
 export default function Home() {
   const { me, matches, joinMatch } = useStore();
@@ -32,7 +33,7 @@ export default function Home() {
           <Row style={s.heroBar}>
             <T style={s.brand}>RALLY</T>
             <Pressable onPress={() => router.push('/profile')} style={s.avatar} accessibilityLabel={tr('ملفي', 'My profile')}>
-              <T style={{ fontFamily: fonts.bold, fontSize: 16, lineHeight: 22, color: '#000' }}>{me.name[0]}</T>
+              <T style={{ fontFamily: fonts.bold, fontSize: 16, lineHeight: 22, color: '#000' }}>{initial(me.name)}</T>
             </Pressable>
           </Row>
           <View style={s.heroText}>

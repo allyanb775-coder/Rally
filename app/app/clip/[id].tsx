@@ -7,6 +7,7 @@ import { colors, fonts, radius, space } from '@/constants/theme';
 import { fmtDate } from '@/lib/format';
 import { useStore } from '@/lib/store';
 import { tr } from '@/lib/i18n';
+import { initial } from '@/lib/initial';
 
 /** Full-screen clip with its owner; your own clips can be deleted (asks once). */
 export default function Clip() {
@@ -40,7 +41,7 @@ export default function Clip() {
             onPress={() => (mine ? router.push('/profile') : router.push({ pathname: '/player/[id]', params: { id: clip.playerId } }))}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <View style={s.avatar}>
-              <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{owner?.name[0]}</T>
+              <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{initial(owner?.name)}</T>
             </View>
             <View>
               <T variant="h3">{owner?.name ?? tr('لاعب', 'Player')}</T>

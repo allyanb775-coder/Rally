@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '@/constants/theme';
 import { useStore } from '@/lib/store';
 import { MATCH_SIZE } from '@/lib/types';
+import { initial } from '@/lib/initial';
 
 /**
  * Top-down padel court (20m × 10m, ratio 2:1) with the four player spots.
@@ -32,7 +33,7 @@ export function Court({ playerIds, size = 'md' }: { playerIds: string[]; size?: 
                   key={i}
                   style={[s.dot, { width: dot, height: dot, borderRadius: dot / 2 }, p ? { backgroundColor: mine ? '#FFD400' : colors.text } : s.empty]}>
                   <Text style={{ fontFamily: fonts.kufi, fontSize: dot * 0.4, lineHeight: dot * 0.9, color: p ? '#000' : '#FFFFFF' }}>
-                    {p ? p.name[0] : '+'}
+                    {p ? initial(p.name) : '+'}
                   </Text>
                 </View>
               );

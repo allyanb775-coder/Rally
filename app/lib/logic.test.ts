@@ -161,3 +161,13 @@ test('regions: 13 regions, every city in exactly one, old city names kept', () =
   for (const c of ['الرياض', 'جدة', 'مكة', 'المدينة', 'الدمام', 'الخبر', 'الظهران', 'بريدة', 'عنيزة', 'أبها', 'الطائف', 'تبوك', 'حائل', 'الأحساء']) assert.ok(regionOf(c), c);
   assert.equal(regionOf('عنيزة')?.id, 'qassim');
 });
+
+import { initial } from './initial.ts';
+
+test('avatar letters are English', () => {
+  assert.equal(initial('Fahad'), 'F');
+  assert.equal(initial('أنت'), 'A');
+  assert.equal(initial('تركي'), 'T');
+  assert.equal(initial('عبدالله'), 'A');
+  assert.equal(initial(''), '?');
+});

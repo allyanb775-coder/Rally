@@ -6,6 +6,7 @@ import { Led, ledLevel, ledNum } from './Led';
 import { tr } from '@/lib/i18n';
 import { align } from '@/components/ui';
 import { cityLabel } from '@/lib/cities';
+import { initial } from '@/lib/initial';
 
 /** The player's card, built like a scoreboard plate, to share as a story. */
 export function PlayerCard({ player }: { player: Player }) {
@@ -18,7 +19,7 @@ export function PlayerCard({ player }: { player: Player }) {
       </View>
       <View style={s.mid}>
         <View style={s.avatar}>
-          <Text style={s.avatarText}>{player.name[0]}</Text>
+          <Text style={s.avatarText}>{initial(player.name)}</Text>
         </View>
         <View style={{ gap: 8, alignItems: 'flex-start' }}>
           <Led value={ledLevel(player.level)} dot={7} />

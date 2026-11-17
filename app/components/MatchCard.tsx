@@ -10,6 +10,7 @@ import { Led, ledTime } from './Led';
 import { LevelBadge, Row, T } from './ui';
 import { tr } from '@/lib/i18n';
 import { cityLabel } from '@/lib/cities';
+import { initial } from '@/lib/initial';
 
 /** One fixture on the schedule board: LED time block, venue, and the four spots. */
 export function MatchCard({ match }: { match: Match; highlight?: boolean; compact?: boolean }) {
@@ -72,7 +73,7 @@ export function PlayerRow({ id, host, hostLabel = tr('صاحب المباراة'
     <Pressable onPress={() => (id === me.id ? router.push('/profile') : router.push({ pathname: '/player/[id]', params: { id } }))}>
     <Row style={s.player}>
       <View style={[s.avatar, id === me.id && { backgroundColor: colors.blue }]}>
-        <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{p.name[0]}</T>
+        <T style={{ fontFamily: fonts.kufi, color: colors.ink, lineHeight: 24 }}>{initial(p.name)}</T>
       </View>
       <View style={{ flex: 1 }}>
         <T variant="h3">{p.name}</T>
